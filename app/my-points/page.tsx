@@ -22,13 +22,15 @@ import {
   QueryTasksType,
 } from "../api/agent_c";
 import { Empty, message, Skeleton } from "antd";
+import { CloseOutlined } from "@ant-design/icons";
 import { formatDate } from "../utils";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "../store";
 import { syncPoints } from "../store/userSlice";
-import { useAccount, useChainId, useWriteContract, useSwitchChain } from "wagmi";
+import { useAccount, useChainId, useWriteContract, useSwitchChain, useReadContract } from "wagmi";
 import { parseUnits } from "viem";
 import erc20Abi from "@/app/abi/erc20.json";
+import { isDev } from "../enum";
 interface ListItem {
   value: number;
   select: boolean;
@@ -42,6 +44,15 @@ interface CoinListItem {
   icon: string;
   disabled: boolean;
 }
+
+const getActualRecords = (records: QueryTasksItem[]) =>
+  records.filter((record) => record.timestamp !== undefined);
+
+const getRecordsSignature = (records: QueryTasksItem[]) =>
+  getActualRecords(records)
+    .map((record) => `${record.type ?? "unknown"}-${record.point ?? "unknown"}-${record.timestamp}`)
+    .join("|");
+
 const Page = () => {
   const router = useRouter();
   const { t } = useTranslation();
@@ -51,6 +62,29 @@ const Page = () => {
   const chainId = useChainId();
   const { writeContractAsync, isPending } = useWriteContract();
   const { switchChain } = useSwitchChain();
+
+  // Get token configuration
+  const USDT_MAINNET = process.env.NEXT_PUBLIC_USDT_MAINNET;
+  const MOCK_USDT_TESTNET = process.env.NEXT_PUBLIC_MOCK_USDT_TESTNET;
+  const DEFAULT_CHAIN_ID = process.env.NEXT_PUBLIC_CHAIN_ID;
+
+  const defaultChainId = DEFAULT_CHAIN_ID ? parseInt(DEFAULT_CHAIN_ID) : 56;
+  const isBscMainnet = chainId === 56;
+  const isBscTestnet = chainId === 97;
+
+  const tokenAddress = (isBscTestnet ? MOCK_USDT_TESTNET : USDT_MAINNET) as `0x${string}`;
+  const decimals = isBscTestnet ? 6 : 18;
+
+  // Query user balance
+  const { data: userBalance } = useReadContract({
+    address: tokenAddress,
+    abi: erc20Abi,
+    functionName: "balanceOf",
+    args: address ? [address] : undefined,
+    query: {
+      enabled: !!address && (isBscMainnet || isBscTestnet),
+    },
+  });
   const [list, setList] = useState<ListItem[]>([
     {
       value: 1,
@@ -139,7 +173,14 @@ const Page = () => {
   const [listLoading, setlistLoading] = useState(true);
   const [waitingConfirmation, setWaitingConfirmation] = useState(false);
   const waitingConfirmationRef = useRef(false);
+
+  // Handle close waiting confirmation
+  const handleCloseWaitingConfirmation = () => {
+    waitingConfirmationRef.current = false;
+    setWaitingConfirmation(false);
+  };
   const previousRecordsLengthRef = useRef(0);
+  const previousRecordsSignatureRef = useRef("");
 
   const handleGetList = async () => {
     try {
@@ -160,8 +201,16 @@ const Page = () => {
 
       // Check if waiting for confirmation and new data arrived
       // Compare actual record count (excluding empty placeholder records)
-      const actualRecordsCount = newRecords.filter(r => r.timestamp !== undefined).length;
-      if (waitingConfirmationRef.current && actualRecordsCount > previousRecordsLengthRef.current) {
+      const actualRecords = getActualRecords(newRecords);
+      const actualRecordsCount = actualRecords.length;
+      const recordsSignature = getRecordsSignature(newRecords);
+      if (
+        waitingConfirmationRef.current &&
+        (
+          actualRecordsCount > previousRecordsLengthRef.current ||
+          recordsSignature !== previousRecordsSignatureRef.current
+        )
+      ) {
         waitingConfirmationRef.current = false;
         setWaitingConfirmation(false);
         messageApi.success(t("myPoints.subscribeSuccess") || "Subscribe successful!");
@@ -266,14 +315,7 @@ const Page = () => {
       return;
     }
 
-    const PAYEE_ADDRESS = process.env.NEXT_PUBLIC_PAYEE_ADDRESS;
-    const USDT_MAINNET = process.env.NEXT_PUBLIC_USDT_MAINNET;
-    const MOCK_USDT_TESTNET = process.env.NEXT_PUBLIC_MOCK_USDT_TESTNET;
-    const DEFAULT_CHAIN_ID = process.env.NEXT_PUBLIC_CHAIN_ID;
-
-    const defaultChainId = DEFAULT_CHAIN_ID ? parseInt(DEFAULT_CHAIN_ID) : 56;
-    const isBscMainnet = chainId === 56;
-    const isBscTestnet = chainId === 97;
+    const PAYEE_ADDRESS = isDev ?'0x08CDF68035D34865FD56e18a7E02B494Dece6E80' : process.env.NEXT_PUBLIC_PAYEE_ADDRESS;
 
     // Auto-switch to default chain if not on correct network
     if (chainId !== defaultChainId) {
@@ -290,20 +332,24 @@ const Page = () => {
       return;
     }
 
-    const tokenAddress = isBscTestnet ? MOCK_USDT_TESTNET : USDT_MAINNET;
-    const decimals = isBscTestnet ? 6 : 18;
+    // Check balance
+    const requiredAmount = parseUnits(selectedItem.money, decimals);
+    if (userBalance !== undefined && userBalance < requiredAmount) {
+      messageApi.error(t("common.insufficientBalance") || "Insufficient balance");
+      return;
+    }
 
     try {
-      const amount = parseUnits(selectedItem.money, decimals);
       await writeContractAsync({
-        address: tokenAddress as `0x${string}`,
+        address: tokenAddress,
         abi: erc20Abi,
         functionName: "transfer",
-        args: [PAYEE_ADDRESS, amount],
+        args: [PAYEE_ADDRESS, requiredAmount],
       });
 
       // Record current records length before transaction
-      previousRecordsLengthRef.current = records.filter(r => r.timestamp !== undefined).length;
+      previousRecordsLengthRef.current = getActualRecords(records).length;
+      previousRecordsSignatureRef.current = getRecordsSignature(records);
 
       // Start waiting for chain confirmation
       waitingConfirmationRef.current = true;
@@ -334,6 +380,13 @@ const Page = () => {
         <div className="fixed top-20 left-1/2 transform -translate-x-1/2 z-50 bg-black text-white px-6 py-3 rounded-lg shadow-lg flex items-center gap-3">
           <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
           <span className="text-sm font-medium">{t("myPoints.waitingConfirmation") || "Waiting for chain confirmation..."}</span>
+          <button
+            onClick={handleCloseWaitingConfirmation}
+            className="ml-2 text-white hover:text-gray-300 transition-colors cursor-pointer"
+            title={t("common.close") || "Close"}
+          >
+            <CloseOutlined className="text-lg" />
+          </button>
         </div>
       )}
 
@@ -511,7 +564,6 @@ const Page = () => {
 };
 
 export default Page;
-
 
 
 
