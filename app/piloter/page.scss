@@ -1,0 +1,36 @@
+.page-piloter {
+  .chooseToken {
+    transition: ease .3s;
+    &:hover {
+        box-shadow: 1px 3px 8px 1px rgba(0, 0, 0, 0.3);
+    }
+  }
+  .child-item{
+
+    // &:nth-child(odd){
+    //   background-color: #DDDDDD;
+    // }
+  }
+
+  
+    .home-btn {
+        user-select: none;
+        transition: ease all 0.3s;
+        cursor: pointer;
+        background: white;
+        color: black;
+        box-shadow: 3px 3px 1px 0 rgba(0, 0, 0, 1), 0 0 0 rgba(0, 0, 0, 0.1);
+        transition: box-shadow 0.3s ease, transform 0.3s ease;
+
+
+
+        &.selected {
+            color: white;
+            background: black;
+            box-shadow: 1px 1px 0 0 rgba(0, 0, 0, 1), 0 0 0 rgba(0, 0, 0, 0.1);
+            transform: translate(0, 2px);
+        }
+
+
+    }
+}

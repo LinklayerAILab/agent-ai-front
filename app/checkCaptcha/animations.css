@@ -1,0 +1,29 @@
+/* Custom animations for CheckCaptcha page */
+@keyframes show-modal-animate {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+@keyframes hide-modal-animate {
+  0% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+/* Custom utility classes for animations */
+.animate-show-modal {
+  animation: show-modal-animate 0.3s ease forwards;
+}
+
+.animate-hide-modal {
+  animation: hide-modal-animate 0.3s ease forwards;
+  opacity: 0;
+  display: none;
+}

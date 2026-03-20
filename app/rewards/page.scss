@@ -1,0 +1,40 @@
+.page-exchange {
+  .right-box {
+    background: url("../images/rewards/bg.svg") no-repeat center center;
+    background-size: 96%;
+  }
+  .net-bg {
+    background: url('../images/rewards/net.svg') no-repeat;
+    background-size: calc(100% - 60px) auto; // 左右各14px，总共28px
+    background-position: center bottom 30px; // 水平居中，距离底部14px
+  }
+  .tab-item {
+    background-color: #424242;
+    color: white;
+    min-width: 120px;
+    text-align: center;
+    &.swap {
+      border-top-left-radius: 8px;
+    }
+    &.stake {
+      border-top-right-radius: 8px;
+    }
+    &.select {
+      background: #cf0;
+      color: black;
+      font-weight: bold;
+    }
+  }
+  .tab-content {
+    border-top-right-radius: 8px;
+    border-bottom-left-radius: 8px;
+    border-bottom-right-radius: 8px;
+  }
+}
+@media screen and (max-width: 1024px) {
+  .page-exchange {
+    .right-box {
+      background: none;
+    }
+  }
+}

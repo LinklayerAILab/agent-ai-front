@@ -1,0 +1,25 @@
+.alpha-empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 48px 20px;
+  text-align: center;
+  min-height: 300px;
+
+  .empty-state-icon {
+    margin-bottom: 5px;
+
+    .empty-state-image {
+
+      object-fit: contain;
+    }
+  }
+
+  .empty-state-description {
+
+    color: #333333;
+    line-height: 1.6;
+    font-weight: bold;
+  }
+}

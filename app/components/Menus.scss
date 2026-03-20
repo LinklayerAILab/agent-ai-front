@@ -1,0 +1,398 @@
+.menu {
+  transition: ease 0.3s;
+  border-radius: 4px;
+  .notice-link {
+    color: black;
+  }
+  &:active {
+    background-color: #ccc;
+  }
+  div {
+    transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    height: 2px;
+    border-radius: 1px;
+    margin: 0 4px;
+    background-color: #000;
+  }
+  &.active {
+    border-radius: 6px;
+    div:nth-of-type(1) {
+      transform: translateY(3.5px) rotate(45deg);
+    }
+    div:nth-of-type(2) {
+      transform: translateY(-3.5px) rotate(-45deg);
+    }
+  }
+}
+.menu-panel {
+  border-radius: 14px;
+  border: 1px solid #eee;
+  transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  width: 100%;
+  height: calc(100vh - 54px);
+}
+
+.menus {
+  z-index: 111;
+  border-style: solid;
+  top: 57px;
+  right: 0px;
+  background-color: white;
+  width: 100vw;
+  justify-content: space-between;
+  width: 157px;
+}
+.mobile-menu {
+  position: fixed;
+  top: 54px;
+  left: 0;
+  transition: ease 0.3s;
+  transform: translateX(-50vw);
+  width: 0;
+  height: calc(100vh - 54px);
+  background: #eaeaea;
+  border-right: 1px solid #000;
+  &.show-menu {
+    width: 50vw;
+    transform: translateX(0vw);
+  }
+}
+
+.root-page-context {
+  transition: ease 0.3s;
+  &.open-menu {
+    transform: translateX(50vw);
+  }
+
+  &.graph {
+    background: white;
+  }
+  @media screen and (min-width: 1024px) {
+    &.open-menu {
+      transform: translateX(0vw);
+    }
+  }
+}
+@media screen and (max-width: 768px) {
+  .root-page-context.graph {
+    padding: 55px 0 0;
+    .router-wrapper {
+      padding-bottom: 0;
+    }
+  }
+}
+
+.menus.fixed {
+  position: fixed;
+  left: 0;
+  right: 0;
+  top: 57px;
+  bottom: 0;
+  height: calc(100vh - 57px);
+  width: 100vw;
+}
+
+.platform-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-style: solid;
+  border-width: 1px;
+  border-color: black;
+  border-radius: 4px;
+  height: 4vh;
+  padding-left: 6px;
+  padding-right: 7px;
+}
+
+.platform-card:hover {
+  cursor: pointer;
+}
+
+.platform-card .icon-box {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  padding-right: 5px;
+  // width: 30px;
+  border-right: 1px solid black;
+}
+
+// .platform-card .icon-box.pr-0 {
+//     padding-right: 0;
+// }
+.platform-card .icon-box svg {
+  width: 80%;
+}
+
+.page-con.home,
+.page-con.apiForm,
+.page-con.ranking {
+  // background: url('../images/home/net.svg') repeat;
+  background: white;
+}
+
+
+.home-layout {
+  /* Tailwind: lg:h-[91vh] bg-[#F4F4F4] overflow-y-scroll */
+  height: auto;
+  width: 100%;
+  height: 100%;
+  overflow-y: scroll;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  /* 隐藏滚动条 */
+  &::-webkit-scrollbar {
+    display: none;
+  }
+
+  & > div {
+    width: 100%;
+  }
+
+  .router-wrapper {
+    /* Tailwind: lg:flex lg:justify-center lg:items-center lg:h-[91vh] lg:py-0 py-[20px] min-h-screen lg:min-h-0 bg-[#F4F4F4] */
+    display: block;
+    width: 100%;
+    padding-top: 20px;
+    padding-bottom: 20px;
+
+    @media (min-width: 1024px) {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100%;
+      min-height: auto;
+      padding-top: 0;
+      padding-bottom: 0;
+    }
+
+    & > div {
+      width: 100%;
+      height: 100%;
+
+      & > div {
+        width: 100%;
+      }
+    }
+  }
+  @media screen and (max-width: 640px) {
+    .router-wrapper {
+      padding-top: 0;
+      overflow-y: scroll;
+      overflow-x: hidden;
+    }
+  }
+}
+.icon-pointer {
+  transform: translateX(1px);
+}
+
+@media screen and (max-width: 1024px) {
+  .menus {
+    height: calc(100vh - 57px);
+  }
+  .platform-card {
+    height: 40px;
+  }
+  .home-layout {
+    display: block;
+  }
+}
+/* 优化的路由切换动画 */
+
+/* 上滑 */
+.scroll-top-enter {
+  opacity: 0;
+  transform: translateY(100%);
+  filter: blur(1px);
+}
+
+.scroll-top-enter-active {
+  opacity: 1;
+  transform: translateY(0);
+  transition: all 250ms;
+  filter: blur(0);
+}
+
+.scroll-top-exit {
+  opacity: 1;
+  transform: translateY(0);
+  filter: blur(0);
+}
+
+.scroll-top-exit-active {
+  opacity: 0;
+  transform: translateY(-100%);
+  transition: all 250ms;
+  filter: blur(1px);
+}
+
+/* 下滑 */
+.scroll-down-enter {
+  opacity: 0;
+  transform: translateY(-100%);
+  filter: blur(0);
+}
+
+.scroll-down-enter-active {
+  opacity: 1;
+  transform: translateY(0);
+  transition: all 250ms;
+  filter: blur(0);
+}
+
+.scroll-down-exit {
+  opacity: 1;
+  transform: translateY(0);
+  filter: blur(1px);
+}
+
+.scroll-down-exit-active {
+  opacity: 0;
+  transform: translateY(100%);
+  transition: all 250ms;
+  filter: blur(1px);
+}
+
+/* 添加硬件加速优化 */
+.scroll-top-enter,
+.scroll-top-enter-active,
+.scroll-top-exit,
+.scroll-top-exit-active,
+.scroll-down-enter,
+.scroll-down-enter-active,
+.scroll-down-exit,
+.scroll-down-exit-active {
+  will-change: transform, opacity, filter;
+  backface-visibility: hidden;
+  -webkit-perspective: 1000px;
+  perspective: 1000px;
+}
+
+/* 为容器添加溢出隐藏，确保动画更干净 */
+.router-wrapper {
+  overflow: hidden;
+  position: relative;
+}
+
+/* 添加弹性进入动画变体（可选） */
+@keyframes bounceInUp {
+  0% {
+    opacity: 0;
+    transform: translateY(100%) scale(0.3);
+  }
+  50% {
+    opacity: 0.8;
+    transform: translateY(-10%) scale(1.05);
+  }
+  70% {
+    opacity: 0.9;
+    transform: translateY(5%) scale(0.98);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes bounceInDown {
+  0% {
+    opacity: 0;
+    transform: translateY(-100%) scale(0.3);
+  }
+  50% {
+    opacity: 0.8;
+    transform: translateY(10%) scale(1.05);
+  }
+  70% {
+    opacity: 0.9;
+    transform: translateY(-5%) scale(0.98);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* 弹性动画变体类（可以通过添加.bounce类启用） */
+.scroll-top-enter-active.bounce {
+  animation: bounceInUp 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.scroll-down-enter-active.bounce {
+  animation: bounceInDown 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+/* 快速响应的动画变体 */
+/* 上滑动画 - 快速版本 */
+.scroll-top-fast-enter {
+  opacity: 0;
+  transform: translateY(-20%) scale(0.99) translateZ(0);
+  filter: blur(0.5px);
+}
+
+.scroll-top-fast-enter-active {
+  opacity: 1;
+  transform: translateY(0) scale(1) translateZ(0);
+  filter: blur(0);
+  transition: all 0.1s ease-out;
+}
+
+.scroll-top-fast-exit {
+  opacity: 1;
+  transform: translateY(0) scale(1) translateZ(0);
+  filter: blur(0);
+}
+
+.scroll-top-fast-exit-active {
+  opacity: 0;
+  transform: translateY(20%) scale(1.01) translateZ(0);
+  filter: blur(0.5px);
+  transition: all 0.1s ease-out;
+}
+
+/* 下滑动画 - 快速版本 */
+.scroll-down-fast-enter {
+  opacity: 0;
+  transform: translateY(20%) scale(0.99) translateZ(0);
+  filter: blur(0.5px);
+}
+
+.scroll-down-fast-enter-active {
+  opacity: 1;
+  transform: translateY(0) scale(1) translateZ(0);
+  filter: blur(0);
+  transition: all 0.1s ease-out;
+}
+
+.scroll-down-fast-exit {
+  opacity: 1;
+  transform: translateY(0) scale(1) translateZ(0);
+  filter: blur(0);
+}
+
+.scroll-down-fast-exit-active {
+  opacity: 0;
+  transform: translateY(-20%) scale(1.01) translateZ(0);
+  filter: blur(0.5px);
+  transition: all 0.1s ease-out;
+}
+
+/* 快速动画的硬件加速优化 */
+.scroll-top-fast-enter,
+.scroll-top-fast-enter-active,
+.scroll-top-fast-exit,
+.scroll-top-fast-exit-active,
+.scroll-down-fast-enter,
+.scroll-down-fast-enter-active,
+.scroll-down-fast-exit,
+.scroll-down-fast-exit-active {
+  will-change: transform, opacity, filter;
+  backface-visibility: hidden;
+  -webkit-perspective: 1000px;
+  perspective: 1000px;
+}

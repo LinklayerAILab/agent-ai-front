@@ -1,0 +1,104 @@
+.menu-button {
+    padding-left: 20px;
+    padding-right: 20px;
+    /* xl:px-[10px] */
+    border-radius: 6px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 16px;
+    font-weight: bold;
+    height: 5vh;
+    cursor: pointer;
+    /* xl:justify-center */
+    /* lg:border-[2px] xl:border-solid xl:border-[#000] */
+    /* xl:h-[5vh] */
+
+    &.checked {
+        background-color: #CF0;
+    }
+
+    &.true {
+        .logout-btn {
+            transition: ease .3s;
+
+            .btn-box {
+                transition: all 0.3s ease-in-out;
+                border-style: solid;
+                border-width: 1px;
+                border-color: #e2e2e2;
+            }
+        }
+
+        &:hover {
+            .logout-btn {
+                display: block;
+                bottom: -48px;
+            }
+        }
+
+        .btn-box:hover {
+            box-shadow: 0 6px 16px 0 rgba(0, 0, 0, 0.08), 0 3px 6px -4px rgba(0, 0, 0, 0.12), 0 9px 28px 8px rgba(0, 0, 0, 0.05);
+            background: #fff;
+        }
+    }
+}
+
+.info-card {
+    border-width: 2px;
+    border-style: solid;
+    border-color: #000;
+    border-radius: 10px;
+    height: 40px;
+    padding-left: 16px;
+    padding-right: 16px;
+    background-color: #fff;
+
+    .info-card-icon {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin-right: 5px;
+    }
+}
+
+.info-card-user {
+    border-width: 2px;
+    border-style: solid;
+    border-color: #000;
+    border-radius: 8px;
+    height: 52px;
+    padding-left: 16px;
+    padding-right: 16px;
+    background-color: #EAEAEA;
+
+    .info-card-icon {
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
+        background: #000;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin-right: 5px;
+    }
+}
+
+.info-box {
+    .line-box {
+        width: 70px;
+        /* xl:w-[100px] */
+        height: 0;
+        border-bottom: 1px solid #666;
+    }
+}
+
+@media screen and (max-width:1024px) {
+    .menu-button {
+        box-shadow: none;
+        border: none;
+        border-radius: 0;
+        padding: 14px 20px;
+        height: 48px;
+    }
+}

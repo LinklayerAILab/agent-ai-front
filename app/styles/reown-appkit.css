@@ -1,0 +1,35 @@
+/* Reown AppKit 自定义样式 */
+
+/* 设置模态框的 z-index */
+w3m-modal,
+w3m-modal *,
+[data-w3m],
+[data-w3m] *,
+.w3m-modal,
+.w3m-modal *,
+w3m-router,
+w3m-router * {
+  z-index: 9999 !important;
+}
+
+/* 确保背景遮罩层的 z-index */
+w3m-modal::part(overlay),
+.w3m-overlay {
+  z-index: 9998 !important;
+}
+
+/* 设置更高的层级以确保在所有元素之上 */
+:root {
+  --w3m-z-index: 9999;
+}
+
+/* 针对特定的模态框容器 */
+div[data-testid="w3m-modal"] {
+  z-index: 9999 !important;
+}
+
+/* 如果使用了特定的类名或ID */
+#w3m-modal,
+.w3m-modal-container {
+  z-index: 9999 !important;
+}

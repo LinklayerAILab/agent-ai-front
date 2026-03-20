@@ -1,0 +1,500 @@
+/* 基础样式 */
+// .music-animate {
+//     transform: rotate(2deg);
+// }
+
+.music-animate div {
+    border-top-left-radius: 1px;
+    border-top-right-radius: 1px;
+}
+
+/* big 样式 */
+.music-animate.small div {
+    width: 4px;
+    background-color: #cf0;
+}
+
+@media (min-width: 1024px) {
+    .music-animate.small div {
+        width: 5px;
+    }
+}
+
+.music-animate.small div:nth-of-type(1) {
+    background-color: #cf0;
+    animation: a1 0.8s linear infinite;
+}
+
+.music-animate.small div:nth-of-type(2) {
+    background-color: #FFBE34;
+    animation: a2 1s linear infinite;
+}
+
+.music-animate.small div:nth-of-type(3) {
+    background-color: #cf0;
+    animation: a3 0.7s linear infinite;
+}
+
+.music-animate.small div:nth-of-type(4) {
+    background-color: #FFBE34;
+    animation: a4 1.1s linear infinite;
+}
+
+.music-animate.small div:nth-of-type(5) {
+    background-color: #cf0;
+    animation: a5 0.75s linear infinite;
+}
+
+.music-animate.small div:nth-of-type(6) {
+    background-color: #cf0;
+    animation: a6 1.2s linear infinite;
+}
+
+.music-animate.small div:nth-of-type(7) {
+    background-color: #FFBE34;
+    animation: a7 1s linear infinite;
+}
+
+/* small 样式 */
+.music-animate.big div {
+    width: 8px;
+    background-color: #cf0;
+}
+
+@media (min-width: 1024px) {
+    .music-animate.big div {
+        width: 8px;
+    }
+}
+
+.music-animate.big div:nth-of-type(1) {
+    background-color: #cf0;
+    animation: b1 0.8s linear infinite;
+}
+
+.music-animate.big div:nth-of-type(2) {
+    background-color: #FFBE34;
+    animation: b2 1s linear infinite;
+}
+
+.music-animate.big div:nth-of-type(3) {
+    background-color: #cf0;
+    animation: b3 0.7s linear infinite;
+}
+
+.music-animate.big div:nth-of-type(4) {
+    background-color: #FFBE34;
+    animation: b4 1.1s linear infinite;
+}
+
+.music-animate.big div:nth-of-type(5) {
+    background-color: #cf0;
+    animation: b5 0.75s linear infinite;
+}
+
+.music-animate.big div:nth-of-type(6) {
+    background-color: #cf0;
+    animation: b6 1.2s linear infinite;
+}
+
+.music-animate.big div:nth-of-type(7) {
+    background-color: #FFBE34;
+    animation: b7 1s linear infinite;
+}
+
+/* big 动画定义 */
+@keyframes a1 {
+    0% {
+        height: 2vh;
+    }
+
+    50% {
+        height: 3vh;
+    }
+
+    100% {
+        height: 2vh;
+    }
+}
+
+@keyframes a2 {
+    0% {
+        height: 1.7vh;
+    }
+
+    50% {
+        height: 2.2vh;
+    }
+
+    100% {
+        height: 1.7vh;
+    }
+}
+
+@keyframes a3 {
+    0% {
+        height: 1.2vh;
+    }
+
+    50% {
+        height: 2.4vh;
+    }
+
+    100% {
+        height: 1.2vh;
+    }
+}
+
+@keyframes a4 {
+    0% {
+        height: 1.6vh;
+    }
+
+    50% {
+        height: 2.6vh;
+    }
+
+    100% {
+        height: 1.6vh;
+    }
+}
+
+@keyframes a5 {
+    0% {
+        height: 1vh;
+    }
+
+    50% {
+        height: 2.5vh;
+    }
+
+    100% {
+        height: 1vh;
+    }
+}
+
+@keyframes a6 {
+    0% {
+        height: 0.8vh;
+    }
+
+    50% {
+        height: 2.4vh;
+    }
+
+    100% {
+        height: 0.8vh;
+    }
+}
+
+@keyframes a7 {
+    0% {
+        height: 1.3vh;
+    }
+
+    50% {
+        height: 2.7vh;
+    }
+
+    100% {
+        height: 1.3vh;
+    }
+}
+
+/* small 动画定义 */
+@keyframes b1 {
+    0% {
+        height: 2vh;
+    }
+
+    50% {
+        height: 3vh;
+    }
+
+    100% {
+        height: 2vh;
+    }
+}
+
+@keyframes b2 {
+    0% {
+        height: 3vh;
+    }
+
+    50% {
+        height: 2.5vh;
+    }
+
+    100% {
+        height: 3vh;
+    }
+}
+
+@keyframes b3 {
+    0% {
+        height: 2.2vh;
+    }
+
+    50% {
+        height: 3.5vh;
+    }
+
+    100% {
+        height: 2.2vh;
+    }
+}
+
+@keyframes b4 {
+    0% {
+        height: 1.8vh;
+    }
+
+    50% {
+        height: 2.6vh;
+    }
+
+    100% {
+        height: 1.8vh;
+    }
+}
+
+@keyframes b5 {
+    0% {
+        height: 2.5vh;
+    }
+
+    50% {
+        height: 1.6vh;
+    }
+
+    100% {
+        height: 2.5vh;
+    }
+}
+
+@keyframes b6 {
+    0% {
+        height: 2.5vh;
+    }
+
+    50% {
+        height: 1.2vh;
+    }
+
+    100% {
+        height: 2.5vh;
+    }
+}
+
+@keyframes b7 {
+    0% {
+        height: 2.2vh;
+    }
+
+    50% {
+        height: 3.2vh;
+    }
+
+    100% {
+        height: 2.2vh;
+    }
+}
+
+/* 响应式动画（max-width: 1024px） */
+@media (max-width: 1024px) {
+    @keyframes a1 {
+        0% {
+            height: 10px;
+        }
+
+        50% {
+            height: 35px;
+        }
+
+        100% {
+            height: 15px;
+        }
+    }
+
+    @keyframes a2 {
+        0% {
+            height: 18px;
+        }
+
+        50% {
+            height: 40px;
+        }
+
+        100% {
+            height: 18px;
+        }
+    }
+
+    @keyframes a3 {
+        0% {
+            height: 20px;
+        }
+
+        50% {
+            height: 38px;
+        }
+
+        100% {
+            height: 20px;
+        }
+    }
+
+    @keyframes a4 {
+        0% {
+            height: 12px;
+        }
+
+        50% {
+            height: 30px;
+        }
+
+        100% {
+            height: 12px;
+        }
+    }
+
+    @keyframes a5 {
+        0% {
+            height: 22px;
+        }
+
+        50% {
+            height: 43px;
+        }
+
+        100% {
+            height: 22px;
+        }
+    }
+
+    @keyframes a6 {
+        0% {
+            height: 18px;
+        }
+
+        50% {
+            height: 36px;
+        }
+
+        100% {
+            height: 18px;
+        }
+    }
+
+    @keyframes a7 {
+        0% {
+            height: 22px;
+        }
+
+        50% {
+            height: 45px;
+        }
+
+        100% {
+            height: 22px;
+        }
+    }
+
+    @keyframes b1 {
+        0% {
+            height: 18px;
+        }
+
+        50% {
+            height: 40px;
+        }
+
+        100% {
+            height: 18px;
+        }
+    }
+
+    @keyframes b2 {
+        0% {
+            height: 22px;
+        }
+
+        50% {
+            height: 35px;
+        }
+
+        100% {
+            height: 22px;
+        }
+    }
+
+    @keyframes b3 {
+        0% {
+            height: 18px;
+        }
+
+        50% {
+            height: 36px;
+        }
+
+        100% {
+            height: 2.18px;
+        }
+    }
+
+    @keyframes b4 {
+        0% {
+            height: 28px;
+        }
+
+        50% {
+            height: 26px;
+        }
+
+        100% {
+            height: 28px;
+        }
+    }
+
+    @keyframes b5 {
+        0% {
+            height: 13px;
+        }
+
+        50% {
+            height: 30px;
+        }
+
+        100% {
+            height: 13px;
+        }
+    }
+
+    @keyframes b6 {
+        0% {
+            height: 22px;
+        }
+
+        50% {
+            height: 38px;
+        }
+
+        100% {
+            height: 22px;
+        }
+    }
+
+    @keyframes b7 {
+        0% {
+            height: 24px;
+        }
+
+        50% {
+            height: 3.6px;
+        }
+
+        100% {
+            height: 24px;
+        }
+    }
+}

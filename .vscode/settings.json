@@ -1,0 +1,9 @@
+{
+    "i18n-ally.localesPaths": [
+        "app/i18n",
+        "public/locales"
+    ],
+    "cSpell.words": [
+        "Cascader"
+    ]
+}

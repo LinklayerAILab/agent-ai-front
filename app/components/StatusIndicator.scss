@@ -1,0 +1,250 @@
+.status-indicator {
+  border-style: solid;
+  border-color: #000;
+  border-radius: 50%;
+  display: inline-block;
+  box-shadow: 1px 1px 1px 0px rgba(0, 0, 0, 0.2);
+  transition: all 0.2s ease;
+
+  // 尺寸相关的内圆大�?
+  &.status-small {
+    &::after {
+      width: 6px;
+      height: 6px;
+    }
+  }
+
+  &.status-medium {
+    &::after {
+      width: 8px;
+      height: 8px;
+    }
+  }
+
+  &.status-large {
+    &::after {
+      width: 12px;
+      height: 12px;
+    }
+  }
+
+  &.status-xlarge {
+    &::after {
+      width: 16px;
+      height: 16px;
+    }
+  }
+
+  // 内圆�?
+  &::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    border-radius: 50%;
+  }
+
+  // 状态颜�?
+  &.status-green {
+    background-color: #4ade80;
+    // &::after {
+    //   background-color: #22c55e;
+    // }
+  }
+
+  &.status-red {
+    background-color: #f87171;
+    // &::after {
+    //   background-color: #ef4444;
+    // }
+  }
+
+  &.status-yellow {
+    background-color: #fbbf24;
+    // &::after {
+    //   background-color: #f59e0b;
+    // }
+  }
+
+  &.status-primary {
+    background-color: #cf0;
+    // &::after {
+    //   background-color: #b8e600;
+    // }
+  }
+
+  &.status-gray {
+    background-color: #d1d5db;
+    // &::after {
+    //   background-color: #9ca3af;
+    // }
+  }
+
+  &.status-loading {
+    background-color: #e5e7eb;
+    border-color: #9ca3af;
+    animation: loading-spin 1s linear infinite;
+
+    &::after {
+      display: none;
+    }
+  }
+
+  // 脉冲动画
+  &.status-pulse {
+    &.status-green {
+      animation: gradientFade1 2s ease-in-out infinite;
+    }
+
+    &.status-red {
+      animation: gradientFade2 2s ease-in-out infinite;
+    }
+
+    &.status-yellow {
+      animation: gradientFade3 2s ease-in-out infinite;
+    }
+
+    &.status-primary {
+      animation: pulse-primary 2s ease-in-out infinite;
+    }
+
+    &.status-gray {
+      animation: none;
+    }
+  }
+
+  // 悬浮效果
+  &:hover {
+    transform: scale(1.05);
+    box-shadow: 2px 2px 2px 0px rgba(0, 0, 0, 0.3);
+  }
+
+  &:active {
+    transform: scale(0.95);
+  }
+}
+
+// 动画定义
+@keyframes pulse-green {
+  0%, 100% {
+    background-color: #4ade80;
+    box-shadow: 0 0 0 0 rgba(74, 222, 128, 0.7);
+  }
+  50% {
+    background-color: #22c55e;
+    box-shadow: 0 0 0 8px rgba(74, 222, 128, 0);
+  }
+}
+
+@keyframes pulse-red {
+  0%, 100% {
+    background-color: #f87171;
+    box-shadow: 0 0 0 0 rgba(248, 113, 113, 0.7);
+  }
+  50% {
+    background-color: #ef4444;
+    box-shadow: 0 0 0 8px rgba(248, 113, 113, 0);
+  }
+}
+
+@keyframes pulse-yellow {
+  0%, 100% {
+    background-color: #fbbf24;
+    box-shadow: 0 0 0 0 rgba(251, 191, 36, 0.7);
+  }
+  50% {
+    background-color: #f59e0b;
+    box-shadow: 0 0 0 8px rgba(251, 191, 36, 0);
+  }
+}
+
+@keyframes gradientFade1 {
+  0%, 60% {
+    background: linear-gradient(to bottom, #a7ffd5, #51ff6e);
+    box-shadow: inset 0 3px 0 0 #fff, 0 0 0 4px #e6e6e6;
+  }
+  65% {
+    background: #eee;
+    box-shadow: inset 0 3px 0 0 #fff, 0 0 0 4px #e6e6e6;
+  }
+  70%, 85% {
+    background: #eee;
+    box-shadow: inset 0 3px 0 0 #fff, 0 0 0 5px #e6e6e6, 0 0 8px rgba(167, 255, 213, 0.5);
+  }
+  90%, 100% {
+    background: linear-gradient(to bottom, #a7ffd5, #51ff6e);
+    box-shadow: inset 0 3px 0 0 #fff, 0 0 0 4px #e6e6e6;
+  }
+}
+
+@keyframes gradientFade2 {
+  0%, 60% {
+    background: linear-gradient(to bottom, #ffacb4, #ff6063);
+    box-shadow: inset 0 3px 0 0 #fff, 0 0 0 4px #e6e6e6;
+  }
+  65% {
+    background: #eee;
+    box-shadow: inset 0 3px 0 0 #fff, 0 0 0 4px #e6e6e6;
+  }
+  70%, 85% {
+    background: #eee;
+    box-shadow: inset 0 3px 0 0 #fff, 0 0 0 5px #e6e6e6, 0 0 8px rgba(255, 172, 180, 0.5);
+  }
+  90%, 100% {
+    background: linear-gradient(to bottom, #ffacb4, #ff6063);
+    box-shadow: inset 0 3px 0 0 #fff, 0 0 0 4px #e6e6e6;
+  }
+}
+
+@keyframes gradientFade3 {
+  0%, 60% {
+    background: linear-gradient(to bottom, #eeff70, #e1ff00);
+    box-shadow: inset 0 3px 0 0 #fff, 0 0 0 4px #e6e6e6;
+  }
+  65% {
+    background: #eee;
+    box-shadow: inset 0 3px 0 0 #fff, 0 0 0 4px #e6e6e6;
+  }
+  70%, 85% {
+    background: #eee;
+    box-shadow: inset 0 3px 0 0 #fff, 0 0 0 5px #e6e6e6, 0 0 8px rgba(238, 255, 112, 0.5);
+  }
+  90%, 100% {
+    background: linear-gradient(to bottom, #eeff70, #e1ff00);
+    box-shadow: inset 0 3px 0 0 #fff, 0 0 0 4px #e6e6e6;
+  }
+}
+@keyframes pulse-primary {
+  0%, 100% {
+    background-color: #cf0;
+    box-shadow: 0 0 0 0 rgba(204, 255, 0, 0.7);
+  }
+  50% {
+    background-color: #b8e600;
+    box-shadow: 0 0 0 8px rgba(204, 255, 0, 0);
+  }
+}
+
+@keyframes loading-spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+// 响应式调�?
+@media (max-width: 1024px) {
+  .status-indicator {
+    &:hover {
+      transform: scale(1.03);
+    }
+
+    &:active {
+      transform: scale(0.97);
+    }
+  }
+}
+

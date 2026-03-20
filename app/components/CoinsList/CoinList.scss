@@ -1,0 +1,40 @@
+.coinlist {
+        table {
+        border-radius: 8px;
+        overflow: hidden;
+        background: white;
+        thead td {
+            height: 5vh;
+        }
+        td,
+        th {
+            text-align: center;
+            padding: 0;
+ 
+
+        }
+
+        td {
+            height: 50px;
+            font-size: 14px;
+            
+            &:last-child {
+                width:60px;
+                min-width: 60px;
+                max-width: 60px;
+            }
+        }
+    }
+}
+
+@media (max-width: 768px) {
+    .coinlist {
+        table {
+         td,
+        th {
+            padding: 0 4px;
+        }
+            
+        }
+    }
+}

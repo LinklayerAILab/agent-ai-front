@@ -1,0 +1,221 @@
+.page-aiAgent {
+
+    .coming-box {
+        background: url('../images/guide/go_clear.svg') no-repeat;
+        background-size: contain;
+    }
+
+    .search-ipt {
+        border: none;
+        outline: none;
+
+    }
+
+
+    .search-box {
+        input::placeholder {
+            font-size: 14px;
+        }
+
+        .search-active-icon {
+            display: none;
+        }
+
+        .search-icon {
+            display: block;
+        }
+
+        &:active {
+            .search-active-icon {
+                display: block;
+            }
+
+            .search-icon {
+                display: none;
+            }
+        }
+    }
+
+    .text-ipt {
+        border: none;
+        outline: none;
+        resize: none;
+    }
+
+    .left-card {
+
+    }
+
+    .tribe-tit {
+        text-shadow: 4px -1px 0 #fff, 4px -1px 0 #fff, -1px 4px 0 #fff, 4px 2px 0 #fff;
+    }
+
+    .desc-box {
+        text-shadow: 2px -1px 0 #fff, 2px -1px 0 #fff, -1px 2px 0 #fff, 2px 2px 0 #fff;
+    }
+
+    .h5-box {
+        .dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 4px;
+            border: 2px solid black;
+            background-color: #cf0;
+            position: absolute;
+
+            &:nth-of-type(1) {
+                left: 8px;
+                top: 8px;
+            }
+
+            &:nth-of-type(2) {
+                right: 8px;
+                top: 8px;
+            }
+
+            &:nth-of-type(3) {
+                left: 8px;
+                bottom: 8px;
+            }
+
+            &:nth-of-type(4) {
+                right: 8px;
+                bottom: 8px;
+            }
+        }
+    }
+
+
+
+}
+    .page-element {
+  
+        .ant-pagination-prev, .ant-pagination-next {
+            border: 2px solid black !important;
+            display: flex;
+            box-shadow: inset 0 4px 0 0 #F4FFC7;
+            justify-content: center;
+            align-items: center;
+            height: 4.8vh !important;
+            width: 6.6vh !important;
+                  border-radius: 2.4vh;
+                  background: white !important;
+                          &[aria-disabled="false"]:hover {
+                    background: #cf0 !important;
+                }
+            button {
+                height: 100% !important;
+                width: 100% !important;
+                border-radius: 2.4vh !important;
+                transition: ease-in-out 0.3s;
+                 box-shadow: inset 0 -2px 0 0 #000;
+                 &:hover {
+                                 box-shadow: inset 0 0 0 0 #000;
+                 }
+            }
+        }
+        .ant-pagination-simple-pager {
+             border: 2px solid black !important;
+            display: flex;
+            justify-content: center;
+                  background: white !important;
+            align-items: center;
+            height: 4.8vh !important;
+            border-radius: 2.4vh;
+             padding-right: 14px !important;
+             color: #999 !important;
+            input {
+                border-radius: 2.4vh !important;
+                border: none !important;
+                padding: 0 !important;
+                font-weight: bold !important;
+                color: black !important;
+
+            }
+            .ant-pagination-slash{
+                margin-left: 0;
+            }
+        }
+    }
+.bottom-box {
+    box-shadow: inset 0 4px 0 0 #F4FFC7;
+
+}
+.bottom-box-context {
+    background: url('../images/ranking/bg.png') repeat;
+    background-size: 16px 16px;
+}
+
+.text-ipt-mobile {
+    border: none;
+}
+
+.chat-drawer {
+    .ant-drawer-header {
+        background: #F3F3F3;
+    }
+
+    .ant-drawer-close {
+        padding: 0;
+        background: #f3f3f3;
+
+        &:hover {
+            background: #f3f3f3;
+        }
+    }
+}
+    .list-box {
+        .rank-card:nth-last-of-type(1) {
+            margin-bottom: 0 !important;
+        }
+    }
+@media screen and (max-width:768px) {
+    .page-aiAgent {
+        .search-box {
+            input::placeholder {
+                font-size: 10px;
+            }
+        }
+
+        .ant-popover .ant-popover-inner {
+            // margin: 0 auto;
+            padding: 0;
+            margin: 0 14px;
+            // border: none;
+            overflow: hidden;
+        }
+
+    }
+
+        .page-element {
+  
+        .ant-pagination-prev, .ant-pagination-next {
+     
+
+            height: 32px !important;
+            width: 60px !important;
+                  border-radius: 16px;
+
+     
+            button {
+   
+                border-radius: 16px !important;
+                display: flex !important;
+                justify-content: center !important;
+                align-items: center !important;
+            }
+        }
+        .ant-pagination-simple-pager {
+
+            height: 32px !important;
+            border-radius: 16px;
+             color: #999 !important;
+            input {
+                border-radius: 16px !important;
+
+            }
+        }
+    }
+
+
+}

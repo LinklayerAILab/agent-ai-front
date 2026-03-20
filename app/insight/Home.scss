@@ -1,0 +1,200 @@
+.page-home-inner {
+    // 横向滚动容器样式
+    :global {
+        #date-swiper {
+            &::-webkit-scrollbar {
+                height: 4px;
+            }
+
+            &::-webkit-scrollbar-track {
+                background: #eee;
+            }
+
+            &::-webkit-scrollbar-thumb {
+                background-color: #ccff00;
+                border-radius: 4px;
+            }
+
+            &::-webkit-scrollbar-thumb:hover {
+                background-color: #abd501;
+            }
+        }
+    }
+.ant-rate .ant-rate-star:not(:last-child) {
+    margin-inline-end: 4px;
+}
+    .context-box {
+        background: url('../images/home/rb-bg.svg') no-repeat;
+        background-position: right 0 bottom 0;
+    }
+    @media (min-width: 1024px) {
+        height: 80vh;
+         .context-box {
+            background: none;
+         }
+    }
+
+    .home-btn {
+        user-select: none;
+        transition: ease all 0.3s;
+        cursor: pointer;
+        background: white;
+        color: black;
+        box-shadow: 3px 3px 1px 0 rgba(0, 0, 0, 1), 0 0 0 rgba(0, 0, 0, 0.1);
+        transition: box-shadow 0.3s ease, transform 0.3s ease;
+
+        &.selected {
+            color: white;
+            background: black;
+            box-shadow: 1px 1px 0 0 rgba(0, 0, 0, 1), 0 0 0 rgba(0, 0, 0, 0.1);
+            transform: translate(0, 2px);
+        }
+    }
+
+    .animateScale {
+        animation: animateScale .6s .2s forwards;
+    }
+
+    .animateScale1 {
+        animation: animateScale .6s .4s forwards;
+    }
+
+    .animateScale2 {
+        animation: animateScale .6s .6s forwards;
+    }
+
+    .animateProgress {
+        animation: animateProgress 2s 1s forwards;
+    }
+
+    .animate {
+        &-1 {
+            animation: animate1 2s 1s linear infinite;
+        }
+    }
+
+    .bind-token {
+        background: url("../images/home/gz.svg") repeat;
+        background-size: 20px;
+    }
+
+    .dot {
+        width: 12px;
+        height: 12px;
+        border-radius: 9999px;
+        position: absolute;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background: rgba($color: #fff, $alpha: 0.2);
+
+        div {
+            width: 8px;
+            height: 8px;
+            background-color: #cf0;
+            border-radius: 9999px;
+        }
+
+        &:nth-last-of-type(1) {
+            left: 8px;
+            top: 8px;
+        }
+
+        &:nth-last-of-type(2) {
+            left: 8px;
+            bottom: 8px;
+        }
+
+        &:nth-last-of-type(3) {
+            right: 8px;
+            top: 8px;
+        }
+
+        &:nth-last-of-type(4) {
+            right: 8px;
+            bottom: 8px;
+
+        }
+    }
+
+    @media screen and (max-width: 1024px) {
+        .home-btn {
+            box-shadow: 2px 2px 1px 0 rgba(0, 0, 0, 1), 0 0 0 rgba(0, 0, 0, 0.1);
+        }
+    }
+
+    @keyframes animateScale {
+        0% {
+            opacity: 0;
+            transform: scale(0);
+        }
+
+        100% {
+            opacity: 1;
+            transform: scale(1);
+        }
+    }
+
+    @keyframes animate1 {
+        0% {
+            transform: rotate(0deg);
+        }
+
+        100% {
+            transform: rotate(360deg);
+        }
+    }
+
+    @keyframes animateProgress {
+        0% {
+            width: 0;
+        }
+
+        100% {
+            width: 100%;
+        }
+    }
+
+    @keyframes float1 {
+        0% {
+            --at-apply: top-4vh right-5.5vh;
+        }
+
+        50% {
+            --at-apply: top-6vh right-5.8vh;
+        }
+
+        100% {
+            --at-apply: top-4.4vh right-5.5vh;
+        }
+    }
+
+    .hide-scrollbar {
+        &::-webkit-scrollbar {
+            display: none;
+        }
+
+        scrollbar-width: none;
+        -ms-overflow-style: none;
+    }
+
+    .text-stroke-black {
+        -webkit-text-stroke: 2px black;
+        text-stroke: 2px black;
+        paint-order: stroke fill;
+    }
+
+    .text-shadow-white {
+        font-size: 16px;
+        font-style: italic;
+           -webkit-text-stroke: 2px #fff;
+        text-stroke: 2px #fff;
+        paint-order: stroke fill;
+    }
+
+    :global {
+        .ant-select-item-option-selected:not(.ant-select-item-option-disabled) {
+            background-color: #E8FF8B !important;
+        }
+    }
+}

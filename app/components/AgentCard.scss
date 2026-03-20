@@ -1,0 +1,11 @@
+.left-card {
+    background: url("../images/agent/card.svg") no-repeat;
+    background-position: left 0 top 0;
+    background-size: cover;
+
+    &.selected {
+        background: url("../images/agent/card-active.svg") no-repeat;
+        background-size: cover;
+
+    }
+}

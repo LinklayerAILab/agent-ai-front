@@ -1,0 +1,74 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* :root {
+  --background: #ffffff;
+  --foreground: #171717;
+} */
+@import url('https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap');
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #fff;
+    --foreground: black;
+  }
+}
+
+body {
+  /* color: var(--foreground);
+  background: var(--background); */
+  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+}
+
+
+/* Global scrollbar styling (Firefox) */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #ccc #f1f5f9;
+}
+html,
+body {
+  background-color: white;
+  color: black;
+  overflow-x: hidden !important;
+}
+.page-con {
+  background: #f4f4f4;
+  color: black;
+  
+}
+
+.select-token .ant-select-selector{
+  border: none !important;
+ }
+.markdown-body {
+  font-size: 14px !important;
+}
+
+@media (min-width: 1024px) {
+  body {
+    overflow: hidden;
+  }
+
+}
+@media (max-width: 1024px) {
+  .page-con {
+    width: 100vw;
+    min-height: 100vh;
+    background: white;
+  
+  }
+  .page-con.piloter {
+    background: #f4f4f4;
+  }
+  html,body {
+    overflow: auto;
+  }
+}
+
+#telegram-login-LinkLayerAIAgentBot {
+  display: none;
+}

@@ -1,0 +1,26 @@
+.page-my-points {
+     .pointerIcon {
+            transform: translateX(1px);
+        }
+
+
+
+    .hide-scrollbar {
+        -ms-overflow-style: none;  /* IE and Edge */
+        scrollbar-width: none;  /* Firefox */
+
+        &::-webkit-scrollbar {
+            display: none;  /* Chrome, Safari and Opera */
+        }
+    }
+    .list-box {
+        .list-item-ele {
+            background: #E9FF93;
+            &:nth-last-of-type(odd) {
+                background: #F9FFE2;
+            }
+        }
+    }
+
+}
+

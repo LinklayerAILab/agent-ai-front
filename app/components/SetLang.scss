@@ -1,0 +1,17 @@
+    @media screen and (max-width: 640px) {
+
+        .platform-card {
+            .icon-box {
+                border-right: none;
+                // width: 34px;
+                padding-right: 0;
+                padding-left: 6px;
+                padding-right: 4px;
+                justify-content: start;
+                svg {
+                    width: 24px;
+                }
+            }
+        }
+       
+    }

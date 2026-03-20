@@ -1,0 +1,12 @@
+.price-card {
+    .btn-out-box.block{
+        width: 100%;
+        display: block;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        .ant-spin-nested-loading{
+            width: 100%;
+        }
+    }
+}

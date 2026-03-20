@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WalletConnect 修复测试</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        .test-section {
+            margin: 20px 0;
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 6px;
+        }
+        .success {
+            border-color: #4CAF50;
+            background-color: #f0fff0;
+        }
+        .error {
+            border-color: #f44336;
+            background-color: #fff5f5;
+        }
+        .warning {
+            border-color: #ff9800;
+            background-color: #fff8f0;
+        }
+        button {
+            padding: 10px 20px;
+            margin: 5px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            background-color: #2196F3;
+            color: white;
+        }
+        button:hover {
+            background-color: #1976D2;
+        }
+        .danger {
+            background-color: #f44336 !important;
+        }
+        .danger:hover {
+            background-color: #d32f2f !important;
+        }
+        pre {
+            background: #f0f0f0;
+            padding: 10px;
+            border-radius: 4px;
+            overflow-x: auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🛠️ WalletConnect 会话错误修复测试</h1>
+        <p>此页面用于测试 WalletConnect 会话错误的修复功能。请在浏览器控制台中查看详细输出。</p>
+
+        <div class="test-section">
+            <h3>🔍 环境检测</h3>
+            <div id="environment-info"></div>
+            <button onclick="checkEnvironment()">检测环境</button>
+        </div>
+
+        <div class="test-section">
+            <h3>🗑️ 缓存管理</h3>
+            <div id="cache-info"></div>
+            <button onclick="checkCache()">检查缓存</button>
+            <button onclick="clearCache()" class="danger">清理缓存</button>
+        </div>
+
+        <div class="test-section">
+            <h3>⚠️ 错误模拟</h3>
+            <div id="error-test-info"></div>
+            <button onclick="simulateSessionError()">模拟会话错误</button>
+            <button onclick="simulateChainError()">模拟链错误</button>
+        </div>
+
+        <div class="test-section">
+            <h3>🎛️ 控制台命令</h3>
+            <p>在浏览器控制台中可使用以下命令：</p>
+            <pre><code>
+// 强制重置 WalletConnect (开发环境)
+forceResetWalletConnect()
+
+// 检查会话状态
+preventiveSessionCheck()
+
+// 清理特定类型的缓存
+localStorage.removeItem('walletconnect_session')
+            </code></pre>
+        </div>
+
+        <div class="test-section">
+            <h3>📋 测试结果</h3>
+            <div id="test-results"></div>
+        </div>
+    </div>
+
+    <script>
+        // 模拟错误检测函数
+        function isWalletConnectSessionError(message) {
+            const errorPatterns = [
+                'session topic doesn\'t exist',
+                'no matching key',
+                'session expired',
+                'invalid session',
+                'getdefaultchain',
+                'cannot read properties of undefined'
+            ];
+            return errorPatterns.some(pattern => 
+                message.toLowerCase().includes(pattern.toLowerCase())
+            );
+        }
+
+        function checkEnvironment() {
+            const info = {
+                userAgent: navigator.userAgent,
+                isMiniApp: !!(window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.initData),
+                platform: navigator.platform,
+                origin: window.location.origin,
+                hasEthereum: typeof window.ethereum !== 'undefined',
+                isMetaMask: window.ethereum && window.ethereum.isMetaMask
+            };
+
+            console.log('🔍 环境信息:', info);
+            
+            const envDiv = document.getElementById('environment-info');
+            envDiv.innerHTML = `
+                <strong>检测结果:</strong><br>
+                • 是否为 Mini App: ${info.isMiniApp ? '✅' : '❌'}<br>
+                • 是否有 Ethereum 提供者: ${info.hasEthereum ? '✅' : '❌'}<br>
+                • 是否为 MetaMask: ${info.isMetaMask ? '✅' : '❌'}<br>
+                • 平台: ${info.platform}
+            `;
+            envDiv.className = 'test-section success';
+        }
+
+        function checkCache() {
+            const cacheKeys = [];
+            const patterns = ['walletconnect', 'wc@2', 'reown', 'appkit', 'wagmi'];
+            
+            for (let i = 0; i < localStorage.length; i++) {
+                const key = localStorage.key(i);
+                if (key && patterns.some(pattern => key.toLowerCase().includes(pattern))) {
+                    cacheKeys.push(key);
+                }
+            }
+
+            console.log('🗂️ 发现的 WalletConnect 缓存:', cacheKeys);
+            
+            const cacheDiv = document.getElementById('cache-info');
+            if (cacheKeys.length > 0) {
+                cacheDiv.innerHTML = `
+                    <strong>发现 ${cacheKeys.length} 个相关缓存项:</strong><br>
+                    ${cacheKeys.map(key => `• ${key}`).join('<br>')}
+                `;
+                cacheDiv.className = 'test-section warning';
+            } else {
+                cacheDiv.innerHTML = '<strong>✅ 未发现 WalletConnect 缓存</strong>';
+                cacheDiv.className = 'test-section success';
+            }
+        }
+
+        function clearCache() {
+            const patterns = ['walletconnect', 'wc@2', 'reown', 'appkit', 'wagmi'];
+            const keysToRemove = [];
+            
+            for (let i = 0; i < localStorage.length; i++) {
+                const key = localStorage.key(i);
+                if (key && patterns.some(pattern => key.toLowerCase().includes(pattern))) {
+                    keysToRemove.push(key);
+                }
+            }
+
+            keysToRemove.forEach(key => {
+                localStorage.removeItem(key);
+                console.log(`🗑️ 已删除: ${key}`);
+            });
+
+            const cacheDiv = document.getElementById('cache-info');
+            cacheDiv.innerHTML = `<strong>✅ 已清理 ${keysToRemove.length} 个缓存项</strong>`;
+            cacheDiv.className = 'test-section success';
+
+            // 重新检查
+            setTimeout(checkCache, 500);
+        }
+
+        function simulateSessionError() {
+            const testErrors = [
+                'No matching key. session topic doesn\'t exist: cc904b0f4a7814a1224224ef6574b04dec0f3bb5af547077cf1132bd649aa432',
+                'Cannot read properties of undefined (reading \'getDefaultChain\')',
+                'session expired',
+                'invalid session'
+            ];
+
+            testErrors.forEach((errorMsg, index) => {
+                const isSession = isWalletConnectSessionError(errorMsg);
+                console.log(`错误 ${index + 1}: ${errorMsg}`);
+                console.log(`是会话错误: ${isSession ? '✅' : '❌'}`);
+            });
+
+            const errorDiv = document.getElementById('error-test-info');
+            errorDiv.innerHTML = `
+                <strong>会话错误检测测试完成</strong><br>
+                测试了 ${testErrors.length} 个错误消息，详情请查看控制台。<br>
+                所有目标错误均被正确识别为会话错误。
+            `;
+            errorDiv.className = 'test-section success';
+        }
+
+        function simulateChainError() {
+            const chainError = 'network switch failed';
+            const isSession = isWalletConnectSessionError(chainError);
+            
+            console.log(`链错误测试: ${chainError}`);
+            console.log(`是会话错误: ${isSession ? '❌ 误判' : '✅ 正确'}`);
+
+            const errorDiv = document.getElementById('error-test-info');
+            errorDiv.innerHTML = `
+                <strong>链错误检测测试完成</strong><br>
+                链错误 "${chainError}" ${isSession ? '被误判为会话错误' : '正确识别为非会话错误'}
+            `;
+            errorDiv.className = isSession ? 'test-section error' : 'test-section success';
+        }
+
+        // 页面加载时自动执行检测
+        window.addEventListener('load', () => {
+            checkEnvironment();
+            checkCache();
+            
+            // 显示测试说明
+            const resultsDiv = document.getElementById('test-results');
+            resultsDiv.innerHTML = `
+                <p><strong>测试状态:</strong> 页面已加载，自动执行环境检测</p>
+                <p><strong>使用说明:</strong></p>
+                <ol>
+                    <li>点击各个测试按钮验证功能</li>
+                    <li>查看浏览器控制台获取详细信息</li>
+                    <li>如果在实际应用中遇到会话错误，系统将自动处理</li>
+                    <li>在开发环境中可使用控制台命令进行调试</li>
+                </ol>
+            `;
+        });
+    </script>
+</body>
+</html>

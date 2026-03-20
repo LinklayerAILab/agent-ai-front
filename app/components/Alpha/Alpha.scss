@@ -1,0 +1,92 @@
+@keyframes float {
+    0%, 100% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(-20px);
+    }
+}
+
+@keyframes indicatorGlow {
+    0% {
+        opacity: 0;
+    }
+    5% {
+        opacity: 1;
+    }
+    36% {
+        opacity: 1;
+    }
+    42% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 0;
+    }
+}
+
+.page-alpha-inner {
+    .left-box {
+        // background: url("../../images/alpha/bg.svg") no-repeat center;
+        // background-size: contain;
+    }
+
+    #alpha-bot {
+        animation: float 3s ease-in-out infinite;
+    }
+
+    #wave-sound {
+        animation: float 3s ease-in-out infinite;
+    }
+
+    #alpha-time {
+        -webkit-text-stroke: 1px black;
+        text-stroke: 1px black;
+    }
+
+    .alpha-drop {
+        filter: drop-shadow(0 0 4px #cf0) drop-shadow(0 0 8px #cf0);
+    }
+
+    .alpha-list {
+        display: grid;
+        grid-template-columns: 1fr;
+        row-gap: 20px;
+        column-gap: 20px;
+        padding: 10px 0;
+        align-content: start;
+
+        @media (min-width: 1024px) {
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }
+
+
+    .hide-scrollbar {
+        scrollbar-width: none; /* Firefox */
+        -ms-overflow-style: none; /* IE and Edge */
+
+        &::-webkit-scrollbar {
+            display: none; /* Chrome, Safari, Opera */
+        }
+    }
+
+    .alpha-indicator-active {
+        opacity: 0;
+        animation: indicatorGlow 2.4s linear infinite;
+    }
+
+    .alpha-indicator-active--1 {
+        animation-delay: 0s;
+    }
+
+    .alpha-indicator-active--2 {
+        animation-delay: 0.8s;
+    }
+
+    .alpha-indicator-active--3 {
+        animation-delay: 1.6s;
+    }
+}
+
+

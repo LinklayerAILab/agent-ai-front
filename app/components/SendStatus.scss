@@ -1,0 +1,21 @@
+.confirmBtn {
+    transition: ease-in-out 0.2s;
+    box-shadow: 1px 8px 1px #eaeaea;
+    transform: translate(0, -4px);
+
+    &:hover {
+        cursor: pointer;
+    }
+
+    &:active {
+        transform: translate(0, 0);
+        background-color: #A7D000;
+        box-shadow: 0 0 0px 0px #999;
+    }
+
+    &.bg-\[\#ccc\]:active {
+        background-color: #ccc;
+        box-shadow: 0 0 0px 0px #999;
+    }
+
+}

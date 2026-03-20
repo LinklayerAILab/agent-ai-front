@@ -1,0 +1,171 @@
+.float-1 {
+    animation: animate-1 4s ease infinite .1s;
+}
+
+.float-2 {
+    animation: animate-1 4s ease infinite .3s;
+}
+
+.float-5 {
+    animation: animate-1 4s ease infinite .4s;
+}
+
+.float-6 {
+    animation: animate-1 4s ease infinite .5s;
+}
+
+
+.float-3 {
+    animation: animate-4 4s ease infinite .5s;
+}
+
+.float-4 {
+    animation: animate-4 4s ease infinite .6s;
+}
+
+
+
+.float-8 {
+    animation: animate-4 4s ease infinite .7s;
+}
+
+.float-7 {
+    animation: animate-4 4s ease infinite .9s;
+}
+
+@keyframes animate-1 {
+    0% {
+        transform: translate(0, 0);
+    }
+
+    50% {
+        transform: translate(2px, 12px);
+    }
+
+    100% {
+        transform: translate(0, 0);
+    }
+}
+
+@keyframes animate-4 {
+    0% {
+        transform: translate(0, 0);
+    }
+
+    50% {
+        transform: translate(4px, 14px);
+    }
+
+    100% {
+        transform: translate(0, 0);
+    }
+}
+
+.run-left-1 {
+    animation: animate-2 4s ease infinite .1s;
+}
+
+.run-left-2 {
+    animation: animate-2 4s ease infinite .3s;
+}
+
+.run-left-3 {
+    animation: animate-2 4s ease infinite .5s;
+}
+
+.run-left-4 {
+    animation: animate-2 4s ease infinite .7s;
+}
+
+.run-left-5 {
+    animation: animate-2 4s ease infinite .9s;
+}
+
+.run-left-6 {
+    animation: animate-2 4s ease infinite 1.1s;
+}
+
+.run-1 {
+    animation: animate-2 4s ease infinite .1s;
+}
+
+.run-2 {
+    animation: animate-2 4s ease infinite .3s;
+}
+
+.run-3 {
+    animation: animate-2 4s ease infinite .5s;
+}
+
+.run-4 {
+    animation: animate-2 4s ease infinite .7s;
+}
+
+.run-5 {
+    animation: animate-3 4s ease infinite .1s;
+}
+
+.run-6 {
+    animation: animate-3 4s ease infinite .3s;
+}
+
+.run-7 {
+    animation: animate-3 4s ease infinite .5s;
+}
+
+.run-8 {
+    animation: animate-3 4s ease infinite .7s;
+}
+
+.run-right-1 {
+    animation: animate-3 4s ease infinite .1s;
+}
+
+.run-right-2 {
+    animation: animate-3 4s ease infinite .3s;
+}
+
+.run-right-3 {
+    animation: animate-3 4s ease infinite .5s;
+
+}
+
+.run-right-4 {
+    animation: animate-3 4s ease infinite .7s;
+}
+
+.run-right-5 {
+    animation: animate-3 4s ease infinite .9s;
+}
+
+.run-right-6 {
+    animation: animate-3 4s ease infinite 1.1s;
+}
+
+@keyframes animate-2 {
+    0% {
+        transform: translate(0, 0);
+    }
+
+    33% {
+        transform: translate(12px, 6px);
+    }
+
+    100% {
+        transform: translate(0, 0);
+    }
+}
+
+@keyframes animate-3 {
+    0% {
+        transform: translate(0, 0);
+    }
+
+    33% {
+        transform: translate(10px, 8px);
+    }
+
+    100% {
+        transform: translate(0, 0);
+    }
+}

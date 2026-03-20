@@ -1,0 +1,87 @@
+.page-brc20 {
+  .brc20-container {
+    text-align: center;
+    max-width: 800px;
+    padding: 40px 20px;
+
+    .brc20-title {
+      font-size: 48px;
+      font-weight: bold;
+      margin-bottom: 20px;
+      color: #000;
+    }
+
+    .brc20-description {
+      font-size: 18px;
+      color: #666;
+      margin-bottom: 40px;
+    }
+
+    .brc20-content {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 300px;
+
+      .brc20-card {
+        background: white;
+        border: 2px solid black;
+        border-radius: 12px;
+        padding: 60px 40px;
+        box-shadow: 4px 4px 0 rgba(0, 0, 0, 0.1);
+
+        .card-icon {
+          font-size: 64px;
+          margin-bottom: 20px;
+        }
+
+        h2 {
+          font-size: 24px;
+          font-weight: bold;
+          margin-bottom: 12px;
+          color: #000;
+        }
+
+        p {
+          font-size: 16px;
+          color: #666;
+          margin: 0;
+        }
+      }
+    }
+  }
+}
+
+@media (max-width: 1024px) {
+  .page-brc20 {
+    padding: 20px;
+
+    .brc20-container {
+      .brc20-title {
+        font-size: 32px;
+      }
+
+      .brc20-description {
+        font-size: 16px;
+      }
+
+      .brc20-content {
+        .brc20-card {
+          padding: 40px 30px;
+
+          .card-icon {
+            font-size: 48px;
+          }
+
+          h2 {
+            font-size: 20px;
+          }
+
+          p {
+            font-size: 14px;
+          }
+        }
+      }
+    }
+  }
+}

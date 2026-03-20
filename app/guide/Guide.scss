@@ -1,0 +1,19 @@
+.chat-box {
+    &-tit {
+        border-top-left-radius: 8px;
+        border-top-right-radius: 8px;
+
+    }
+
+    .chat-con {
+        border-bottom-left-radius: 8px;
+        border-bottom-right-radius: 8px;
+    }
+}
+
+@media screen and (max-width:768px) {
+    .card-list {
+        display: flex;
+        gap: 12px;
+    }
+}

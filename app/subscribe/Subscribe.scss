@@ -1,0 +1,21 @@
+.page-subscribe {
+    .list-rule {
+        img {
+            margin-top: 0.3vh;
+        }
+    }
+
+    .form {
+        background: url("../../app/images/subscribe/form.svg") no-repeat center;
+        background-size: contain;
+    }
+    .points-list-box {
+        .point-card{
+            background-color: #F8F8F8;
+            border-bottom: 1px solid #e1dede;
+        }
+        .point-card:nth-of-type(odd){
+            background-color: #EAEAEA;
+        }
+    }
+}

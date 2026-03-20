@@ -1,0 +1,92 @@
+.page-agent {
+    .bot-icon {
+        background: url("./images/agent/groupBg.svg") no-repeat;
+        background-size: cover;
+        background-position: center center;
+    }
+
+    .chat-box {
+        border-bottom-left-radius: 8px;
+        border-bottom-right-radius: 8px;
+    }
+
+    .text-input {
+        border: none;
+        resize: none;
+        outline: none;
+
+        &:focus {
+            border: none;
+        }
+
+
+    }
+
+    .animateScale {
+        animation: animateScale .6s .2s forwards;
+    }
+
+    .animateScale1 {
+        animation: animateScale .6s .4s forwards;
+    }
+
+    .animateScale2 {
+        animation: animateScale .6s .6s forwards;
+    }
+
+    .animateProgress {
+        animation: animateProgress 2s 1s forwards;
+    }
+
+    .animate {
+
+        // 地球转动
+        &-1 {
+            animation: animate1 2s 1s linear infinite;
+        }
+
+    }
+
+
+    @keyframes animateScale {
+        0% {
+            opacity: 0;
+            transform: scale(0);
+        }
+
+        100% {
+            opacity: 1;
+            transform: scale(1);
+        }
+    }
+
+    // 地球转动
+    @keyframes animate1 {
+        0% {
+            transform: rotate(0deg);
+        }
+
+        100% {
+            transform: rotate(360deg);
+        }
+    }
+
+    // 进度条
+    @keyframes animateProgress {
+        0% {
+            width: 0;
+        }
+
+        100% {
+            width: 100%;
+        }
+    }
+}
+
+
+
+@media (min-width: 1024px) {
+    body {
+        overflow: hidden;
+    }
+}

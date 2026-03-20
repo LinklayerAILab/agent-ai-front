@@ -1,0 +1,35 @@
+
+    .home-btn {
+        user-select: none;
+        transition: ease all 0.3s;
+        cursor: pointer;
+        background: white;
+        color: black;
+        box-shadow: 3px 3px 1px 0 rgba(0, 0, 0, 1), 0 0 0 rgba(0, 0, 0, 0.1);
+        transition: box-shadow 0.3s ease, transform 0.3s ease;
+
+        // &:hover {
+        //     color: white;
+        //     background: black;
+        //     box-shadow: 1px 1px 0 0 rgba(0, 0, 0, 1), 0 0 0 rgba(0, 0, 0, 0.1);
+        //     transform: translate(0, 2px);
+        // }
+
+        &.selected {
+            color: white;
+            background: black;
+            box-shadow: 1px 1px 0 0 rgba(0, 0, 0, 1), 0 0 0 rgba(0, 0, 0, 0.1);
+            transform: translate(0, 2px);
+        }
+
+
+    }
+    @media screen and (max-width: 1024px) {
+        .home-btn {
+            box-shadow: 2px 2px 1px 0 rgba(0, 0, 0, 1), 0 0 0 rgba(0, 0, 0, 0.1);
+        }
+    }
+
+      .ant-select-item-option-selected:not(.ant-select-item-option-disabled) {
+            background-color: #E8FF8B !important;
+        }

@@ -1,0 +1,35 @@
+.page-graph {
+    background: white;
+    .left-box {
+        background: url("../images/graph//bg.svg") no-repeat center center;
+        background-size: cover;
+        background-color: #999999;
+
+    }
+    .left-box-bg {
+       background: url("../images/graph//leftBoxBg.svg") no-repeat center center;
+        background-size: contain;
+    }
+    .icon-graph-left{
+        
+        background: url('./../images/graph/left.svg') no-repeat;
+        background-size: contain;
+    }
+    .icon-graph-right{
+       
+        background: url('./../images/graph/right.svg') no-repeat;
+        background-size: contain;
+    }
+}
+@media screen and (max-width:768px) {
+    .page-graph {
+            .left-box-bg {
+       background: url("../images/graph//leftBoxBgH5.svg") no-repeat center center;
+        background-size: 390px;
+    }
+    .left-box {
+                background: url("../images/graph//leftBoxH5.svg") no-repeat center center;
+                background-size: cover;
+    }
+    }
+}

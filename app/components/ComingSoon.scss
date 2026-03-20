@@ -1,0 +1,5 @@
+.coming-soon {
+    @apply w-[200px] h-[215px] lg:w-[380px] lg:h-[420px];
+    background: url('../images/components/go_clear.svg') no-repeat;
+    background-size: contain;
+}
