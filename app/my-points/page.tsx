@@ -24,8 +24,8 @@ import {
 import { Empty, message, Skeleton } from "antd";
 import { CloseOutlined } from "@ant-design/icons";
 import { formatDate } from "../utils";
-import { useDispatch, useSelector } from "react-redux";
-import { AppDispatch, RootState } from "../store";
+import { useSelector } from "react-redux";
+import { RootState } from "../store";
 import { useAccount, useChainId, useWriteContract, useSwitchChain, useConfig } from "wagmi";
 import { readContract } from "wagmi/actions";
 import { parseUnits } from "viem";
@@ -58,7 +58,6 @@ const Page = () => {
   const router = useRouter();
   const { t } = useTranslation();
   const [messageApi, messageContext] = message.useMessage();
-  const dispatch = useDispatch<AppDispatch>();
   const { address, isConnected } = useAccount();
   const chainId = useChainId();
   const { writeContractAsync, isPending } = useWriteContract();
