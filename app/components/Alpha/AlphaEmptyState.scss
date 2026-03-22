@@ -22,4 +22,14 @@
     line-height: 1.6;
     font-weight: bold;
   }
+
+  &.flex-row {
+    flex-direction: row;
+    min-height: 100%;
+
+    .empty-state-icon {
+      margin-bottom: 0;
+      flex-shrink: 0;
+    }
+  }
 }

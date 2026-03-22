@@ -161,11 +161,11 @@ function Page() {
             </div>
             <div
               ref={scrollContainerRef}
-              className={`h-[400px] lg:h-[66vh] overflow-y-auto w-[100%] mt-[2vh] grid content-start grid-cols-1 lg:grid-cols-[repeat(2,minmax(0,1fr))] gap-[14px] lg:gap-x-[2vh] lg:gap-y-[2vh]`}
+              className={`h-[400px] lg:h-[66vh] overflow-y-auto w-[100%] mt-[2vh] grid content-start gap-[14px] lg:gap-x-[2vh] lg:gap-y-[2vh] ${invites.length === 0 ? "grid-cols-1" : "grid-cols-1 lg:grid-cols-[repeat(2,minmax(0,1fr))]"}`}
             >
               {invites.length === 0 ? (
-                <div className="w-full h-full flex items-center justify-center border-[2px] border-solid border-black rounded-[8px]">
-                  <AlphaEmptyState description={t("alpha.noDataDescription")}  imageClassName="w-[158px] lg:w-[203px]" descriptionClassName="text-[16px] lg:text-[18px]" />
+                <div className="w-full h-[390px] lg:h-[66vh] flex items-center justify-center border-[2px] border-solid border-black rounded-[8px]">
+                  <AlphaEmptyState description={t("alpha.noDataDescription")}  className="flex-col w-full h-full min-h-0 px-[20px] lg:px-[2vh] py-0 gap-[10px] lg:gap-[1.2vh]" imageClassName="w-[158px] lg:w-[203px]" descriptionClassName="text-[16px] lg:text-[18px] whitespace-nowrap mb-0" />
                 </div>
               ) : (
                 invites.map((item, idx) => <Card key={idx} data={item}></Card>)

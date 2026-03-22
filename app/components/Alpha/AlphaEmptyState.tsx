@@ -8,14 +8,20 @@ type AlphaEmptyStateProps = {
   description?: string;
   imageClassName?: string;
   descriptionClassName?: string;
+  className?: string;
 };
 
-export const AlphaEmptyState = ({ description, imageClassName, descriptionClassName }: AlphaEmptyStateProps) => {
+export const AlphaEmptyState = ({
+  description,
+  imageClassName,
+  descriptionClassName,
+  className,
+}: AlphaEmptyStateProps) => {
   const { t } = useTranslation();
   const text = description || t("alpha.noDataDescription");
 
   return (
-    <div className="alpha-empty-state bg-[#EBEBEB] w-full h-full rounded-[8px]">
+    <div className={`alpha-empty-state bg-[#EBEBEB] w-full h-full rounded-[8px] ${className || ""}`}>
       <div className="empty-state-icon">
         <Image
           src={nullImage}
