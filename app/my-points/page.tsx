@@ -26,7 +26,6 @@ import { CloseOutlined } from "@ant-design/icons";
 import { formatDate } from "../utils";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "../store";
-import { syncPoints } from "../store/userSlice";
 import { useAccount, useChainId, useWriteContract, useSwitchChain, useConfig } from "wagmi";
 import { readContract } from "wagmi/actions";
 import { parseUnits } from "viem";
@@ -275,37 +274,6 @@ const Page = () => {
       clearInterval(t);
     };
   }, [isLogin]);
-
-  // Poll user points every 5 seconds
-  useEffect(() => {
-    let pointsInterval: NodeJS.Timeout;
-
-    const startPointsPolling = () => {
-      // Clear any existing interval
-      if (pointsInterval) {
-        clearInterval(pointsInterval);
-      }
-
-      // Sync points immediately
-      dispatch(syncPoints());
-
-      // Then sync every 5 seconds
-      pointsInterval = setInterval(() => {
-        dispatch(syncPoints());
-      }, 5000);
-    };
-
-    if (isLogin) {
-      startPointsPolling();
-    }
-
-    // Cleanup on unmount
-    return () => {
-      if (pointsInterval) {
-        clearInterval(pointsInterval);
-      }
-    };
-  }, [isLogin, dispatch]);
 
   const handlePay = async () => {
     if (isPending) return;

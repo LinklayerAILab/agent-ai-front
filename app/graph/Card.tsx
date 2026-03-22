@@ -13,7 +13,7 @@ export const Card = (props: { data: InviteItem }) => {
   const isLogin = useSelector((state:RootState) => state.user.isLogin)
   return (
     <div
-      className={`graph-card border-[2px] border-solid border-black rounded-[8px] flex justify-between flex-col w-full lg:w-[calc(50%-1vh)] h-[150px]`}
+      className={`graph-card border-[2px] border-solid border-black rounded-[8px] flex justify-between flex-col w-full min-w-0 h-[150px]`}
     >
       <div
         className={`flex items-center gap-[6px] px-[2vh] h-[90px] lg:h-[13.4vh]`}

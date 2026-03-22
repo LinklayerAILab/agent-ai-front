@@ -358,7 +358,7 @@ export default function Menus(props: MenusProps) {
                       </div>
                     </div>
                   </MenuButton> */}
-                  <MenuButton
+                  {/* <MenuButton
                     checked={pathname === "/rewards" ? true : false}
                     onClick={() => handleTo("/rewards")}
                   >
@@ -378,7 +378,7 @@ export default function Menus(props: MenusProps) {
                         </svg>
                       </div>
                     </div>
-                  </MenuButton>
+                  </MenuButton> */}
     
                 </div>
               </div>

@@ -2,7 +2,7 @@
 import insight from '@/app/images/components/menus/insight.svg'
 // import ranking from '@/app/images/components/menus/ranking.svg'
 // import alpha from '@/app/images/components/menus/alpha.svg'
-import rewards from '@/app/images/components/menus/rewards.svg'
+// import rewards from '@/app/images/components/menus/rewards.svg'
 import piloter from '@/app/images/components/menus/piloter.svg'
 import subscribe from '@/app/images/components/menus/subscribe.svg'
 import brc20 from '@/app/images/components/menus/brc20.svg'
@@ -84,7 +84,7 @@ export const MENU_ROUTES = [
     name: "menu.graph",
     prev: "/piloter",
     needLogin: false,
-    next: "/rewards",
+    next: null,
     icon: subscribe
   },
   // {
@@ -98,15 +98,15 @@ export const MENU_ROUTES = [
   //   icon: ranking
   // },
 
-  {
-    path: "/rewards",
-    index: 6,
-    type: "route",
-    name: "menu.exchange",
-    prev: "/graph",
-    needLogin: false,
-    next: null,
-    icon: rewards
-  },
+  // {
+  //   path: "/rewards",
+  //   index: 6,
+  //   type: "route",
+  //   name: "menu.exchange",
+  //   prev: "/graph",
+  //   needLogin: false,
+  //   next: null,
+  //   icon: rewards
+  // },
 
 ];
