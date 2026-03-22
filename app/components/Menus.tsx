@@ -113,16 +113,29 @@ export default function Menus(props: MenusProps) {
     let touchStartY = 0;
     let touchEndX = 0;
     let touchEndY = 0;
+    let shouldIgnoreSwipe = false;
+
+    const isIgnoredSwipeTarget = (target: EventTarget | null) => {
+      if (!(target instanceof Element)) return false;
+      return Boolean(target.closest("[data-menu-swipe-ignore='true']"));
+    };
 
     const handleTouchStart = (e: TouchEvent) => {
+      shouldIgnoreSwipe = isIgnoredSwipeTarget(e.target);
+      if (shouldIgnoreSwipe) return;
       touchStartX = e.changedTouches[0].screenX;
       touchStartY = e.changedTouches[0].screenY;
     };
 
     const handleTouchEnd = (e: TouchEvent) => {
+      if (shouldIgnoreSwipe || isIgnoredSwipeTarget(e.target)) {
+        shouldIgnoreSwipe = false;
+        return;
+      }
       touchEndX = e.changedTouches[0].screenX;
       touchEndY = e.changedTouches[0].screenY;
       handleSwipeGesture();
+      shouldIgnoreSwipe = false;
     };
 
     const handleSwipeGesture = () => {

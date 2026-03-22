@@ -42,11 +42,11 @@ export default function Alpha() {
   const [messageApi, contextHolder] = message.useMessage();
   const isLogin = useSelector((state: RootState) => state.user.isLogin);
   const [updateTime, setUpdateTime] = useState(0)
-  const [relativeTime, setRelativeTime] = useState("0m age");
+  const [relativeTime, setRelativeTime] = useState("0m ago");
 
   useEffect(() => {
     if (!updateTime) {
-      setRelativeTime("0m age");
+      setRelativeTime("0m ago");
       return;
     }
     const update = () => {
@@ -58,7 +58,7 @@ export default function Alpha() {
         setRelativeTime(`${days}d${remainingMinutes}m`);
         return;
       }
-      setRelativeTime(`${minutes}m age`);
+      setRelativeTime(`${minutes}m ago`);
     };
     update();
     const timer = setInterval(update, 1000);

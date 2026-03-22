@@ -161,7 +161,7 @@ function Page() {
             </div>
             <div
               ref={scrollContainerRef}
-              className={`h-[400px] lg:h-[66vh] overflow-y-auto w-[100%] mt-[2vh] flex flex-wrap gap-[14px] lg:gap-[2vh`}
+              className={`h-[400px] lg:h-[66vh] overflow-y-auto w-[100%] mt-[2vh] flex flex-wrap gap-[14px] lg:gap-[2vh]`}
             >
               {invites.length === 0 ? (
                 <div className="w-full h-full flex items-center justify-center border-[2px] border-solid border-black rounded-[8px]">

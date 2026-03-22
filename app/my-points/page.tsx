@@ -1,6 +1,6 @@
 ﻿"use client";
 
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import right from "@/app/images/components/right.svg";
 import { LeftOutlined } from "@ant-design/icons";
@@ -27,10 +27,11 @@ import { formatDate } from "../utils";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "../store";
 import { syncPoints } from "../store/userSlice";
-import { useAccount, useChainId, useWriteContract, useSwitchChain, useReadContract } from "wagmi";
+import { useAccount, useChainId, useWriteContract, useSwitchChain, useConfig } from "wagmi";
+import { readContract } from "wagmi/actions";
 import { parseUnits } from "viem";
 import erc20Abi from "@/app/abi/erc20.json";
-import { isDev } from "../enum";
+
 interface ListItem {
   value: number;
   select: boolean;
@@ -43,6 +44,7 @@ interface CoinListItem {
   select: boolean;
   icon: string;
   disabled: boolean;
+  contract?: string
 }
 
 const getActualRecords = (records: QueryTasksItem[]) =>
@@ -62,29 +64,19 @@ const Page = () => {
   const chainId = useChainId();
   const { writeContractAsync, isPending } = useWriteContract();
   const { switchChain } = useSwitchChain();
+  const config = useConfig();
 
   // Get token configuration
   const USDT_MAINNET = process.env.NEXT_PUBLIC_USDT_MAINNET;
-  const MOCK_USDT_TESTNET = process.env.NEXT_PUBLIC_MOCK_USDT_TESTNET;
+  const USDC_MAINNET = process.env.NEXT_PUBLIC_USDC_MAINNET;
   const DEFAULT_CHAIN_ID = process.env.NEXT_PUBLIC_CHAIN_ID;
 
   const defaultChainId = DEFAULT_CHAIN_ID ? parseInt(DEFAULT_CHAIN_ID) : 56;
   const isBscMainnet = chainId === 56;
   const isBscTestnet = chainId === 97;
 
-  const tokenAddress = (isBscTestnet ? MOCK_USDT_TESTNET : USDT_MAINNET) as `0x${string}`;
   const decimals = isBscTestnet ? 6 : 18;
 
-  // Query user balance
-  const { data: userBalance } = useReadContract({
-    address: tokenAddress,
-    abi: erc20Abi,
-    functionName: "balanceOf",
-    args: address ? [address] : undefined,
-    query: {
-      enabled: !!address && (isBscMainnet || isBscTestnet),
-    },
-  });
   const [list, setList] = useState<ListItem[]>([
     {
       value: 1,
@@ -113,13 +105,15 @@ const Page = () => {
       select: true,
       icon: usdt,
       disabled: false,
+      contract: USDT_MAINNET
     },
     {
       label: "USDC",
       value: "usdc",
       select: false,
       icon: usdc,
-      disabled: true,
+      disabled: false,
+      contract: USDC_MAINNET
     },
     {
       label: "LLA",
@@ -137,6 +131,25 @@ const Page = () => {
     },
   ]);
 
+  const selectedCoin = useMemo(() => {
+    return coinList.find((item) => item.select);
+  }, [coinList]);
+  const tokenAddress = selectedCoin?.contract as `0x${string}`;
+  
+
+
+  const getLatestTokenBalance = async () => {
+    if (!address || !tokenAddress) {
+      return null;
+    }
+
+    return await readContract(config, {
+      address: tokenAddress,
+      abi: erc20Abi,
+      functionName: "balanceOf",
+      args: [address],
+    }) as bigint;
+  };
   // handle list 椤圭偣鍑?
   const handleListItemClick = (clickedValue: number) => {
     setList((prevList) =>
@@ -156,12 +169,11 @@ const Page = () => {
     if (item.select) {
       return;
     }
-    setCoinList((prevList) =>
-      prevList.map((item) => ({
-        ...item,
-        select: item.value === item.value,
-      }))
-    );
+    const newList = coinList.map(it => ({
+      ...it,
+      select: it.disabled === false && it.value === item.value
+    }));
+    setCoinList(newList);
   };
 
   const isLogin = useSelector((state: RootState) => state.user.isLogin);
@@ -310,12 +322,12 @@ const Page = () => {
     }
 
     const selectedCoin = coinList.find((item) => item.select);
-    if (!selectedCoin || selectedCoin.value !== "usdt") {
-      messageApi.warning(t("common.coming") || "Only USDT is supported right now");
+    if (!selectedCoin) {
+      messageApi.warning(t("common.coming"));
       return;
     }
 
-    const PAYEE_ADDRESS = isDev ?'0x08CDF68035D34865FD56e18a7E02B494Dece6E80' : process.env.NEXT_PUBLIC_PAYEE_ADDRESS;
+    const PAYEE_ADDRESS = process.env.NEXT_PUBLIC_PAYEE_ADDRESS;
 
     // Auto-switch to default chain if not on correct network
     if (chainId !== defaultChainId) {
@@ -334,7 +346,16 @@ const Page = () => {
 
     // Check balance
     const requiredAmount = parseUnits(selectedItem.money, decimals);
-    if (userBalance !== undefined && userBalance < requiredAmount) {
+    let latestBalance: bigint | null = null;
+
+    try {
+      latestBalance = await getLatestTokenBalance();
+    } catch {
+      messageApi.error(t("common.transactionFailed") || "Transaction failed");
+      return;
+    }
+
+    if (latestBalance === null || latestBalance < requiredAmount) {
       messageApi.error(t("common.insufficientBalance") || "Insufficient balance");
       return;
     }
@@ -454,8 +475,8 @@ const Page = () => {
           <div className="mt-[8px] gap-[8px] lg:gap-[1.6vh] lg:mt-[1.4vh] flex flex-wrap justify-between">
             {coinList.map((item) => (
               <div
-                className={`border-[2px] border-solid border-black rounded-[8px] flex h-[42px] bg-[#EBEBEB] lg:h-[7vh] items-center justify-between px-[14px] w-[calc(50%-4px)] lg:w-[calc(50%-0.8vh)] ${
-                  item.disabled ? "cursor-not-allowed" : "cursor-pointer "
+                className={`border-[2px] border-solid border-black rounded-[8px] flex h-[42px] lg:h-[7vh] items-center justify-between px-[14px] w-[calc(50%-4px)] lg:w-[calc(50%-0.8vh)] ${
+                  item.disabled ? "cursor-not-allowed bg-[#EBEBEB]" : "cursor-pointer bg-[#fff] hover:bg-[#eee]"
                 }`}
                 key={item.value}
                 onClick={() => handleCoinListClick(item)}
@@ -564,7 +585,3 @@ const Page = () => {
 };
 
 export default Page;
-
-
-
-

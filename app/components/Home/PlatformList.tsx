@@ -150,6 +150,7 @@ export default function PlatformList(props: {
       });
     }
   }, [isLogin]);
+
   return (
     <div className="flex lg:flex-col flex-col-reverse h-[100%] overflow-hidden lg:gap-[1.4vh] lg:border-b-solid lg:border-b-[1px] lg:border-b-[#d6d6d6]">
       <div className="mt-[20px] lg:mt-0">
@@ -188,7 +189,11 @@ export default function PlatformList(props: {
           </div>
         </div>
       </div>
-      <div className="flex items-center justify-between w-auto lg:pl-0 lg:w-[100%] overflow-x-scroll lg:overflow-x-hidden flex-nowrap gap-2 lg:gap-1">
+      <div
+        data-menu-swipe-ignore="true"
+        className="flex items-center justify-between w-auto lg:pl-0 lg:w-[100%] overflow-x-scroll lg:overflow-x-hidden flex-nowrap gap-2 lg:gap-1"
+        style={{ touchAction: "pan-x" }}
+      >
         {list.map((item, index) => (
           <div
             key={index}
