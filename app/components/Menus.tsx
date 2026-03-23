@@ -524,7 +524,7 @@ export default function Menus(props: MenusProps) {
 
                 <div className="flex items-center gap-2 text-sm lg:text-lg font-bold">
                   <div className="flex items-center gap-2 h-[38px] lg:h-[5vh]">
-                    {pathname !== '/toDapp' && <Connect />}
+                    <Connect />
                   </div>
                 </div>
               </div>
