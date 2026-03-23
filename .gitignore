@@ -49,3 +49,11 @@ yarn-error.log*
 next-env.d.ts
 
 certificates
+AGENTS.md
+CLAUDE.md
+check-wallet-type.js
+remove-console-logs.js
+ref-pattern-example.md
+test-session-fix.js
+translate-comments.js
+WALLETCONNECT_FIX_README.md

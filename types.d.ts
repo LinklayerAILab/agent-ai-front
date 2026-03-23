@@ -1,6 +1,5 @@
 export { };
 
-// 修复 IDE 对 @reown/appkit-siwe 的类型识别问题
 declare module '@reown/appkit-siwe' {
   export * from '@reown/appkit-siwe/dist/types/exports/index';
 }
