@@ -2,7 +2,7 @@
 import Image from "next/image";
 import { useEffect, useRef, useState, useMemo } from "react";
 import { useTranslation } from "react-i18next";
-import { Skeleton, message } from "antd";
+import { Skeleton } from "antd";
 import "./Alpha.scss";
 import { AlphaCard } from "./AlphaCard";
 import { SoundWave } from "./SoundWave";
@@ -39,7 +39,6 @@ export default function Alpha() {
   const [alphaData, setAlphaData] = useState<AlphaTokenWithPrice[]>([]);
   const [loading, setLoading] = useState(true);
 
-  const [messageApi, contextHolder] = message.useMessage();
   const isLogin = useSelector((state: RootState) => state.user.isLogin);
   const [updateTime, setUpdateTime] = useState(0)
   const [relativeTime, setRelativeTime] = useState("0m ago");
@@ -164,7 +163,7 @@ export default function Alpha() {
         } 
       } catch (error) {
         console.error("Failed to fetch alpha tokens:", error);
-        messageApi.error("Failed to load alpha tokens");
+        // messageApi.error("Failed to load alpha tokens");
         setLoading(false);
       }
     };
@@ -179,7 +178,7 @@ export default function Alpha() {
       setLoading(false)
       setAlphaData([])
     }
-  }, [isLogin, messageApi]);
+  }, [isLogin]);
 
 
 
@@ -330,7 +329,6 @@ export default function Alpha() {
 
   return (
     <>
-      {contextHolder}
       <div className="w-[calc(100vw-28px)] lg:w-[100%] h-auto lg:h-[83vh] lg:border-solid lg:border-black lg:border-2 lg:bg-[#EBEBEB] rounded-[8px] flex flex-col lg:flex-row items-center lg:p-[2vh] page-alpha-inner">
         <div className="w-full h-full flex flex-col lg:flex-row lg:gap-4">
           <div className="bg-white rounded-[8px] w-full lg:w-[520px] h-full">
