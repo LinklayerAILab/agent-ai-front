@@ -1,4 +1,4 @@
-/* 渐入渐出动画 - 用于sendEmail、checkCaptcha等页面的路由跳转 */
+/* Fade in/out animation - for route transitions in sendEmail, checkCaptcha and other pages */
 .fade-enter {
     opacity: 0;
     transform: scale(0.98) translateY(10px);
@@ -21,7 +21,7 @@
     transition: all 0.3s cubic-bezier(0.55, 0.085, 0.68, 0.53);
 }
 
-/* 硬件加速优化 */
+/* Hardware acceleration optimization */
 .fade-enter,
 .fade-enter-active,
 .fade-exit,

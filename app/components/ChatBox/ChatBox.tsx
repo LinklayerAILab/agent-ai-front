@@ -16,7 +16,7 @@ import chat_mark from "@/app/images/agent/chat-mark.svg";
 import send from "@/app/images/agent/send.svg";
 import TypeForm from "@/app/components/TypeForm";
 
-// 语言configurationtype
+// Language configuration type
 export interface LanguageConfig {
   flag: string;
   title: string;
@@ -25,17 +25,17 @@ export interface LanguageConfig {
   consultParam: string;
 }
 
-// ChatBox propertytype
+// ChatBox property types
 export interface ChatBoxProps {
-  /** 聊dayscontentsection */
+  /** Chat content section */
   children: ReactNode;
-  /** 自Defineheading */
+  /** Custom title */
   title?: string;
-  /** logintiptext */
+  /** Login prompt text */
   loginPrompt?: string;
 }
 
-// default语言configuration
+// Default language configuration
 // const defaultLanguages: LanguageConfig[] = [
 //   {
 //     flag: usa,
@@ -46,10 +46,10 @@ export interface ChatBoxProps {
 //   },
 //   {
 //     flag: china,
-//     title: "select币种",
-//     readyText: "then绪in",
-//     consultText: "咨询",
-//     consultParam: "二级交易"
+//     title: "Select token",
+//     readyText: "Ready",
+//     consultText: "Consult",
+//     consultParam: "Secondary trading"
 //   },
 //   {
 //     flag: ko,
@@ -80,7 +80,7 @@ const ChatBox: React.FC<ChatBoxProps> = ({
       {isLogin ? (
         <div className="relative w-[100%] lg:h-[100%] flex flex-1 border-[2px] border-solid border-black rounded-[8px] overflow-hidden" id="chat-box">
           <div className="w-[100%] h-[100%] bg-white">
-            {/* 标题栏 */}
+            {/* Title bar */}
             <div className="bg-[#cf0] h-[40px] lg:h-[5vh] flex items-center justify-center">
               {/* <span className="hidden text-[12px] lg:text-[16px] lg:flex items-center justify-center font-bold gap-1 lg:gap-2">
                 <Image src={agentTitle} className="h-[20px] lg:h-[30px]" alt="" />
@@ -88,15 +88,15 @@ const ChatBox: React.FC<ChatBoxProps> = ({
               </span> */}
             </div>
             
-            {/* 主内容区域 */}
+            {/* Main content area */}
             <div className="h-[74vh] lg:h-[76.5vh] flex flex-col-reverse lg:flex-col justify-between w-[100%] bg-[#f1f1f1]">
-              {/* 聊天内容区域 */}
+              {/* Chat content area */}
                 {children}
             </div>
           </div>
         </div>
       ) : (
-        // 未loginstate
+        // Not logged in state
         <div className="border-[2px] border-solid border-black lg:flex-1 rounded-[8px] bg-[#f1f1f1] overflow-hidden flex flex-col lg:h-[100%]">
           <div className="bg-[#cf0] h-[50px] flex justify-center items-center font-bold">
           </div>

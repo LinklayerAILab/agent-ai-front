@@ -1,7 +1,7 @@
 /**
- * format化钱packageaddress，Displaybefore6位andafter4位
- * @param address 钱packageaddress
- * @returns format化afteraddress
+ * Format wallet address, display first 6 and last 4 characters
+ * @param address wallet address
+ * @returns formatted address
  */
 export function formatAddress(address: string | undefined): string {
   if (!address) return '';
@@ -11,8 +11,8 @@ export function formatAddress(address: string | undefined): string {
 }
 
 /**
- * 复制text到剪贴板
- * @param text 要复制text
+ * Copy text to clipboard
+ * @param text text to copy
  */
 export async function copyToClipboard(text: string): Promise<boolean> {
   try {
@@ -20,7 +20,7 @@ export async function copyToClipboard(text: string): Promise<boolean> {
       await navigator.clipboard.writeText(text);
       return true;
     } else {
-      // 兼容旧浏览器
+      // Fallback for older browsers
       const textArea = document.createElement('textarea');
       textArea.value = text;
       textArea.style.position = 'fixed';
@@ -34,7 +34,7 @@ export async function copyToClipboard(text: string): Promise<boolean> {
       return successful;
     }
   } catch (error) {
-    console.error('复制失败:', error);
+    console.error('Copy failed:', error);
     return false;
   }
 }

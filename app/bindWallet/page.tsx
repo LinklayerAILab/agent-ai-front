@@ -38,20 +38,20 @@ function Page() {
 
   const performSignature = async () => {
     try {
-      // 确保钱package已connection
+      // Ensure wallet is connected
       if (!isConnected || !address) {
         throw new Error('Wallet not connected. Please connect your wallet first.')
       }
-      // Createsignaturemessage
+      // Create signature message
       const sigMsg = `LinkLayer AI Agent Wallet Binding Address: ${address}`
-      // use Promise 来handle Wagmi callbackmode
+      // Use Promise to handle Wagmi callback mode
       return new Promise<void>((resolve, reject) => {
         signMessage(
           { message: sigMsg },
           {
             onSuccess: async (signature) => {
               try {
-                  // 调用绑定 API
+                  // Call binding API
                   setSign(signature)
                   resolve()
                 } catch (error) {
@@ -60,7 +60,7 @@ function Page() {
                 }
               },
               onError: (error) => {
-                console.error('签名失败:', error)
+                console.error('Signature failed:', error)
                 reject(error)
               }
             }

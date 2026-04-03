@@ -40,7 +40,7 @@
 
     .animate {
 
-        // 地球转动
+        // Earth rotation
         &-1 {
             animation: animate1 2s 1s linear infinite;
         }
@@ -60,7 +60,7 @@
         }
     }
 
-    // 地球转动
+    // Earth rotation
     @keyframes animate1 {
         0% {
             transform: rotate(0deg);
@@ -71,7 +71,7 @@
         }
     }
 
-    // 进度条
+    // Progress bar
     @keyframes animateProgress {
         0% {
             width: 0;

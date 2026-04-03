@@ -48,25 +48,6 @@ export const set_integrated = (
   return service.post(`${AGENT_API}/v1/set_integrated`, params);
 };
 
-/**
- * ALL --allpair话ID
-SPACE--工作空间产生的对话ID
-API--API调用产生的对话ID
-EMBED--iframe产生的对话ID
-WIDGET--部件气泡产生的对话ID
-AI_SEARCH--AI搜索产生的对话ID
-SHARE--分享产生的对话ID
-WHATSAPP_META--WhatsApp by Meta产生的对话ID
-WHATSAPP_ENGAGELAB--WhatsApp by EngageLab产生的对话ID
-DINGTALK--钉钉机器人产生的对话ID
-DISCORD--Discord产生的对话ID
-SLACK --Slack产生的对话ID
-ZAPIER--Zapier产生的对话ID
-WXKF --微信客服产生的对话ID
-TELEGRAM--Telegram产生的对话ID
-LIVECHAT--LiveChat产生的对话ID
-ZAPIER--Zapier产生的对话ID
- */
 
 export type ConversationType =
   | "ALL"
@@ -233,7 +214,7 @@ export interface GetIntegraInfosResponse extends ApiResponse {
     IntegInfos: InfoItem[] | null;
   };
 }
-// fetch 集成information
+// Fetch integrated information
 export const get_Integrated_infos = (): Promise<GetIntegraInfosResponse> => {
   return service.get(`${AGENT_API}/v1/get_Integrated_infos`);
 };
@@ -247,15 +228,15 @@ export interface CreateOrderParams {
 export interface OrderInfo {
   order_id: string;
   commodity_id: number;
-  pay_address: string; // 付款人地址地址
-  collection_address: string; // 收款地址
-  amount: number; // 付款金额
+  pay_address: string;
+  collection_address: string;
+  amount: number;
   credits: number;
   coin_type: number;
   network_id: number;
   paid_amount: number;
   /**
-   * 0: 未支付, 1: 支付Success, 2: 支付Failed, 3: 实际支付金额不足
+   * 0: unpaid, 1: payment success, 2: payment failed, 3: insufficient payment amount
    */
   payment_status: 0 | 1 | 2 | 3;
   payment_time: number;
@@ -271,16 +252,16 @@ export interface CreateOrderResponse extends ApiResponse {
     order: OrderInfo;
   };
 }
-//  0 积分  1 按monthssubscribe  2  按yearssubscribe 3 按季度
+//  0 credits  1 monthly subscribe  2 yearly subscribe  3 quarterly subscribe
 
-// Create订单
+// Create order
 export const create_order = (
   params: CreateOrderParams
 ): Promise<CreateOrderResponse> => {
   return service.post(`${AGENT_API}/v1/create_order`, params);
 };
 
-// 0 积分 1 按monthssubscribe  2  按yearssubscribe、
+// 0 credits 1 monthly subscribe  2  yearly subscribe
 export const get_unpayment_order = (params: {
   commodity_id: number;
 }): Promise<CreateOrderResponse> => {
@@ -292,7 +273,7 @@ export interface UpdateOrderParams {
   tx_hash: string;
   payer_address?: `0x${string}`;
   credits: number;
-  // isnoupdate積分
+  // whether to update credits
   update_credit_flag: boolean;
 }
 export const update_order = (params: UpdateOrderParams) => {
@@ -312,7 +293,7 @@ export interface GetUserOrdersResponse extends ApiResponse {
     };
   };
 }
-// query账单list
+// Query order list
 export const get_user_orders = (
   params: GetUserOrdersParams
 ): Promise<GetUserOrdersResponse> => {
@@ -324,7 +305,7 @@ export interface GetUsingOrderResponse extends ApiResponse {
     order: OrderInfo;
   };
 }
-// query正inuse订单
+// Query currently active order
 export const get_using_order = (): Promise<GetUsingOrderResponse> => {
   return service.post(`${AGENT_API}/v1/get_using_order`);
 };
@@ -334,7 +315,7 @@ export interface GetCreditResponse extends ApiResponse {
     credits: number;
   };
 }
-// Delete query积分
+// Query credits
 export const get_credit = (): Promise<GetCreditResponse> => {
   return service.post(`${AGENT_API}/v1/get_credit`);
 };
@@ -349,7 +330,7 @@ export const user_rewardpoints = (): Promise<GetUserRewardpointResponse> => {
   return service.get(`${DEFAI_AGENT_API}/v1/user_rewardpoints`);
 }
 
-// verificationtoken有效性
+// Verify token validity
 export const validate_token = (): Promise<LoginResponse> => {
   return service.post(`${AGENT_API}/v1/validate_token`);
 };
@@ -367,7 +348,7 @@ export interface SetLoginCodeResponse extends ApiResponse {
 export interface SetLoginCodeParams {
   bot_id: string;
 }
-// refresh login_code
+// Refresh login_code
 export const set_logincode = (
   params: SetLoginCodeParams
 ): Promise<SetLoginCodeResponse> => {
@@ -393,7 +374,7 @@ export interface PageParams {
   size: number;
 }
 
-// queryagent tg koldata
+// Query agent tg kol data
 export const get_agent_KOL = (
   params: PageParams
 ): Promise<GetAgentKOLResponse> => {
@@ -414,7 +395,7 @@ export type GetTwitterAgentKOLResponse = {
   };
 } & ApiResponse;
 
-// query agent twitter koldata
+// Query agent twitter kol data
 export const agentKOLDappTwitter = (
   params: PageParams
 ): Promise<GetTwitterAgentKOLResponse> => {

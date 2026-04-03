@@ -7,21 +7,21 @@ interface BinanceResponse {
 
 export interface BinanceTokenScreenItem {
   tokenId: string;           // Binance Token ID (CoinGecko ID)
-  tokenSymbol: string;       // 代币符号
-  tokenName: string;         // 代币名称
-  contractAddress: string;   // 合约地址
-  poolAddress: string;       // 主池地址
-  poolType: string;          // 池子类型 (V2/V3)
-  quoteTokenSymbol: string;  // 报价币符号
-  depthScore: number;        // 深度充足性分数
-  stabilitySlope: number;    // 深度稳定性斜率
-  exitSlippage: number;      // 退出可行性滑点
-  overallScore: number;      // 综合评分
-  riskLevel: string;         // 风险等级
-  analysisResult: string;    // 完整分析结果 JSON
-  screeningTime: number;     // 筛选时间
-  lastUpdated: number;       // 最后更新时间
-  price?: number;            // 代币价格（从价格接口获取）
+  tokenSymbol: string;       // Token symbol
+  tokenName: string;         // Token name
+  contractAddress: string;   // Contract address
+  poolAddress: string;       // Main pool address
+  poolType: string;          // Pool type (V2/V3)
+  quoteTokenSymbol: string;  // Quote token symbol
+  depthScore: number;        // Depth adequacy score
+  stabilitySlope: number;    // Depth stability slope
+  exitSlippage: number;      // Exit feasibility slippage
+  overallScore: number;      // Overall score
+  riskLevel: string;         // Risk level
+  analysisResult: string;    // Complete analysis result JSON
+  screeningTime: number;     // Screening time
+  lastUpdated: number;       // Last update time
+  price?: number;            // Token price (from price API)
   imageUrl: string
 }
 
@@ -35,8 +35,8 @@ export interface GetBinanceTokenScreenResponse extends BinanceResponse {
 }
 
 /**
- * fetch币安代币筛选list
- * use代理path /defai_api/binance_token_screen
+ * Fetch Binance token screening list
+ * Use proxy path /defai_api/binance_token_screen
  */
 export const getBinanceTokenScreen = () => {
   return request<GetBinanceTokenScreenResponse>("/defai_api/v1/binance_token_screen", {
@@ -45,7 +45,7 @@ export const getBinanceTokenScreen = () => {
   });
 };
 
-// ==================== 价格interface ====================
+// ==================== Price interfaces ====================
 
 export interface BinanceTokenPriceItem {
   symbol: string;
@@ -67,9 +67,9 @@ export interface GetBinanceTokenPriceResponse extends BinanceResponse {
 }
 
 /**
- * fetch币安代币价格
- * use代理path /defai_api/v1/binance_token_price
- * @param tokenAddresses 合约addressarray
+ * Fetch Binance token prices
+ * Use proxy path /defai_api/v1/binance_token_price
+ * @param tokenAddresses Contract address array
  */
 export const getBinanceTokenPrice = (tokenAddresses: string[]) => {
   return request<GetBinanceTokenPriceResponse>("/defai_api/v1/binance_token_price", {
@@ -84,12 +84,12 @@ export const getBinanceTokenPrice = (tokenAddresses: string[]) => {
 };
 
 /**
- * fetch币安代币筛选list及价格
- * group合interface：先fetch筛选list，再批量fetch价格并合并
+ * Fetch Binance token screening list and prices
+ * Combined interface: first fetch screening list, then batch fetch prices and merge
  */
 export const getBinanceTokenScreenWithPrices = async (): Promise<BinanceTokenScreenItem[]> => {
   try {
-    // 1. fetch筛选list
+    // 1. Fetch screening list
     const screenResponse = await getBinanceTokenScreen();
     const tokens = screenResponse.data.results || [];
 
@@ -97,32 +97,32 @@ export const getBinanceTokenScreenWithPrices = async (): Promise<BinanceTokenScr
       return [];
     }
 
-    // 2. 提取all合约address
+    // 2. Extract all contract addresses
     const contractAddresses = tokens.map(token => token.contractAddress).filter(Boolean);
 
     if (contractAddresses.length === 0) {
       return tokens;
     }
 
-    // 3. 批量fetch价格
+    // 3. Batch fetch prices
     try {
       const priceResponse = await getBinanceTokenPrice(contractAddresses);
       const prices = priceResponse.data.prices || [];
 
-      // 4. Create价格map表
+      // 4. Create price map
       const priceMap = new Map<string, number>();
       prices.forEach(item => {
         priceMap.set(item.token_address.toLowerCase(), item.price);
       });
 
-      // 5. 合并价格data到代币list
+      // 5. Merge price data into token list
       return tokens.map(token => ({
         ...token,
         price: priceMap.get(token.contractAddress.toLowerCase()),
       }));
     } catch (priceError) {
       console.error('Failed to fetch prices, returning tokens without price:', priceError);
-      // 价格fetchFailed时，Return不含价格代币list
+      // When price fetch fails, return token list without prices
       return tokens;
     }
   } catch (error) {

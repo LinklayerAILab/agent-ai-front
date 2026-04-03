@@ -41,15 +41,15 @@ const Subscribe = () => {
   // const [orderType, setOrderType] = useState<number>(1);
   // const [tokenBalance, setTokenBalance] = useState<bigint | undefined>(undefined);
   // const [allowance, setAllowance] = useState<bigint | undefined>(undefined);
-  
-  // 钱packageerrormodalstate
+
+  // Wallet error modal state
   // const [walletErrorVisible, setWalletErrorVisible] = useState(false);
   // const [walletError, setWalletError] = useState<string>('');
 
  
 
   const handleSubscribe = async () => {
-    // 暂时disablesubscribefunctionality，Display coming soon tip
+    // Temporarily disable subscribe functionality, show coming soon message
     messageApi.warning(t("common.coming"));
     return;
 
@@ -64,14 +64,14 @@ const Subscribe = () => {
     //   return
     // }
 
-    // // // 1.connection钱package
+    // // // 1. Connect wallet
     // if (!address) {
     //   localStorage.setItem("subscribeType", type + "")
     //   await open()
     //   return
     // }
 
-    // // // 2.直接Display订单弹窗
+    // // // 2. Display order modal directly
     // setOrderType(type);
     // setOrderModalVisible(true);
 
@@ -85,18 +85,18 @@ const Subscribe = () => {
   //   }
   // }, [chainId])
 
-  // fetch代币余额andauthorization额度
+  // Fetch token balance and allowance amount
   // useEffect(() => {
   //   if (address && chainId && chainId === CHAIN_ID) {
   //     fetchTokenData();
   //   }
   // }, [address, chainId])
 
-  // listenaddress变更event，refreshpagedata
+  // Listen to address change event, refresh page data
   // useEffect(() => {
   //   const handleAddressChanged = (event: CustomEvent) => {
   //     console.log('Address changed event received:', event.detail);
-  //     // refresh token data
+  //     // refreshing token data
   //     if (address && chainId && chainId === CHAIN_ID) {
   //       fetchTokenData();
   //     }
@@ -118,10 +118,10 @@ const Subscribe = () => {
   //   }
   // }, [address, isConnected])
 
-  // 每次open订单弹窗时refresh token balance andauthorization额度
+  // Refresh token balance and allowance when opening order modal
   // useEffect(() => {
   //   if (orderModalVisible && address && chainId && chainId === CHAIN_ID) {
-  //     console.log("订单弹窗open，refresh token data...");
+  //     console.log("Order modal opened, refreshing token data...");
   //     fetchTokenData();
   //   }
   // }, [orderModalVisible, address, chainId])
@@ -140,7 +140,7 @@ const Subscribe = () => {
   //   hash,
   // })
 
-  // Define产品datatype
+  // Define product data type
   // type ProductData = {
   //   amount: bigint;
   //   productId: bigint;
@@ -148,7 +148,7 @@ const Subscribe = () => {
 
   // };
 
-  // fetch代币余额andauthorization额度asyncfunction
+  // Fetch token balance and allowance amount async function
   // const fetchTokenData = async () => {
   //   if (!address || !chainId || chainId !== CHAIN_ID) return;
 
@@ -179,7 +179,7 @@ const Subscribe = () => {
   //   }
   // };
 
-  // fetch商品informationasyncfunction
+  // Fetch product information async function
   // const fetchProductData = async () => {
   //   try {
   //     const productResult = await readContract(config, {
@@ -196,7 +196,7 @@ const Subscribe = () => {
   //   }
   // };
 
-  // fetchauthorization额度
+  // Fetch allowance amount
   // const fetchAllowance = async () => {
   //   try {
   //     const allowanceResult = await readContract(config, {
@@ -213,7 +213,7 @@ const Subscribe = () => {
   //   }
   // };
 
-  // refreshauthorization额度（updatestate）
+  // Refresh allowance amount (update state)
   // const refetchAllowance = async () => {
   //   if (!address || !chainId || chainId !== CHAIN_ID) return;
 
@@ -225,19 +225,19 @@ const Subscribe = () => {
   //   }
   // };
 
-  // format化余额Display（false设代币有18位小数）
+  // Format balance display (assumes token has 18 decimal places)
   // const formatTokenBalance = (balance: bigint | undefined, decimals: number = 18) => {
   //   if (!balance) return "0";
   //   return formatUnits(balance, decimals);
   // };
 
-  // checkisnoneedauthorization
+  // Check if authorization is needed
   // const needsApproval = (amount: bigint | undefined, currentAllowance: bigint | undefined) => {
   //   if (!amount || !currentAllowance) return true;
   //   return currentAllowance < amount;
   // };
 
-  // 移除自动Successhandle，改forin交易confirmafter手动handle
+  // Remove auto-success handling, manually handle after transaction confirmation
 
   // useEffect(() => {
   //   if (writeError) {
@@ -246,26 +246,26 @@ const Subscribe = () => {
   // }, [writeError, messageApi]);
 
   // const handleConfirmOrder = async () => {
-  //   // 暂时disabledown单functionality
+  //   // Temporarily disable order placement functionality
   //   messageApi.info(t("common.coming"));
   //   return;
 
   //   // /**
-  //   //  * @param productId 商品ID
-  //   //  * @param orderId 订单ID
-  //   //  * @param payToken 支付代币address
-  //   //  * @param userId userID
+  //   //  * @param productId Product ID
+  //   //  * @param orderId Order ID
+  //   //  * @param payToken Payment token address
+  //   //  * @param userId User ID
   //   //  */
 
   //   // try {
-  //   //   console.log('🔍 execute订单beforesessioncheck...')
+  //   //   console.log('🔍 Execute order before session check...')
   //   //   const hadIssues = preventiveSessionCheck()
   //   //   if (hadIssues) {
   //   //     messageApi.info(t("order.walletCacheCleaned"))
   //   //     await new Promise(resolve => setTimeout(resolve, 1000))
   //   //   }
 
-  //   //   // 1. 严格check钱packageconnectionstate
+  //   //   // 1. Strictly check wallet connection state
   //   //   if (!address || !isConnected) {
   //   //     messageApi.error(t("order.walletNotConnected"));
   //   //     await open();
@@ -273,20 +273,20 @@ const Subscribe = () => {
   //   //   }
 
   //   //
-  //   //   // 2. 强制refreshconnectionstate - await钱packagestatesync
-  //   //   console.log('whenbeforeconnectionstate:', { address, isConnected, chainId });
+  //   //   // 2. Force refresh connection state - await wallet state sync
+  //   //   console.log('Connection state before:', { address, isConnected, chainId });
   //   //   await new Promise(resolve => setTimeout(resolve, 500));
 
-  //   //   // 2. check并切换到正确network
+  //   //   // 2. Check and switch to correct network
   //   //   if (Number(chainId) !== CHAIN_ID) {
   //   //     try {
-  //   //       console.log('切换network:', { from: chainId, to: CHAIN_ID });
+  //   //       console.log('Switching network:', { from: chainId, to: CHAIN_ID });
   //   //       await switchChainAsync({ chainId: CHAIN_ID });
-  //   //       // awaitnetwork切换complete
+  //   //       // awaitWait for network switch to complete
   //   //       await new Promise(resolve => setTimeout(resolve, 1500));
-  //   //       console.log('network切换Success');
+  //   //       console.log('Network switch successful');
   //   //     } catch (switchError) {
-  //   //       console.error('network切换Failed:', switchError);
+  //   //       console.error('Network switch failed:', switchError);
   //   //       const errorMessage = switchError.message || switchError.toString();
 
   //   //       if (errorMessage.includes('Chain not configured')) {
@@ -300,14 +300,14 @@ const Subscribe = () => {
   //   //     }
   //   //   }
 
-  //   //   // 3. againverificationconnectionstate（network切换after）
+  //   //   // 3. Verify connection state again（after network switch）
   //   //   if (!address || !isConnected) {
   //   //     messageApi.error(t("order.walletConnectionLost"));
   //   //     return;
   //   //   }
   //   //   fetchTokenData()
-  //   //   // dynamicfetch商品data、authorization额度and代币精度
-  //   //   console.log("fetch商品information、authorization额度and代币精度...");
+  //   //   // Dynamically fetch product data、authorization amount and token decimals
+  //   //   console.log("Fetching product information、authorization amount and token decimals...");
   //   //   const [currentProductData, currentAllowance, tokenDecimals] = await Promise.all([
   //   //     fetchProductData(),
   //   //     fetchAllowance(),
@@ -318,45 +318,45 @@ const Subscribe = () => {
   //   //       chainId: CHAIN_ID,
   //   //     }).then((v) => Number(v as unknown as string | number))
   //   //   ]);
-  //   //   console.log("商品information:", currentProductData);
-  //   //   console.log("whenbeforeauthorization额度:", currentAllowance);
-  //   //   console.log("代币精度:", tokenDecimals);
+  //   //   console.log("Product information:", currentProductData);
+  //   //   console.log("whenbeforeauthorization amount:", currentAllowance);
+  //   //   console.log("Token decimals:", tokenDecimals);
 
   //   //   if (!currentProductData?.amount || currentAllowance === undefined || !tokenDecimals) {
-  //   //     console.error('商品金额error', currentProductData)
-  //   //     console.error('authorization金额error', currentAllowance)
-  //   //     console.error('代币精度error', tokenDecimals)
+  //   //     console.error('Product amount error', currentProductData)
+  //   //     console.error('Authorization amount error', currentAllowance)
+  //   //     console.error('Token decimalserror', tokenDecimals)
   //   //     messageApi.error(t("order.failedToFetchData"));
   //   //     return;
   //   //   }
 
-  //   //   // 将合约Return金额Convertfor实际代币金额
-  //   //   // currentProductData.amount in合约inuse 18 位精度storage (BASE_DECIMALS = 18)
-  //   //   // needbased on ERC20 代币实际精度proceedConvert
-  //   //   // 公式: actualAmount = contractAmount * (10^tokenDecimals) / (10^18)
-  //   //   // 例如:
-  //   //   //   合约金额 = 5.9 * 10^18 = 5900000000000000000
-  //   //   //   代币精度 = 6 (USDT on testnet)
-  //   //   //   实际authorization金额 = 5900000000000000000 / 10^(18-6) = 5900000
+  //   //   // Convert contract returned amount to actual token amount
+  //   //   // currentProductData.amount inis stored with 18 decimals precision storage (BASE_DECIMALS = 18)
+  //   //   // Need to convert based on ERC20 actual token decimals
+  //   //   // Formula: actualAmount = contractAmount * (10^tokenDecimals) / (10^18)
+  //   //   // Example:
+  //   //   //   Contract amount = 5.9 * 10^18 = 5900000000000000000
+  //   //   //   Token decimals = 6 (USDT on testnet)
+  //   //   //   Actual authorization amount = 5900000000000000000 / 10^(18-6) = 5900000
 
   //   //   const BASE_DECIMALS = BigInt(18);
   //   //   const tokenDecimalsBigInt = BigInt(tokenDecimals);
 
   //   //   let approvalAmount: bigint;
   //   //   if (tokenDecimalsBigInt < BASE_DECIMALS) {
-  //   //     // 代币精度less than 18,need除以差value
+  //   //     // Token decimalsless than 18,need to divide by difference
   //   //     const decimalDiff = BASE_DECIMALS - tokenDecimalsBigInt;
   //   //     approvalAmount = currentProductData.amount / (BigInt(10) ** decimalDiff);
   //   //   } else if (tokenDecimalsBigInt > BASE_DECIMALS) {
-  //   //     // 代币精度greater than 18,need乘以差value
+  //   //     // Token decimalsgreater than 18,need to multiply by difference
   //   //     const decimalDiff = tokenDecimalsBigInt - BASE_DECIMALS;
   //   //     approvalAmount = currentProductData.amount * (BigInt(10) ** decimalDiff);
   //   //   } else {
-  //   //     // 精度same,直接use
+  //   //     // Decimals same,use directly
   //   //     approvalAmount = currentProductData.amount;
   //   //   }
 
-  //   //   console.log("金额Calculate:", {
+  //   //   console.log("Amount calculation:", {
   //   //     contractAmount: currentProductData.amount.toString(),
   //   //     contractDecimals: 18,
   //   //     tokenDecimals: tokenDecimals,
@@ -364,18 +364,18 @@ const Subscribe = () => {
   //   //     humanReadable: `${Number(approvalAmount) / (10 ** Number(tokenDecimals))} USDT`
   //   //   });
 
-  //   //   // checkisnoneedauthorization
+  //   //   // Check if authorization is needed
   //   //   if (needsApproval(approvalAmount, currentAllowance)) {
-  //   //     console.log("needauthorization，whenbeforeauthorization额度:", currentAllowance, "need金额:", approvalAmount);
+  //   //     console.log("Need authorization，whenbeforeauthorization amount:", currentAllowance, "required amount:", approvalAmount);
 
-  //   //     // 4. authorizationbefore最终verificationconnectionstate
+  //   //     // 4. Final verification of connection state before authorization
   //   //     if (!address || !isConnected) {
   //   //       messageApi.error(t("order.walletConnectionLost"));
   //   //       return;
   //   //     }
 
-  //   //     // 先authorization合约use钱package代币
-  //   //     console.log('authorizationparameter:', {
+  //   //     // First authorize contract to use wallet tokens
+  //   //     console.log('Authorization parameters:', {
   //   //       chain: isProd ? 'BSC' : 'BSC Testnet',
   //   //       isProd,
   //   //       address: ERC20_CONTRACT,
@@ -384,36 +384,36 @@ const Subscribe = () => {
   //   //       decimals: tokenDecimals
   //   //     });
 
-  //   //     // authorizationbeforeagainverificationconnection
+  //   //     // Verify connection again before authorization
   //   //     if (!address || !isConnected) {
-  //   //       throw new Error('钱packageconnection已disconnect，请re-connection')
+  //   //       throw new Error('Wallet connection disconnected, please reconnect')
   //   //     }
 
-  //   //     console.log('🔄 executeauthorization交易...')
+  //   //     console.log('🔄 Executing authorization transaction...')
   //   //     const approveHash = await writeContractAsync({
   //   //       address: ERC20_CONTRACT as `0x${string}`,
   //   //       abi: erc20Abi,
   //   //       functionName: "approve",
   //   //       args: [CONTRACT, approvalAmount]
   //   //     });
-  //   //     console.log("authorization交易submit:", approveHash);
+  //   //     console.log("Authorization transaction submitted:", approveHash);
 
-  //   //     // awaitauthorization交易被打packageconfirm
+  //   //     // Wait for authorization transaction to be packed and confirmed
   //   //     await waitForTransactionReceipt(config, {
   //   //       hash: approveHash,
   //   //     });
-  //   //     console.log("authorization交易已confirm，refreshauthorization额度");
+  //   //     console.log("Authorization transaction confirmed, refresh authorization amount");
 
-  //   //     // refreshauthorization额度 (synctriggerre-query)
+  //   //     // Refresh authorization amount (sync triggers re-query)
   //   //     await refetchAllowance();
-  //   //     console.log("authorization额度已triggerre-query");
+  //   //     console.log("Authorization amount triggered re-query");
 
-  //   //     // await一小段time让querycomplete
+  //   //     // Wait a short time for query to complete
   //   //     await new Promise(resolve => setTimeout(resolve, 1000));
-  //   //     console.log("startexecute购买");
+  //   //     console.log("Start executing purchase");
 
   //   //   } else {
-  //   //     console.log("已有足够authorization额度，跳过authorizationstep");
+  //   //     console.log("Already have sufficient authorization amount, skip authorization step");
   //   //   }
   //   //   const data = await get_orderid()
   //   //   if (!data || !data.data || !data.data.order_id) {
@@ -422,14 +422,14 @@ const Subscribe = () => {
   //   //   }
   //   //   const order_id = data.data.order_id
   //   //
-  //   //   // 5. 购买before最终verificationconnectionstate
+  //   //   // 5. Final verification of connection state before purchase
   //   //   if (!address || !isConnected) {
   //   //     messageApi.error(t("order.walletConnectionLost"));
   //   //     return;
   //   //   }
 
-  //   //   // execute购买合约调用
-  //   //   console.log('购买parameter:', {
+  //   //   // Execute purchase contract call
+  //   //   console.log('Purchase parameters:', {
   //   //     chain: isProd ? 'BSC' : 'BSC Testnet',
   //   //     isProd,
   //   //     contract: CONTRACT,
@@ -446,14 +446,14 @@ const Subscribe = () => {
   //   //     args: [1, order_id, ERC20_CONTRACT],
   //   //   });
 
-  //   //   console.log("购买交易submit:", purchaseHash);
+  //   //   console.log("Purchase transaction submitted:", purchaseHash);
 
-  //   //   // await购买交易confirm
+  //   //   // Wait for purchase transaction to confirm
   //   //   await waitForTransactionReceipt(config, {
   //   //     hash: purchaseHash,
   //   //   });
 
-  //   //   console.log("购买交易已confirm");
+  //   //   console.log("Purchase transaction confirmed");
   //   //   messageApi.success(t("order.orderPurchaseSuccess"));
   //   //   setOrderModalVisible(false);
 
@@ -471,18 +471,18 @@ const Subscribe = () => {
   //   //  if (errorMessage.includes('session topic doesn\'t exist') ||
   //   //              errorMessage.includes('no matching key') ||
   //   //              errorMessage.includes('getDefaultChain')) {
-  //   //     console.log('🚨 detection到 WalletConnect sessionerror，Displayfixmodal');
+  //   //     console.log('🚨 Detected WalletConnect session error，display fix modal');
   //   //     // setWalletError(errorMessage);
   //   //     // setWalletErrorVisible(true);
   //   //   } else if (errorMessage.includes("switch")) {
   //   //     messageApi.error(t("order.networkSwitchFailed"));
   //   //   } else {
-  //   //     // use友好errorinformation
+  //   //     // Use friendly error message
   //   //     const friendlyMessage = getFriendlyErrorMessage(error);
   //   //     messageApi.error(friendlyMessage);
   //   //   }
   //   // } finally {
-  //   //   // refreshauthorization额度 (synctriggerre-query)
+  //   //   // refreshauthorization amount (sync triggers re-query)
   //   //   await refetchAllowance();
   //   // }
   // };
@@ -521,7 +521,7 @@ const Subscribe = () => {
   const isLogin = useSelector((state: RootState) => state.user.isLogin)
   // const loggedInAddress = useSelector((state: RootState) => state.user.address)
 
-  // checkaddressisno匹配
+  // Check if address matches
   // const isAddressMatched = !address || !loggedInAddress || address.toLowerCase() === loggedInAddress.toLowerCase()
 
   useEffect(() => {
@@ -585,7 +585,7 @@ const Subscribe = () => {
       <div className="lg:flex gap-5 w-full">
         {contextHolder}
 
-        {/* 订单确认弹窗 */}
+        {/* Order confirmation modal */}
         {/* <Modal
           title={t("order.orderConfirmTitle")}
           open={orderModalVisible}
@@ -727,7 +727,7 @@ const Subscribe = () => {
           <div className="flex flex-col border-[2px] border-solid border-black rounded-[8px] overflow-x-hidden w-[100%] bg-white h-[360px] lg:h-[74vh] points-list-box">
             <div className="overflow-y-auto h-[600px] lg:h-[74vh] w-[100%]" ref={boxRef}>
               {
-                listLoading ?       // 骨架屏
+                listLoading ?       // Skeleton loading
                   <div className="p-4 space-y-2 w-[100%]">
                     {Array.from({ length: 13 }).map((_, index) => (
                       <div key={index} className="flex items-center justify-between gap-[4%]">
@@ -758,7 +758,7 @@ const Subscribe = () => {
         </div>
       </div>
 
-      {/* 钱包错误处理模态框 */}
+      {/* Wallet error handling modal */}
       {/* <WalletErrorModal
         visible={walletErrorVisible}
         error={walletError}

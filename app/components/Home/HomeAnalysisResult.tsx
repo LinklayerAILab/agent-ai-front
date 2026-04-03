@@ -10,7 +10,7 @@ export interface MessageChunk {
   timestamp: number;
 }
 
-// use memo package装stopbutton，防止不必要re-render
+// Use memo to wrap stopbutton, prevent unnecessary re-render
 const StopButton = memo(({ onClick }: { onClick?: () => void }) => {
   const lottieAnimation = useMemo(
     () => (
@@ -51,7 +51,7 @@ export const HomeAnalysisResult = (props: HomeAnalysisResultProps) => {
   const [t] = useTranslation();
   const [isTypingComplete, setIsTypingComplete] = useState(false);
   const [open, setOpen] = useState(false);
-  const [isAtBottom, setIsAtBottom] = useState(true); // 记录是否在底部
+  const [isAtBottom, setIsAtBottom] = useState(true); // Track whether at bottom
   const scrollBoxRef = useRef<HTMLDivElement>(null);
 
   const handleConfirm = () => {
@@ -59,17 +59,17 @@ export const HomeAnalysisResult = (props: HomeAnalysisResultProps) => {
     setOpen(false);
   };
 
-  // checkisno滚动到bottom
+  // Check if scrolled to bottom
   const checkIfAtBottom = () => {
     if (scrollBoxRef.current) {
       const { scrollTop, scrollHeight, clientHeight } = scrollBoxRef.current;
-      // 允许一定误差range（10px），避免精度issues
+      // Allow certain error range (10px) to avoid precision issues
       const isBottom = scrollHeight - scrollTop - clientHeight < 10;
       setIsAtBottom(isBottom);
     }
   };
 
-  // 滚动到bottom - use requestAnimationFrame 确保 DOM updatecomplete
+  // Scroll to bottom - use requestAnimationFrame to ensure DOM update complete
   const scrollToBottom = () => {
     if (scrollBoxRef.current) {
       requestAnimationFrame(() => {
@@ -80,17 +80,17 @@ export const HomeAnalysisResult = (props: HomeAnalysisResultProps) => {
     }
   };
 
-  // listen滚动event
+  // Listen to scroll event
   const handleScroll = () => {
     checkIfAtBottom();
   };
 
-  // listen滚动event
+  // Listen to scroll event
   useEffect(() => {
     const element = scrollBoxRef.current;
     if (!element) return;
 
-    // Add滚动eventlisten
+    // Add scroll event listener
     element.addEventListener("scroll", handleScroll);
 
     return () => {
@@ -98,13 +98,13 @@ export const HomeAnalysisResult = (props: HomeAnalysisResultProps) => {
     };
   }, []);
 
-  // whenmessageupdate时，ifinbottom且stateis generating or end，自动滚动
+  // When message updates, if at bottom and state is generating or end, auto scroll
   useEffect(() => {
     if (
       (props.status === "generating" || props.status === "end") &&
       isAtBottom
     ) {
-      // 双重 requestAnimationFrame 确保 DOM 完全render
+      // Double requestAnimationFrame to ensure complete DOM render
       requestAnimationFrame(() => {
         requestAnimationFrame(() => {
           scrollToBottom();
@@ -113,7 +113,7 @@ export const HomeAnalysisResult = (props: HomeAnalysisResultProps) => {
     }
   }, [props.messages, props.status, isAtBottom]);
 
-  // use MutationObserver listencontentchange，实时滚动
+  // Use MutationObserver to listen to content changes, real-time scroll
   useEffect(() => {
     if (
       !scrollBoxRef.current ||
@@ -143,7 +143,7 @@ export const HomeAnalysisResult = (props: HomeAnalysisResultProps) => {
     };
   }, [props.status, isAtBottom]);
 
-  // when打字机complete时settingslogo
+  // Set flag when typewriter completes
   useEffect(() => {
     const handleTextLoaded = () => {
       setOpen(false);
@@ -156,19 +156,19 @@ export const HomeAnalysisResult = (props: HomeAnalysisResultProps) => {
     };
   }, []);
 
-  // when status 变for loading or generating 时，reset打字completestate
+  // When status changes to loading or generating, reset typing complete state
   useEffect(() => {
     if (props.status === "loading" || props.status === "generating") {
       setIsTypingComplete(false);
 
-      // CheckisnoDisplaytip
+      // Check whether to display tip
       if (!localStorage.getItem("showHomeAnalysisTip")) {
         setOpen(true);
       }
     }
   }, [props.status]);
 
-  // CheckisnoDisplaystopbutton
+  // Check whether to display stop button
   const showStopButton =
     props.status === "loading" ||
     props.status === "generating" ||
@@ -176,7 +176,7 @@ export const HomeAnalysisResult = (props: HomeAnalysisResultProps) => {
 
   return (
     <div className="w-full h-full relative">
-      {/* 内容区域 */}
+      {/* Content area */}
       <div
         ref={scrollBoxRef}
         className={`flex flex-col bg-white gap-4 w-full lg:h-[47vh] overflow-y-auto overflow-x-hidden rounded-[4px]`}
@@ -199,7 +199,7 @@ export const HomeAnalysisResult = (props: HomeAnalysisResultProps) => {
         />
       </div>
 
-      {/* 停止按钮 - 固定位置 */}
+      {/* Stop button - fixed position */}
       <div
         className="absolute right-[50%] mr-[-20px] lg:mr-[0] lg:right-[20px] bottom-[20px] lg:bottom-[20px] z-10"
         style={{

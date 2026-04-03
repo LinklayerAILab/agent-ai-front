@@ -6,7 +6,7 @@ console.log('chain:', process.env.NEXT_PUBLIC_CHAIN_ID);
 const nextConfig = {
   reactStrictMode: false,
   compiler: {
-    // 生产环境清理 console，但保留 error 和 warn
+    // Remove console in production, but keep error and warn
     removeConsole: process.env.NODE_ENV === 'production' ? {
       exclude: ['error', 'warn']
     } : false,
@@ -30,14 +30,14 @@ const nextConfig = {
         source: "/board_api/:path*",
         destination: `${process.env.NEXT_PUBLIC_BOARD__HOST}/:path*`,
       },
-      // 将所有 /api/ 请求重写到我们的流式代理
+      // Rewrite all /api/ requests to our streaming proxy
       {
         source: "/api/:path*",
         destination: "/api/proxy/:path*",
       },
     ];
   },
-  // 针对流式响应的特殊配置
+  // Special configuration for streaming responses
   async headers() {
     return [
       {

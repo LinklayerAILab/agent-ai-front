@@ -22,7 +22,7 @@ const SetLang = () => {
     },
     {
       value: "ko",
-      label: "한국인",
+      label: "한국어",
     },
     {
       value: "ru",

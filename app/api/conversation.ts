@@ -81,32 +81,6 @@ export interface SendMessageRequest {
   conversation_config?: ConversationConfig; // Configuration is now optional
 }
 
-/**
- * SendMessageResponse Returnexample
- * {"code":11,"message":"MessageInfo","data":{"message_id":"6785dba0f06d872bff9ee347"}}
- * {"code":3,"message":"Text","data":"我"}  
- * {"code":3,"message":"Text","data":"can"}
- * {"code":3,"message":"Text","data":"帮"}  
- * {"code":3,"message":"Text","data":"助"}
- * {"code":3,"message":"Text","data":"你"}  
- * {"code":3,"message":"Text","data":""}
- * {"code":3,"message":"Text","data":"吗"}
- * {"code":3,"message":"Text","data":"?"}
- * {"code":10,"message":"FlowOutput","data":[{"content":"你好","branch":null,"from_component_name": "User Input"}]}
- * {"code":4,"message":"Cost","data":{"prompt_tokens":4922,"completion_tokens":68,"total_tokens":4990,"prompt_tokens_details":{"audio_tokens":0,"text_tokens":4922},"completion_tokens_details":{"reasoning_tokens":0,"audio_tokens":0,"text_tokens":68}}}
- * {"code":0,"message":"End","data":null}
- * {"code":11,"message":"MessageInfo","data":{"message_id":"67b857b6be1f2906861a5e75"}}
-{"code":39,"message":"Audio","data":{"audioAnswer":"","transcript":"你好"}}
-{"code":39,"message":"Audio","data":{"audioAnswer":"","transcript":"，请"}}
-{"code":39,"message":"Audio","data":{"audioAnswer":"","transcript":"问"}}
-{"code":39,"message":"Audio","data":{"audioAnswer":"","transcript":"有什么"}}
-{"code":39,"message":"Audio","data":{"audioAnswer":"EQAUAA0...IA3bi","transcript":""}}
-{"code":39,"message":"Audio","data":{"audioAnswer":"EQAUAA0...IA3bi","transcript":""}}
-{"code":39,"message":"Audio","data":{"audioAnswer":"EQAUAA0...IA3bi","transcript":""}}
-{"code":10,"message":"FlowOutput","data":[{"content":" Audio:https://gptbots.ai/example.wav,Transcript:(Hello! How can I assist you today?)","audioDatas":[{"transcript":"Hello! How can I assist you today?","url":"https://gptbots.ai/example.wav","seconds":3}],"from_component_name":"AI Model-1"}],"componentId":12}{"code":4,"message":"Cost","data":{"prompt_tokens":4922,"completion_tokens":68,"total_tokens":4990,"prompt_tokens_details":{"audio_tokens":0,"text_tokens":4922},"completion_tokens_details":{"reasoning_tokens":0,"audio_tokens":0,"text_tokens":68}}}
-{"code":0,"message":"End","data":null}
- */
-
 // --- Start of SendMessageResponse Types ---
 
 // Message ID information

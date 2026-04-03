@@ -22,7 +22,7 @@ export default async function handler(
       return res.status(externalApiResponse.status).send(errorBody);
     }
 
-    // 检查客户端是否请求流式响应
+    // Check if client requested streaming response
     if (req.body.response_mode === 'streaming') {
       res.setHeader('Content-Type', 'text/event-stream; charset=utf-8');
       res.setHeader('Cache-Control', 'no-cache');
@@ -49,7 +49,7 @@ export default async function handler(
         res.end();
       }
     } else {
-      // 处理阻塞式响应
+      // Handle blocking response
       const data = await externalApiResponse.json();
       res.status(200).json(data);
     }

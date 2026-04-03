@@ -18,13 +18,13 @@ function TypewriterNode(props: { text: string; icon: StaticImageData }) {
 
   useEffect(() => {
     return () => {
-      // 组件卸载时清理
+      // Cleanup on component unmount
       if (typewriterRef.current) {
         try {
           typewriterRef.current.stop();
           typewriterRef.current = null;
         } catch (error) {
-          // 忽略清理错误
+          // Ignore cleanup errors
           console.log(error);
         }
       }
@@ -55,12 +55,12 @@ function TypewriterNode(props: { text: string; icon: StaticImageData }) {
               typewriter
                 .typeString(props.text)
                 .pauseFor(2000)
-                .deleteAll(1) // 极快速度删除所有内容
+                .deleteAll(1) // Delete all content at very fast speed
                 .pauseFor(500)
                 .callFunction(() => {
-                  // 重新开始下一轮
+                  // Start the next round
                   setTimeout(() => {
-                    setKey((prev) => prev + 1); // 强制重新渲染组件
+                    setKey((prev) => prev + 1); // Force component re-render
                   }, 100);
                 });
               typewriter.start();

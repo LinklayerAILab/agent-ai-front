@@ -148,7 +148,7 @@ const Page = () => {
       args: [address],
     }) as bigint;
   };
-  // handle list 椤圭偣鍑?
+  // Handle list item click
   const handleListItemClick = (clickedValue: number) => {
     setList((prevList) =>
       prevList.map((item) => ({
@@ -158,7 +158,7 @@ const Page = () => {
     );
   };
 
-  // handle coinList 椤圭偣鍑?
+  // Handle coin list item click
   const handleCoinListClick = (item: CoinListItem) => {
     if (item.disabled) {
       messageApi.warning(t("common.coming"));
@@ -485,7 +485,7 @@ const Page = () => {
           </div>
           <div className="rounded-[8px] overflow-hidden mx-[0] lg:mx-[3vh] list-box mt-[14px] lg:mt-[3vh] lg:h-[59vh] overflow-y-auto">
             {listLoading ? (
-              // 楠ㄦ灦灞?
+              // Skeleton loading
               <div className="p-4 space-y-2 w-[100%]">
                 {Array.from({ length: 12 }).map((_, index) => (
                   <div

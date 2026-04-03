@@ -35,12 +35,12 @@ export const AlphaCard = ({
 }: AlphaCardProps) => {
     const { t } = useTranslation();
 
-    // 灏嗙姸鎬佹彁鍗囧埌缁勪欢椤跺眰锛岀‘淇?hooks 璋冪敤椤哄簭涓€鑷?
+    // Lift state to component top level to ensure consistent hooks call order
     const [randomDelay, setRandomDelay] = useState('0.00');
     const [isModalOpen, setIsModalOpen] = useState(false);
 
     useEffect(() => {
-        // 鍙湪瀹㈡埛绔敓鎴愰殢鏈哄欢杩?
+        // Generate random delay only on client side
         setRandomDelay((Math.random() * 1 + 0.5).toFixed(2));
     }, []);
 
@@ -77,7 +77,7 @@ export const AlphaCard = ({
     }
 
     const LightStatus = () => {
-        // gradientFade1 缁? gradientFade2 绾? gradientFade3  榛?
+        // gradientFade1 green, gradientFade2 red, gradientFade3 yellow
         // Use color parameter for background, with animation
         if (color) {
             return (

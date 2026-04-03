@@ -17,14 +17,14 @@ const BannerPanel = () => {
   const isInitialMount = useRef(true);
   const [val, setVal] = useState(0);
 
-  // 确保initialstate正确
+  // Ensure initial state is correct
   useEffect(() => {
-    // component挂载after确保Displayfirst个幻灯片
+    // Ensure first slide is displayed after component mounts
     setVal(0);
   }, []);
 
   const onChange = (current: number, next: number) => {
-    // 过滤掉initial化时调用
+    // Filter out calls during initialization
     if (isInitialMount.current) {
       isInitialMount.current = false;
       return;

@@ -7,7 +7,7 @@ interface CreateConversationResponse {
     conversation_id: string;
 }
 
-// 从环境变量中读取 API 密钥
+// Read API key from environment variables
 const apiKey = process.env.GPTBOT_API_KEY;
 if (!apiKey) {
     console.error('API key is not configured');
@@ -40,10 +40,10 @@ async function handlePost(req: NextApiRequest, res: NextApiResponse) {
             headers,
             body: req.body,
             redirect: "follow",
-            cache: "no-store", // 建议添加以避免缓存问题
+            cache: "no-store", // Recommended to avoid caching issues
         });
 
-        // 检查外部 API 的响应是否成功
+        // Check if external API response is successful
         if (!response.ok) {
             const errorData = await response.json().catch(() => ({ error: 'Failed to parse error response' }));
             console.error('External API error:', response.status, errorData);

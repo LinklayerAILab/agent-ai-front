@@ -313,10 +313,10 @@ export default function CryptoAnalysis() {
         return;
       }
 
-      // 创建新的 AbortController 用于控制流式请求
+      // Create new AbortController to control streaming request
       streamAbortController.current = new AbortController();
 
-      // 将 token 和 AbortController 传递给分析接口
+      // Pass token and AbortController to analysis API
       const streamGenerator = analyse_coin_c_steaming(
         `${t("agent.analyze")} ${coinSymbol}`,
         token,
@@ -337,7 +337,7 @@ export default function CryptoAnalysis() {
       }
 
       for await (const chunk of streamGenerator) {
-        // 检查是否被中止
+        // Check if aborted
         if (streamAbortController.current?.signal.aborted) {
           break;
         }
@@ -433,13 +433,13 @@ export default function CryptoAnalysis() {
 
 
   const stopCreation = () => {
-    console.log("🛑 停止内容生成");
+    console.log("🛑 Stopping content generation");
 
 
     if (streamAbortController.current) {
       streamAbortController.current.abort();
       streamAbortController.current = null;
-      console.log("✅ 流式请求已停止");
+      console.log("✅ Streaming request stopped");
     }
 
 

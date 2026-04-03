@@ -43,10 +43,10 @@ export function delayFunction(delay = 0) {
 
 
 /**
- * 将 Unix timestamp（毫seconds）format化for yyyy-M-d
- * 兼容 IE11 及all现代浏览器
- * @param timestamp 毫secondstimestamp
- * @returns 形如 "1989-9-8"
+ * Format Unix timestamp (milliseconds) to yyyy-M-d
+ * Compatible with IE11 and all modern browsers
+ * @param timestamp timestamp in milliseconds
+ * @returns formatted string like "1989-9-8"
  */
 export function formatDate(
   timestamp: number,
@@ -56,16 +56,16 @@ export function formatDate(
 
   const dt = new Date(timestamp);
 
-  // 基础field
+  // Basic fields
   const year = dt.getFullYear();
-  const month = dt.getMonth() + 1; // 0 基
+  const month = dt.getMonth() + 1; // 0-based
   const day = dt.getDate();
   const hours = dt.getHours();
   const minutes = dt.getMinutes();
   const seconds = dt.getSeconds();
   const ms = dt.getMilliseconds();
 
-  // 补零助手（避免依赖 padStart）
+  // Pad zero helper (avoid dependency on padStart)
   function pad2(n: number): string {
     return n < 10 ? '0' + n : String(n);
   }
@@ -75,12 +75,12 @@ export function formatDate(
     return String(n);
   }
 
-  // 12 hours制
+  // 12-hour format
   const hour12 = hours % 12 === 0 ? 12 : hours % 12;
   const ampmLower = hours < 12 ? 'am' : 'pm';
   const ampmUpper = ampmLower.toUpperCase();
 
-  // support占位符（size写敏感）：
+  // Supported placeholders (case sensitive):
   // YYYY, YY, MM, M, DD, D, HH, H, hh, h, mm, m, ss, s, SSS, S, A, a
   const tokenMap: Record<string, string> = {
     YYYY: String(year),
@@ -103,7 +103,7 @@ export function formatDate(
     a: ampmLower,
   };
 
-  // 单次全量替换，避免repeat/交叉替换issues
+  // One-time full replacement to avoid repeat/cross replacement issues
   const re = /(YYYY|YY|MM|M|DD|D|HH|H|hh|h|mm|m|ss|s|SSS|S|A|a)/g;
   return String(format).replace(re, (t) => tokenMap[t]);
 }

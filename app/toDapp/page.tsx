@@ -36,12 +36,12 @@ function ToDappContent() {
 
   const { list, handleTo } = useToDapp(toUrl);
 
-  // listenuserloginstate
+  // Listen to user login state
   const isLogin = useSelector((state: RootState) => state.user.isLogin);
 
   const INVITE_CODE_KEY = "invite_code";
 
-  // check并save invite_code parameter（参考 Connect.tsx）
+  // Check and save invite_code parameter (see Connect.tsx)
   useEffect(() => {
     const extractInviteCode = () => {
       const directInviteCode = searchParams?.get("invite_code");
@@ -74,7 +74,7 @@ function ToDappContent() {
     window.location.href = toUrl;
   };
 
-  // loginafter跳转到rootpath
+  // Redirect to root path after login
   useEffect(() => {
     if (isLogin) {
       router.push("/");
@@ -223,12 +223,12 @@ function ToDappContent() {
                   typewriter
                     .typeString(text)
                     .pauseFor(2000)
-                    .deleteAll(1) // 极快速度删除所有内容
+                    .deleteAll(1) // Delete all content at very fast speed
                     .pauseFor(500)
                     .callFunction(() => {
-                      // re-startdown一轮
+                      // Restart another round
                       setTimeout(() => {
-                        setKey((prev) => prev + 1); // 强制重新渲染组件
+                        setKey((prev) => prev + 1); // Force component re-render
                       }, 100);
                     });
                   typewriter.start();

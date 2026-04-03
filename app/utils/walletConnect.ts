@@ -1,6 +1,6 @@
-// mobile钱packageconnectiontools
+// Mobile wallet connection utility
 
-// Define Ethereum pair象type
+// Define Ethereum provider type
 export interface EthereumProvider extends Record<string, unknown> {
   isMetaMask?: boolean;
   isConnected?: () => boolean;
@@ -8,12 +8,12 @@ export interface EthereumProvider extends Record<string, unknown> {
 }
 
 /**
- * mobile设备detection
+ * Mobile device detection
  */
 export const isMobileDevice = () => {
   if (typeof window === 'undefined') return false
 
-  // 更全面mobiledetection
+  // More comprehensive mobile detection
   const userAgent = navigator.userAgent.toLowerCase()
   const mobilePatterns = [
     /android/i,
@@ -28,13 +28,13 @@ export const isMobileDevice = () => {
     /tablet/i
   ]
 
-  // checkscreendimension
+  // Check screen dimensions
   const hasSmallScreen = window.innerWidth <= 768 || window.innerHeight <= 768
 
-  // check触摸support
+  // Check touch support
   const hasTouchSupport = 'ontouchstart' in window || navigator.maxTouchPoints > 0
 
-  // user代理detection
+  // User agent detection
   const matchesUserAgent = mobilePatterns.some(pattern => pattern.test(userAgent))
 
   return matchesUserAgent || (hasSmallScreen && hasTouchSupport)
@@ -42,7 +42,7 @@ export const isMobileDevice = () => {
 
 
 /**
- * detectionplatformtype
+ * Detect platform type
  */
 export const getPlatformType = () => {
   if (typeof window === 'undefined') return 'unknown'
@@ -56,7 +56,7 @@ export const getPlatformType = () => {
 }
 
 /**
- * detectionisnoin MetaMask mobile浏览器内
+ * Detect if not in MetaMask mobile browser
  */
 export const isMetaMaskMobile = () => {
   if (typeof window === 'undefined') return false
@@ -65,12 +65,12 @@ export const isMetaMaskMobile = () => {
 }
 
 /**
- * fetch MetaMask 深link
+ * Get MetaMask deep link
  */
 export const getMetaMaskDeepLink = (wcUri: string) => {
   const encodedUri = encodeURIComponent(wcUri)
   
-  // based ondifferentplatformReturndifferent深linkformat
+  // Return different deep link formats based on different platforms
   if (/iPhone|iPad|iPod/i.test(navigator.userAgent)) {
     // iOS use metamask:// protocol
     return `metamask://wc?uri=${encodedUri}`
@@ -78,31 +78,31 @@ export const getMetaMaskDeepLink = (wcUri: string) => {
     // Android use https link
     return `https://metamask.app.link/wc?uri=${encodedUri}`
   }
-  
-  // defaultuse通用link
+
+  // Default use universal link
   return `https://metamask.app.link/wc?uri=${encodedUri}`
 }
 
 /**
- * handlemobile钱packageconnection
+ * Handle mobile wallet connection
  */
 export const handleMobileWalletConnect = async (wcUri: string) => {
   if (!isMobileDevice()) {
     return false
   }
   
-  // ifalreadyin MetaMask 浏览器内，直接connection
+  // If already in MetaMask browser, connect directly
   if (isMetaMaskMobile()) {
     return true
   }
-  
-  // Generate深link并跳转
+
+  // Generate deep link and redirect
   const deepLink = getMetaMaskDeepLink(wcUri)
-  
-  // use window.location.href 跳转（更可靠）
+
+  // Use window.location.href to redirect (more reliable)
   window.location.href = deepLink
-  
-  // 备用方案：ifup面method不工作，尝试 window.open
+
+  // Fallback: if above method doesn't work, try window.open
   setTimeout(() => {
     window.open(deepLink, '_blank')
   }, 100)
@@ -114,7 +114,7 @@ export const handleMobileWalletConnect = async (wcUri: string) => {
 
 
 /**
- * fetch WalletConnect configuration（针pairmobileoptimization）
+ * Get WalletConnect configuration (optimized for mobile)
  */
 const HOSTNAME = process.env.NEXT_PUBLIC__HOST
 export const getWalletConnectConfig = () => {
@@ -129,14 +129,14 @@ export const getWalletConnectConfig = () => {
       url: typeof window !== 'undefined' ? window.location.origin : HOSTNAME,
       icons: [typeof window !== 'undefined' ? `${window.location.origin}/favicon.ico` : `${HOSTNAME}/favicon.ico`]
     },
-    // based onplatformoptimization钱packageselect
+    // Optimize wallet selection based on platform
     featuredWalletIds: [
         'c57ca95b47569778a828d19178114f4db188b89b763c899ba0be274e97267d96', // MetaMask
         '4622a2b2d6af1c9844944291e5e7351a6aa24cd7b23099efac1b2fd875da31a0', // Trust Wallet
         '18388be9ac2d02726dbac9777c96efaac06d744b2f6d580fccdd4127a6d01fd1', // Binance Web3 Wallet
         '1ae92b26df02f0abca6304df07debccd18262fdf5fe82daa81593582dac9a369', // Rainbow
       ],
-    // mobileoptimizationconfiguration
+    // Mobile optimization configuration
     qrModalOptions: {
       mobileLinks: platformType === 'desktop' ? [] : [
         'metamask',
@@ -152,11 +152,11 @@ export const getWalletConnectConfig = () => {
         'rainbow'
       ] : []
     },
-    // mobile特定settings
+    // Mobile specific settings
     enableOnlyMobile: platformType !== 'desktop',
     enableWalletConnect: true,
     enableInjected: platformType === 'desktop',
-    // Telegram Mini App 特殊configuration
+    // Telegram Mini App special configuration
     enableTelegram: true
   }
 }

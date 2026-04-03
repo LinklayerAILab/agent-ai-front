@@ -40,7 +40,7 @@ export default function Menus(props: MenusProps) {
   const [isMobile, setIsMobile] = useState(false);
   const showMenu = useSelector((state:RootState) => state.menus.showMenu)
 
-  // 独立layoutpagelist
+  // List of pages with independent layout
   const independentLayoutPages = ["/sendEmail", "/checkCaptcha", "/bindWallet"];
   const isIndependentLayout = independentLayoutPages.some(
     (page) =>
@@ -75,7 +75,7 @@ export default function Menus(props: MenusProps) {
     }
     const nowRouteItem = MENU_ROUTES.find((item) => item.path === pathname);
     const nextRouteItem = MENU_ROUTES.find((item) => item.path === path);
-    // ifwhenbefore路由不inMENU_ROUTESin，直接跳转不useanimation
+    // If current or next route is not in MENU_ROUTES, navigate directly without animation
     if (!nowRouteItem || !nextRouteItem) {
       router.push(path);
       return;
@@ -83,9 +83,9 @@ export default function Menus(props: MenusProps) {
 
     let dir = "";
     if (nowRouteItem.index > nextRouteItem.index) {
-      dir = "top"; // 从高index到低index，向上滚动
+      dir = "top"; // From higher index to lower index, scroll up
     } else {
-      dir = "down"; // 从低index到高index，向下滚动
+      dir = "down"; // From lower index to higher index, scroll down
     }
 
     const animationClass = dir === "top" ? "scroll-top" : "scroll-down";
@@ -107,7 +107,7 @@ export default function Menus(props: MenusProps) {
     }
   }, []);
 
-  // left滑手势closemenu
+  // Swipe left gesture to close menu
   useEffect(() => {
     let touchStartX = 0;
     let touchStartY = 0;
@@ -141,15 +141,15 @@ export default function Menus(props: MenusProps) {
     const handleSwipeGesture = () => {
       const deltaX = touchEndX - touchStartX;
       const deltaY = touchEndY - touchStartY;
-      const minSwipeDistance = 50; // 最小滑动距离
+      const minSwipeDistance = 50; // Minimum swipe distance
 
-      // Checkisnofor水平滑动（水平距离greater than垂直距离）
+      // Check for horizontal swipe (horizontal distance greater than vertical distance)
       if (Math.abs(deltaX) > Math.abs(deltaY)) {
-        // left滑：closemenu
+        // Swipe left: close menu
         if (deltaX < -minSwipeDistance && showMenu) {
           menuClose();
         }
-        // right滑：openmenu
+        // Swipe right: open menu
         else if (deltaX > minSwipeDistance && !showMenu) {
           dispatch(setShowMenu(true));
         }
@@ -184,7 +184,7 @@ export default function Menus(props: MenusProps) {
   useEffect(() => {
     // setMenuActive(false);
     dispatch(setShowMenu(false))
-    // crypto-analysis and apiForm 路由切换时清null转场animation
+    // Clear transition animation when switching between crypto-analysis and apiForm routes
     if (
       pathname?.startsWith("/crypto-analysis") ||
       pathname?.startsWith("/apiForm")
@@ -197,7 +197,7 @@ export default function Menus(props: MenusProps) {
   const [notices, setNotices] = useState<NoticeItem[]>([]);
 
   useEffect(() => {
-    // fetch公告datafunction
+    // Function to fetch announcement data
     const fetchNotices = async () => {
       try {
         const response = await getNotices();
@@ -212,7 +212,7 @@ export default function Menus(props: MenusProps) {
   const handleSetMenu = () => {
     dispatch(setShowMenu(!showMenu))
   }
-  // ifis独立layoutpage，直接rendercontent，不useMenuslayout
+  // If it's an independent layout page, render content directly without using Menus layout
   if (isIndependentLayout) {
     return <>{props.children ?? <></>}</>;
   }

@@ -93,73 +93,108 @@ export default function Alpha() {
         // Step 2: Extract token addresses
         const tokenAddresses = tokenList.map((item) => item.token_address).filter(Boolean);
 
-        // Step 3: Fetch prices and liquidity check in parallel in background
+        // Step 3: Fetch prices and liquidity check independently in parallel
         if (tokenAddresses.length > 0) {
-          try {
-            // Call both APIs in parallel
-            const [priceResponse, liquidityResponse] = await Promise.all([
-              alpha_token_price({
+          // Function to fetch and update token prices independently
+          const fetchTokenPrices = async () => {
+            try {
+              const priceResponse = await alpha_token_price({
                 token_addresses: tokenAddresses,
-              }),
-              liquidity_check({
-                token_addresses: tokenAddresses,
-              }),
-            ]);
-
-            // Create a price map for quick lookup
-            const priceMap = new Map<string, number>();
-            if (priceResponse.data?.prices) {
-              priceResponse.data.prices.forEach((priceItem) => {
-                priceMap.set(priceItem.token_address, priceItem.price);
               });
-            }
 
-            // Create a liquidity map for quick lookup
-            const liquidityMap = new Map<string, { level: number; color: string,d2_result?:{slope: number} }>();
-            if (liquidityResponse.data?.results) {
-              liquidityResponse.data.results.forEach((liquidityItem) => {
-                liquidityMap.set(liquidityItem.token_address, {
-                  level: liquidityItem.level,
-                  color: liquidityItem.color,
-                  d2_result: liquidityItem.d2_result
+              // Create price map for quick lookup
+              const priceMap = new Map<string, number>();
+              if (priceResponse.data?.prices) {
+                priceResponse.data.prices.forEach((priceItem) => {
+                  priceMap.set(priceItem.token_address, priceItem.price);
                 });
-              });
-            }
+              }
 
-            // Update data with price and liquidity info
-            setAlphaData((prevData) =>
-              prevData.map((item, index) => {
-                const token = tokenList[index];
-                const price = priceMap.get(token.token_address);
-                const liquidity = liquidityMap.get(token.token_address);
-                if(liquidity?.d2_result){
-                }
-                
-                return {
+              // Update state with price data immediately
+              setAlphaData((prevData) =>
+                prevData.map((item, index) => {
+                  const token = tokenList[index];
+                  const price = priceMap.get(token.token_address);
+
+                  return {
+                    ...item,
+                    price: typeof price === "number" ? price : item.price,
+                    priceLoaded: true,
+                  };
+                })
+              );
+            } catch (error) {
+              console.error("Failed to fetch token prices:", error);
+
+              // Update with error state for prices only
+              setAlphaData((prevData) =>
+                prevData.map((item) => ({
                   ...item,
-                  price: typeof price === "number" ? price : undefined,
+                  price: Number.NaN,
                   priceLoaded: true,
-                  liquidityLoaded: !!liquidity,
-                  level: liquidity?.level,
-                  color: liquidity?.color,
-                  d2_result: liquidity?.d2_result
-                };
-              })
-            );
-  
-          } catch (priceError) {
-            console.error("Failed to fetch token prices or liquidity:", priceError);
-            // Update with error state
-            setAlphaData((prevData) =>
-              prevData.map((item) => ({
-                ...item,
-                price: Number.NaN,
-                priceLoaded: true,
-                liquidityLoaded: true,
-              }))
-            );
+                }))
+              );
+            }
+          };
 
-          }
+          // Function to fetch and update liquidity data independently
+          const fetchLiquidityData = async () => {
+            try {
+              const liquidityResponse = await liquidity_check({
+                token_addresses: tokenAddresses,
+              });
+
+              // Create liquidity map for quick lookup
+              const liquidityMap = new Map<string, {
+                level: number;
+                color: string;
+                d2_result?: { slope: number }
+              }>();
+
+              if (liquidityResponse.data?.results) {
+                liquidityResponse.data.results.forEach((liquidityItem) => {
+                  liquidityMap.set(liquidityItem.token_address, {
+                    level: liquidityItem.level,
+                    color: liquidityItem.color,
+                    d2_result: liquidityItem.d2_result
+                  });
+                });
+              }
+
+              // Update state with liquidity data immediately
+              setAlphaData((prevData) =>
+                prevData.map((item, index) => {
+                  const token = tokenList[index];
+                  const liquidity = liquidityMap.get(token.token_address);
+
+                  return {
+                    ...item,
+                    liquidityLoaded: !!liquidity,
+                    level: liquidity?.level,
+                    color: liquidity?.color,
+                    d2_result: liquidity?.d2_result
+                  };
+                })
+              );
+            } catch (error) {
+              console.error("Failed to fetch liquidity data:", error);
+
+              // Update with error state for liquidity only
+              setAlphaData((prevData) =>
+                prevData.map((item) => ({
+                  ...item,
+                  liquidityLoaded: true,
+                  level: undefined,
+                  color: undefined,
+                  d2_result: undefined
+                }))
+              );
+            }
+          };
+
+          // Launch both API calls in parallel - they execute independently
+          fetchTokenPrices();
+          fetchLiquidityData();
         } 
       } catch (error) {
         console.error("Failed to fetch alpha tokens:", error);
@@ -183,7 +218,7 @@ export default function Alpha() {
 
 
   useEffect(() => {
-    // 确保只inclientexecute，避免 SSR/Hydration issues
+    // Ensure execution only on client side to avoid SSR/Hydration issues
     if (typeof window === 'undefined') return;
 
     const canvas = canvasRef.current;

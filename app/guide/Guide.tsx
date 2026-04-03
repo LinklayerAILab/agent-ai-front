@@ -62,7 +62,7 @@ const Guide = () => {
           <div className="w-full h-full rounded-[8px] bg-[#F1F1F1] flex flex-col">
             <div className="h-[40px] bg-[#cf0] chat-box-tit"></div>
             <div className="chat-con mx-[14px] lg:mx-[3vh] mb-[14px] lg:mb-[3vh] bg-white flex-1 flex items-center justify-center">
-              {/* 内容 */}
+              {/* Content */}
             </div>
           </div>
         </div>

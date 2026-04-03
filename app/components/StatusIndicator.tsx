@@ -6,11 +6,11 @@ export type StatusColor = 'GREEN' | 'RED' | 'YELLOW' | 'GRAY' | 'PRIMARY';
 
 export interface StatusIndicatorProps {
   statusColor?: StatusColor;
-  size?: number; // 宽高，默认24
-  borderWidth?: number; // 边框宽度，默认2
+  size?: number; // Width and height, default 24
+  borderWidth?: number; // Border width, default 2
   className?: string;
-  pulse?: boolean; // 是否显示脉冲效果，默认true
-  loading?: boolean; // 加载状态
+  pulse?: boolean; // Whether to show pulse effect, default true
+  loading?: boolean; // Loading state
 }
 
 export const StatusIndicator = ({

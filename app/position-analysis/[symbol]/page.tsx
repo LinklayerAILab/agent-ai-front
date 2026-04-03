@@ -182,7 +182,7 @@ export default function PositionAnalysis() {
 
             const checkTurnstile = setInterval(() => {
               if (window.turnstile) {
-                console.log("✅ Turnstile 脚本加载完成");
+                console.log("✅ Turnstile script loaded");
                 clearInterval(checkTurnstile);
                 clearTimeout(timeout);
                 resolve();
@@ -191,7 +191,7 @@ export default function PositionAnalysis() {
           });
         }
 
-        // 按需创建 widget 并获取 token
+        // Create widget on demand and get token
         token = await initTurnstileOnDemand();
       } catch {
         message.error(t("common.humanVerificationFailed"));
@@ -223,7 +223,7 @@ export default function PositionAnalysis() {
       for await (const chunk of streamGenerator) {
 
         if (streamAbortController.current?.signal.aborted) {
-          console.log("🚫 流式请求已被中止，停止处理数据块");
+          console.log("🚫 Streaming request aborted, stopping data chunk processing");
           break;
         }
 
@@ -233,7 +233,7 @@ export default function PositionAnalysis() {
 
         if (chunk && typeof chunk === "object") {
 
-          // 处理 SSE 事件格式
+          // Handle SSE event format
           if (
             "event" in chunk &&
             chunk.event === "message" &&
@@ -257,12 +257,12 @@ export default function PositionAnalysis() {
               return [...prev, newChunk];
             });
           } else if ("event" in chunk && chunk.event === "workflow_started") {
-            console.log("🚀 start...");
+            console.log("🚀 Workflow started...");
           } else if ("event" in chunk && chunk.event === "workflow_finished") {
-            console.log("🏁 completed");
+            console.log("🏁 Workflow completed");
             streamAbortController.current = null;
           } else if ("event" in chunk && chunk.event === "message_end") {
-            console.log("📝 end...");
+            console.log("📝 Message ended...");
             streamAbortController.current = null;
           } else {
    
@@ -302,7 +302,7 @@ export default function PositionAnalysis() {
       }
 
 
-      console.log("🎉 流式请求正常完成");
+      console.log("🎉 Streaming request completed normally");
       setStatus("end");
     } catch (error) {
       if (error instanceof DOMException && error.name === "AbortError") {
@@ -312,7 +312,7 @@ export default function PositionAnalysis() {
 
 
 
-      // 接口异常时重置所有状态
+      // Reset all states when API fails
       setLoading(false);
       setMessageChunks([]);
       setStatus("init");
@@ -331,13 +331,13 @@ export default function PositionAnalysis() {
     }
   };
 
-  // 停止分析
+  // Stop analysis
   const stopCreation = () => {
 
     if (streamAbortController.current) {
       streamAbortController.current.abort();
       streamAbortController.current = null;
-  
+
     }
 
 
@@ -350,7 +350,7 @@ export default function PositionAnalysis() {
       window.dispatchEvent(new Event("textLoaded"));
     }
 
-    console.log("✅ 所有状态已重置");
+    console.log("✅ All states have been reset");
   };
 
   useEffect(() => {
@@ -381,7 +381,7 @@ export default function PositionAnalysis() {
         try {
           window.turnstile.remove(turnstileWidgetId);
         } catch (error) {
-          console.warn("清理 Turnstile widget 失败:", error);
+          console.warn("Failed to cleanup Turnstile widget:", error);
         }
       }
     };

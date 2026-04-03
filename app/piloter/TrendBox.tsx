@@ -38,7 +38,7 @@ const TrendBox: React.FC<TrendBoxProps> = ({
     return list;
   }, [selectType, strategies]);
 
-  // 策略typemap
+  // Strategy type map
   const strategyTypeMap: Record<string, string> = useMemo(() => ({
     'trendTracking': t('strategy.types.trendTracking'),
     'momentum': t('strategy.types.momentum'),

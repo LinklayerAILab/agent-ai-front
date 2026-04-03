@@ -21,7 +21,7 @@ function Page() {
     let chart3: echarts.ECharts | null = null;
     let chart4: echarts.ECharts | null = null;
 
-    // initial化 chart1 - 平滑折线graph
+    // Initialize chart1 - smooth line chart
     const chart1Dom = document.getElementById("chart1");
     if (chart1Dom) {
       chart1 = echarts.init(chart1Dom);
@@ -59,8 +59,8 @@ function Page() {
           splitLine: {
             lineStyle: {
               color: "#edeaeaff",
-              width: 1, // 1px 实线
-              type: "solid", // 实线样式
+              width: 1, // 1px solid line
+              type: "solid", // Solid line style
             },
           },
         },
@@ -80,7 +80,7 @@ function Page() {
           {
             // name: 'LLA Supply',
             type: "line",
-            smooth: true, // 平滑曲线
+            smooth: true, // Smooth curve
             data: [10000, 1200, 11500, 13800, 15100, 17000, 18500],
             lineStyle: {
               color: "#ACD700",
@@ -101,18 +101,18 @@ function Page() {
       chart1.setOption(option1);
     }
 
-    // initial化 chart2 - LLA Staking 直线折线graph
+    // Initialize chart2 - LLA Staking straight line chart
     const chart2Dom = document.getElementById("chart2");
     if (chart2Dom) {
       chart2 = echarts.init(chart2Dom);
 
-      // Generate密集模拟data
+      // Generate dense simulation data
       let base = +new Date(2023, 0, 1);
       const oneDay = 24 * 3600 * 1000;
       const date: string[] = [];
       const data: number[] = [Math.random() * 500000 + 800000];
 
-      // Addfirst个date，pair应first个data点
+      // Add first date, corresponding to first data point
       const firstDate = new Date(base);
       date.push([firstDate.getMonth() + 1, firstDate.getDate()].join('/'));
 
@@ -120,7 +120,7 @@ function Page() {
         const now = new Date((base += oneDay));
         date.push([now.getMonth() + 1, now.getDate()].join('/'));
         const newValue = Math.round((Math.random() - 0.5) * 600000 + data[i - 1]);
-        data.push(Math.max(100000, newValue)); // 确保数据不低于100000
+        data.push(Math.max(100000, newValue)); // Ensure data is not below 100000
       }
 
       const option2: echarts.EChartsOption = {
@@ -212,7 +212,7 @@ function Page() {
       chart2.setOption(option2);
     }
 
-    // initial化 chart3 - LLAx Supply 柱状graph
+    // Initialize chart3 - LLAx Supply bar chart
     const chart3Dom = document.getElementById("chart3");
     if (chart3Dom) {
       chart3 = echarts.init(chart3Dom);
@@ -249,8 +249,8 @@ function Page() {
           splitLine: {
             lineStyle: {
               color: "#edeaeaff",
-              width: 1, // 1px 实线
-              type: "solid", // 实线样式
+              width: 1, // 1px solid line
+              type: "solid", // Solid line style
             },
           },
         },
@@ -271,11 +271,11 @@ function Page() {
             data: [350000, 480000, 420000, 580000, 650000, 720000, 800000],
             itemStyle: {
               color: (params) => {
-                // 奇数index用 #CCFF00，偶数index用 #ACD700
+                // Odd indices use #CCFF00, even indices use #ACD700
                 const colors = ["#CCFF00", "#ACD700"];
                 return colors[params.dataIndex % 2];
               },
-              borderRadius: [100, 100, 0, 0], // 半圆顶部
+              borderRadius: [100, 100, 0, 0], // Semi-circular top
             },
             barWidth: "60%",
             label: {
@@ -290,10 +290,10 @@ function Page() {
       chart3.setOption(option3);
     }
 
-    // initial化 chart4 - LLAx-LLA percentage仪表盘
+    // Initialize chart4 - LLAx-LLA percentage gauge
     const chart4Dom = document.getElementById("chart4");
     if (chart4Dom) {
-      chart4 = echarts.init(chart4Dom, null, { renderer: "svg" }); // 使用 SVG 渲染器消除锯齿
+      chart4 = echarts.init(chart4Dom, null, { renderer: "svg" }); // Use SVG renderer to eliminate jagged edges
 
       const option4: echarts.EChartsOption = {
         series: [
@@ -308,42 +308,42 @@ function Page() {
             splitNumber: 10,
             axisLine: {
               lineStyle: {
-                width: 26, // 轨道宽度12px，圆角约6px
+                width: 26, // Track width 12px, rounded corners about 6px
                 color: [
-                  [1, "#303030"], // 轨道底色
+                  [1, "#303030"], // Track base color
                 ],
-                cap: "round", // 圆角端点
-                shadowBlur: 0, // 移除阴影
-                shadowColor: "transparent", // 透明阴影
-                opacity: 1, // 完全不透明
+                cap: "round", // Rounded corners
+                shadowBlur: 0, // Remove shadow
+                shadowColor: "transparent", // Transparent shadow
+                opacity: 1, // Completely opaque
               },
             },
             progress: {
               show: true,
-              width: 26, // 宽度8px，圆角约4px
+              width: 26, // Width 8px, rounded corners about 4px
               itemStyle: {
-                color: "#cf0", // 激活颜色
-                borderWidth: 0, // 移除边框
-                shadowBlur: 0, // 移除阴影
+                color: "#cf0", // Active color
+                borderWidth: 0, // Remove border
+                shadowBlur: 0, // Remove shadow
                 shadowColor: "transparent",
               },
-              roundCap: false, // 进度条右侧圆弧
+              roundCap: false, // Progress bar right side arc
             },
             pointer: {
-              show: true, // 启用指针
-              length: '75%', // 指针长度
-              width: 6, // 指针宽度
-              offsetCenter: [-1, -1], // 指针位置偏移
+              show: true, // Enable pointer
+              length: '75%', // Pointer length
+              width: 6, // Pointer width
+              offsetCenter: [-1, -1], // Pointer position offset
               itemStyle: {
-                color: '#333', // 指针颜色
+                color: '#333', // Pointer color
                 shadowBlur: 0,
                 shadowColor: 'transparent'
               }
             },
             anchor: {
-              show: true, // 显示指针锚点（圆心）
+              show: true, // Show pointer anchor (center point)
               showAbove: true,
-              size: 10, // 锚点大小
+              size: 10, // Anchor size
               itemStyle: {
                 color: '#333',
                 borderWidth: 3,
@@ -353,16 +353,16 @@ function Page() {
               }
             },
             axisLabel: {
-              show: true, // 显示刻度数字
-              distance: -20, // 标签与轨道的距离（负数向内，正数向外）
+              show: true, // Show scale numbers
+              distance: -20, // Distance from label to track (negative is inward, positive is outward)
               color: '#666',
               fontSize: 14,
               formatter: function(value: number) {
-                // 只Display 0 and 100
+                // Only display 0 and 100
                 if (value === 0) {
-                  return '{left|0%}'; // 左侧标签使用 left 样式
+                  return '{left|0%}'; // Left label uses left style
                 } else if (value === 100) {
-                  return '{right|100%}'; // 右侧标签使用 right 样式
+                  return '{right|100%}'; // Right label uses right style
                 }
                 return '';
               },
@@ -370,28 +370,28 @@ function Page() {
                 left: {
                   fontSize: 14,
                   color: '#666',
-                  fontWeight: 'bold', // 加粗
-                  padding: [30, 0, 0, 0], // 0% 的垂直偏移 [上, 右, 下, 左]
+                  fontWeight: 'bold', // Bold
+                  padding: [30, 0, 0, 0], // 0% vertical offset [top, right, bottom, left]
                 },
                 right: {
                   fontSize: 14,
                   color: '#666',
-                  fontWeight: 'bold', // 加粗
-                  padding: [30, 0, 0, 0], // 100% 的垂直偏移 [上, 右, 下, 左]
+                  fontWeight: 'bold', // Bold
+                  padding: [30, 0, 0, 0], // 100% vertical offset [top, right, bottom, left]
                 }
               }
             },
             axisTick: {
-              show: false, // 隐藏小刻度线
+              show: false, // Hide small tick marks
             },
             splitLine: {
-              show: false, // 隐藏大刻度线
+              show: false, // Hide large tick marks
             },
             title: {
               show: false,
             },
             detail: {
-              show: false, // 隐藏中间的百分比数字
+              show: false, // Hide center percentage number
             },
             data: [
               {
@@ -406,7 +406,7 @@ function Page() {
       chart4.setOption(option4);
     }
 
-    // response式调整
+    // Responsive adjustment
     const handleResize = () => {
       chart1?.resize();
       chart2?.resize();
@@ -415,7 +415,7 @@ function Page() {
     };
     window.addEventListener("resize", handleResize);
 
-    // Clearfunction
+    // Cleanup function
     return () => {
       window.removeEventListener("resize", handleResize);
       chart1?.dispose();

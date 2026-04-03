@@ -4,7 +4,7 @@ import "./NotificationCarousel.scss";
 
 export interface NotificationCarouselProps {
   children: ReactNode[];
-  interval?: number; // 轮播间隔时间（毫秒），默认3000ms
+  interval?: number; // Carousel interval time (milliseconds), default 3000ms
   className?: string;
 }
 
@@ -22,22 +22,22 @@ export default function NotificationCarousel({
   useEffect(() => {
     if (!children || children.length <= 1) return;
 
-    // clear之before定时器
+    // Clear previous timers
     if (timerRef.current) {
       clearInterval(timerRef.current);
     }
 
-    // ifpause，不启动定时器
+    // If paused, don't start timer
     if (isPaused) return;
 
     timerRef.current = setInterval(() => {
       setIsTransitioning(true);
 
-      // animationcompleteafterupdateindex并resetanimationstate
+      // Update index and reset animation state after animation completes
       animationTimerRef.current = setTimeout(() => {
         setCurrentIndex((prevIndex) => (prevIndex + 1) % children.length);
         setIsTransitioning(false);
-      }, 500); // 与动画持续时间一致
+      }, 500); // Consistent with animation duration
     }, interval);
 
     return () => {
@@ -62,12 +62,12 @@ export default function NotificationCarousel({
     return null;
   }
 
-  // ifonly一个childelement，不need轮播
+  // If only one child element, no need for carousel
   if (children.length === 1) {
     return <div className={`notification-carousel ${className}`}>{children[0]}</div>;
   }
 
-  // Calculatedown一个index
+  // Calculate next index
   const nextIndex = (currentIndex + 1) % children.length;
 
   return (
@@ -77,7 +77,7 @@ export default function NotificationCarousel({
       onMouseLeave={handleMouseLeave}
     >
       <div className="notification-carousel-wrapper">
-        {/* 当前显示的通知 */}
+        {/* Currently displayed notification */}
         <div
           className={`notification-item current ${isTransitioning ? "slide-out" : ""}`}
           key={`current-${currentIndex}`}
@@ -85,7 +85,7 @@ export default function NotificationCarousel({
           {children[currentIndex]}
         </div>
 
-        {/* 即将进入的通知 */}
+        {/* Next notification to enter */}
         {isTransitioning && (
           <div
             className="notification-item next slide-in"

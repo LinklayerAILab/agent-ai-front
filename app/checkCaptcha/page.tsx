@@ -111,7 +111,7 @@ function BindEmailModalContent() {
     };
   }, [countDown, isCountDown, handleCountDown]);
   const handleInputChange = (index: number, value: string) => {
-    // Only allow single digit
+    // Only allow single digit input
     if (value.length > 1) return;
 
     const newCode = [...code];
@@ -125,7 +125,7 @@ function BindEmailModalContent() {
     }
   };
 
-  // use useEffect listen code change，确保自动submit逻辑正确execute
+  // Use useEffect to listen to code changes, ensure auto-submit logic executes correctly
   useEffect(() => {
     if (code.every(digit => digit) && code.join("").length === 6) {
       const timer = setTimeout(() => {
@@ -134,11 +134,11 @@ function BindEmailModalContent() {
 
       return () => clearTimeout(timer);
     }
-  }, [code]); // 依赖 code 状态
+  }, [code]); // Depends on code state
 
   const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>, index: number) => {
     if (e.key === "Backspace" && !code[index] && index > 0) {
-      // Focus previous input on backspace if current is empty
+      // Focus previous input on backspace if current input is empty
       codeRefs.current[index - 1]?.focus();
     } else if (e.key === "Enter") {
       handleVerifyClick();
@@ -156,7 +156,7 @@ function BindEmailModalContent() {
 
     setCode(newCode);
 
-    // Focus the last filled input or first empty
+    // Focus the last filled input or first empty input
     const lastFilledIndex = pastedData.length - 1;
     if (lastFilledIndex >= 0 && lastFilledIndex < 5) {
       codeRefs.current[lastFilledIndex + 1]?.focus();
@@ -164,7 +164,7 @@ function BindEmailModalContent() {
       codeRefs.current[5]?.focus();
     }
 
-    // 不need手动submit，useEffect 会自动handle
+    // No need to manually submit, useEffect will handle it automatically
   };
   useEffect(() => {
     codeRefs.current[0]?.focus();

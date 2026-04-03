@@ -8,15 +8,15 @@ import { AutoComplete, Skeleton, Tooltip, message } from "antd";
 import rightIcon from "@/app/images/agent/right.svg";
 import rightIconGary from "@/app/images/agent/rightGary.svg";
 import './CoinList.scss'
-// 导入图片
+// Import images
 import searchIcon from "@/app/images/agent/search.svg";
 // import botdot from "@/app/images/agent/botdot.svg";
 
-// 导入组件
+// Import components
 import Star from "../Star";
 import SmaltImage from "../SmaltImage/SmaltImage";
 
-// 导入 API
+// Import APIs
 import {
   get_gain_ranking_c,
   get_collect_c,
@@ -28,7 +28,7 @@ import {
 import { isDev } from "@/app/enum";
 
 
-// Debounce 工具函数
+// Debounce utility function
 function debounce<T extends (...args: unknown[]) => void>(
   func: T,
   delay: number
@@ -44,13 +44,13 @@ function debounce<T extends (...args: unknown[]) => void>(
   };
 }
 
-// 类型定义
+// Type definitions
 export interface CoinItem {
   symbol: string;
   price: number;
   gain: number;
   image: string;
-  symbol_type: 0 | 1 |2; // 0-现货 1-合约 2-现货+合约
+  symbol_type: 0 | 1 |2; // 0-spot 1-futures 2-spot+futures
   collect: boolean;
   loading?: boolean;
 }
@@ -58,22 +58,22 @@ export interface CoinItem {
 type CurrentItem = CoinItem;
 
 export interface CoinsListProps {
-  /** 咨询AI按钮点击回调 - 现货 */
+  /** Consult AI button click callback - spot */
   onConsultClick: (v:CoinItem) => void;
-  /** 咨询AI按钮点击回调 - 合约 */
+  /** Consult AI button click callback - futures */
   onContractClick: (v:CoinItem) => void;
-  /** 搜索框占位符 */
+  /** Search box placeholder */
   searchPlaceholder?: string;
-  /** 表格标题配置 */
+  /** Table header configuration */
   tableHeaders?: {
     tokenName: string;
     currentPrice: string;
     spot: string;
     futures: string;
   };
-  /** 自定义容器className */
+  /** Custom container className */
   containerClassName?: string;
-  /** 表格容器高度 */
+  /** Table container height */
   tableHeight?: string;
 }
 
@@ -89,14 +89,14 @@ const CoinsList = forwardRef<HTMLDivElement, CoinsListProps>(({
   const [messageApi, contextHolder] = message.useMessage();
   const isLogin = useSelector((state: RootState) => state.user.isLogin);
 
-  // 内部状态
+  // Internal state
   const [currentList, setCurrentList] = useState<CurrentItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [isScrollLoading, setIsScrollLoading] = useState(false);
   const [hasMoreData, setHasMoreData] = useState(true);
   const [searchStr, setSearchStr] = useState("");
 
-  // 内部 refs
+  // Internal refs
   const scrollRef = useRef<HTMLDivElement>(null);
   const params = useRef({ page: 1, size: 20 });
   const gains = useRef<GetGainRankingCResponse | null>(null);
@@ -110,9 +110,9 @@ const CoinsList = forwardRef<HTMLDivElement, CoinsListProps>(({
   const timerCreatedCount = useRef(0);
   const handleGetListRef = useRef<() => Promise<void>>(async () => {});
   const handleGetRankingRef = useRef<(collects: GetCollectCResponse | null) => Promise<void>>(async () => {});
-  const isCreatingTimer = useRef(false); // 防止并发创建定时器
+  const isCreatingTimer = useRef(false); // Prevent concurrent timer creation
 
-  // 调试模式
+  // Debug mode
   const DEBUG_MODE = isDev;
   const debugLog = useCallback((...args: unknown[]) => {
     if (DEBUG_MODE) {
@@ -120,9 +120,9 @@ const CoinsList = forwardRef<HTMLDivElement, CoinsListProps>(({
     }
   }, [DEBUG_MODE]);
 
-  // 统一的定时器管理函数 - 确保同一时刻只有一个定时器
+  // Unified timer management function - ensure only one timer at any time
   const createTimer = useCallback((source: string) => {
-    // 防止并发创建
+    // Prevent concurrent creation
     if (isCreatingTimer.current) {
       debugLog(`Timer creation blocked - already creating from ${source}`);
       return;
@@ -130,21 +130,21 @@ const CoinsList = forwardRef<HTMLDivElement, CoinsListProps>(({
 
     isCreatingTimer.current = true;
 
-    // 先清除已存在的定时器
+    // First clear existing timer
     if (timer.current) {
       debugLog(`Clearing existing timer before creating new one from ${source}`);
       clearInterval(timer.current);
       timer.current = null;
     }
 
-    // 确保组件已挂载
+    // Ensure component is mounted
     if (!isMounted.current) {
       debugLog(`Component unmounted, skip timer creation from ${source}`);
       isCreatingTimer.current = false;
       return;
     }
 
-    // 创建新定时器
+    // Create new timer
     timerCreatedCount.current += 1;
     const timerId = timerCreatedCount.current;
     debugLog(`Creating timer #${timerId} from ${source}`);
@@ -156,7 +156,7 @@ const CoinsList = forwardRef<HTMLDivElement, CoinsListProps>(({
     isCreatingTimer.current = false;
   }, [debugLog]);
 
-  // 清除定时器
+  // Clear timer
   const clearTimer = useCallback((source: string) => {
     if (timer.current) {
       debugLog(`Clearing timer from ${source}`);
@@ -164,7 +164,7 @@ const CoinsList = forwardRef<HTMLDivElement, CoinsListProps>(({
       timer.current = null;
     }
   }, [debugLog]);
-  // 防重复的API调用函数
+  // API call function to prevent duplicate calls
   const callGetGainRankingApi = async (source: string) => {
     const now = Date.now();
     const timeSinceLastCall = now - lastApiCallTime.current;
@@ -188,14 +188,14 @@ const CoinsList = forwardRef<HTMLDivElement, CoinsListProps>(({
     }
   };
 
-  // 获取收藏列表
+  // Get collection list
   const handleGetCollects = async () => {
     const data = await get_collect_c();
     collectC.current = data;
     return data;
   };
 
-  // 分页加载
+  // Pagination loading
   const toPage = useCallback(() => {
     if (!gains.current?.data.res) {
       isScrollLoadingRef.current = false;
@@ -229,7 +229,7 @@ const CoinsList = forwardRef<HTMLDivElement, CoinsListProps>(({
     }
   }, [debugLog]);
 
-  // 重置分页状态
+  // Reset pagination state
   const resetPagination = useCallback(() => {
     params.current.page = 1;
     isScrollLoadingRef.current = false;
@@ -241,7 +241,7 @@ const CoinsList = forwardRef<HTMLDivElement, CoinsListProps>(({
     }
   }, []);
 
-  // 获取币种列表 - 定时器专用
+  // Get coin list - timer dedicated
   const handleGetList = useCallback(async () => {
     const callId = Math.random().toString(36).substr(2, 9);
     debugLog(`handleGetList called by timer [${callId}]`);
@@ -301,16 +301,16 @@ const CoinsList = forwardRef<HTMLDivElement, CoinsListProps>(({
     }
   }, [searchStr, callGetGainRankingApi, debugLog, messageApi]);
 
-  // 更新 handleGetListRef
+  // Update handleGetListRef
   useEffect(() => {
     handleGetListRef.current = handleGetList;
   }, [handleGetList]);
 
-  // 获取排名数据 - 初始化专用
+  // Get ranking data - initialization dedicated
   const handleGetRanking = useCallback(async (collects: GetCollectCResponse | null) => {
     debugLog('handleGetRanking called', { hasTimer: !!timer.current, isFirstLoad: isFirstLoad.current });
 
-    // 使用统一的清除函数
+    // Use unified clear function
     clearTimer('handleGetRanking-start');
 
     if (isFirstLoad.current === true) {
@@ -349,19 +349,19 @@ const CoinsList = forwardRef<HTMLDivElement, CoinsListProps>(({
         debugLog('handleGetRanking completed, list items:', list.length);
       }
 
-      // 初始化完成后启动定时器
+      // Start timer after initialization completes
       createTimer('handleGetRanking-end');
     } finally {
       setLoading(false);
     }
   }, [callGetGainRankingApi, clearTimer, createTimer]);
 
-  // 更新 handleGetRankingRef
+  // Update handleGetRankingRef
   useEffect(() => {
     handleGetRankingRef.current = handleGetRanking;
   }, [handleGetRanking]);
 
-  // 滚动加载
+  // Scroll loading
   const handleScroll = useCallback(() => {
     const el = scrollRef.current;
     if (!el || isScrollLoadingRef.current) return;
@@ -381,7 +381,7 @@ const CoinsList = forwardRef<HTMLDivElement, CoinsListProps>(({
         return;
       }
 
-      // 使用统一的清除函数
+      // Use unified clear function
       clearTimer('scroll-loading');
 
       try {
@@ -392,13 +392,13 @@ const CoinsList = forwardRef<HTMLDivElement, CoinsListProps>(({
 
         toPage();
 
-        // 等待滚动加载完成后再创建定时器
+        // Wait for scroll loading to complete before creating timer
         setTimeout(() => {
           isScrollLoadingRef.current = false;
           setIsScrollLoading(false);
           debugLog('Scroll loading completed');
 
-          // 在 setTimeout 回调中创建定时器，确保状态已更新
+          // Create timer in setTimeout callback to ensure state has updated
           createTimer('scroll-loading-complete');
         }, 100);
       } catch (error) {
@@ -410,15 +410,15 @@ const CoinsList = forwardRef<HTMLDivElement, CoinsListProps>(({
     }
   }, [searchStr, toPage, messageApi, clearTimer, createTimer]);
 
-  // 使用 useRef 存储 debounced 函数，避免每次都重新创建
+  // Use useRef to store debounced function, avoid recreating every time
   const debouncedHandleScrollRef = useRef(debounce(handleScroll, 80));
 
-  // 当 handleScroll 变化时，更新 debounced 函数
+  // Update debounced function when handleScroll changes
   useEffect(() => {
     debouncedHandleScrollRef.current = debounce(handleScroll, 80);
   }, [handleScroll]);
 
-  // 搜索功能
+  // Search functionality
   const handleChange = useCallback((e: string) => {
     setSearchStr(e);
 
@@ -456,14 +456,14 @@ const CoinsList = forwardRef<HTMLDivElement, CoinsListProps>(({
 
       setCurrentList(list || []);
 
-      // 搜索清除后，重新创建定时器
+      // Recreate timer after search is cleared
       createTimer('search-cleared');
 
       debugLog('Search cleared, pagination reset');
     }
   }, [resetPagination, createTimer]);
 
-  // 收藏功能
+  // Collection functionality
   const handleCollect = useCallback(async (symbol: string, collect: boolean) => {
     const data = currentList.map((item) => item);
     data.forEach((item) => {
@@ -505,7 +505,7 @@ const CoinsList = forwardRef<HTMLDivElement, CoinsListProps>(({
     });
   }, [currentList]);
 
-  // 初始化数据
+  // Initialize data
   useEffect(() => {
     isMounted.current = true;
     debugLog('useEffect triggered', {
@@ -518,13 +518,13 @@ const CoinsList = forwardRef<HTMLDivElement, CoinsListProps>(({
       debugLog('User is logged in, getting collects first');
       handleGetCollects().then((collects) => {
         debugLog('Collects obtained, calling handleGetRanking');
-        // 使用 ref 调用，避免依赖 handleGetRanking
+        // Use ref to call, avoid dependency on handleGetRanking
         handleGetRankingRef.current(collects);
       });
     }
     if (!token && !isLogin) {
       debugLog('User is not logged in, skipping initialization');
-      // 使用 ref 调用，避免依赖 handleGetRanking
+      // Use ref to call, avoid dependency on handleGetRanking
       handleGetRankingRef.current(null);
     }
 
@@ -540,7 +540,7 @@ const CoinsList = forwardRef<HTMLDivElement, CoinsListProps>(({
     return () => {
       isMounted.current = false;
 
-      // 使用统一的清除函数
+      // Use unified clear function
       clearTimer('component-unmount');
 
       isScrollLoadingRef.current = false;
@@ -553,9 +553,9 @@ const CoinsList = forwardRef<HTMLDivElement, CoinsListProps>(({
       el.removeEventListener("scroll", debouncedScrollHandler);
       debugLog('Component unmounted, cleanup completed');
     };
-  }, [isLogin, debugLog]); // 移除 handleGetRanking 依赖，使用 ref 调用
+  }, [isLogin, debugLog]); // Remove handleGetRanking dependency, use ref to call
 
-  // 暴露 scrollRef 给父组件（通过 forwardRef 的 ref 参数）
+  // Expose scrollRef to parent component (through forwardRef's ref parameter)
   useEffect(() => {
     if (ref) {
       if (typeof ref === 'function') {
@@ -566,7 +566,7 @@ const CoinsList = forwardRef<HTMLDivElement, CoinsListProps>(({
     }
   }, [ref]);
 
-  // 获取价格颜色样式 - 使用 useCallback 优化
+  // Get price color style - use useCallback to optimize
   const getColor = useCallback((price: number) => {
     if (price > 0) {
       return "text-[#8AA90B]";
@@ -576,7 +576,7 @@ const CoinsList = forwardRef<HTMLDivElement, CoinsListProps>(({
     return "text-[#000000]";
   }, []);
 
-  // 使用 useMemo 优化表格头部配置
+  // Use useMemo to optimize table header configuration
   const headers = useMemo(() => {
     return tableHeaders || {
       tokenName: t('agent.tokenName'),
@@ -586,7 +586,7 @@ const CoinsList = forwardRef<HTMLDivElement, CoinsListProps>(({
     };
   }, [t, tableHeaders]);
 
-  // 使用 useCallback 优化币种名称处理
+  // Use useCallback to optimize coin name processing
   const handleName = useCallback((s: string) => {
     if(s) {
       return s.split('USDT')[0]
@@ -594,7 +594,7 @@ const CoinsList = forwardRef<HTMLDivElement, CoinsListProps>(({
     return '-'
   }, []);
 
-  // 使用 useMemo 优化骨架屏渲染
+  // Use useMemo to optimize skeleton screen rendering
   const skeletonItems = useMemo(() => (
     Array.from({ length: 12 }).map((_, index) => (
       <div key={index} className="flex items-center space-x-4">
@@ -620,7 +620,7 @@ const CoinsList = forwardRef<HTMLDivElement, CoinsListProps>(({
     {contextHolder}
     <div className={`${containerClassName} coinlist p-0 lg:p-[1vh] bg-[#F1F1F1] lg:border-[2px] lg:border-black lg:border-solid rounded-[8px]`}>
 
-      {/* 搜索框 */}
+      {/* Search box */}
       <div className="border-[2px] border-solid border-black bg-white pl-[6px] rounded-[8px] h-[42px] lg:h-[6vh] flex items-center">
         <AutoComplete
           placeholder={searchPlaceholder || t('agent.place')}
@@ -634,9 +634,9 @@ const CoinsList = forwardRef<HTMLDivElement, CoinsListProps>(({
         </div>
       </div>
 
-      {/* 币种列表容器 */}
+      {/* Coin list container */}
       <div className={`rounded-[8px] relative bg-white rounded-[8px]`}>
-        {/* 表格头部 */}
+        {/* Table header */}
         <div className="sticky top-0 left-0 right-0 bg-[#cf0] flex h-[40px] lg:h-[5vh] font-bold text-[14px] px-[14px] lg:px-[14px] text-[#666] rounded-t-[8px] overflow-hidden">
           <div className="flex justify-start items-center flex-[1]">
             {headers.tokenName}
@@ -652,13 +652,13 @@ const CoinsList = forwardRef<HTMLDivElement, CoinsListProps>(({
           </div>
         </div>
 
-        {/* 币种列表 */}
+        {/* Coin list */}
         <div
           ref={scrollRef}
           className={`flex-1 overflow-x-hidden overflow-y-auto ${tableHeight} lg:h-[62vh] rounded-[8px]`}
         >
           {loading ? (
-            // 骨架屏 - 使用 memoized 元素
+            // Skeleton screen - use memoized elements
             <div className="p-4 space-y-4">
               {skeletonItems}
             </div>
@@ -739,7 +739,7 @@ const CoinsList = forwardRef<HTMLDivElement, CoinsListProps>(({
             </table>
           )}
 
-          {/* 底部加载状态 */}
+          {/* Bottom loading status */}
           {!loading && !searchStr && (
             <div className="flex justify-center items-center py-4 text-[14px] text-gray-500">
               {isScrollLoading ? (

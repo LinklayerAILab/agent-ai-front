@@ -5,16 +5,16 @@ export const CopyGroup = (props: {
   hasTitle?: boolean;
 }) => {
   const handleDownload = () => {
-    // down载逻辑
+    // Download logic
   };
 
   const handleShare = () => {
-    // 分享逻辑
+    // Share logic
   };
 
   return (
     <div className="flex items-center gap-[14px]">
-      {/* 下载按钮 */}
+      {/* Download button */}
       <div
         onClick={handleDownload}
         className={`w-[36px] lg:px-[9px] gap-1 lg:w-auto h-[36px] rounded-full border-[1px] border-solid border-black flex items-center justify-center cursor-pointer hover:bg-gray-100 transition-colors ${props.hasTitle && 'w-[36px]'}`}
@@ -25,7 +25,7 @@ export const CopyGroup = (props: {
         <DownloadOutlined style={{ fontSize: "16px" }} />
       </div>
 
-      {/* 分享按钮 */}
+      {/* Share button */}
       <div
         onClick={handleShare}
         className={`w-[36px] lg:px-[9px] gap-1 lg:w-auto h-[36px] rounded-full border-[1px] border-solid border-black flex items-center justify-center cursor-pointer hover:bg-gray-100 transition-colors ${props.hasTitle && 'w-[36px]'}`}

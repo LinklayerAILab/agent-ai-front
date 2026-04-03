@@ -1,5 +1,5 @@
 .page-home-inner {
-    // 横向滚动容器样式
+    // Horizontal scroll container styles
     :global {
         #date-swiper {
             &::-webkit-scrollbar {
@@ -80,7 +80,7 @@
 
     .animate {
 
-        // 地球转动
+        // Earth rotation
         &-1 {
             animation: animate1 2s 1s linear infinite;
         }
@@ -147,7 +147,7 @@
         }
     }
 
-    // 地球转动
+    // Earth rotation
     @keyframes animate1 {
         0% {
             transform: rotate(0deg);
@@ -158,7 +158,7 @@
         }
     }
 
-    // 进度条
+    // Progress bar
     @keyframes animateProgress {
         0% {
             width: 0;
@@ -183,7 +183,7 @@
         }
     }
 
-    // 隐藏滚动条
+    // Hide scrollbar
     .hide-scrollbar {
         /* For WebKit browsers (Chrome, Safari, Edge) */
         &::-webkit-scrollbar {
@@ -197,14 +197,14 @@
         -ms-overflow-style: none;
     }
 
-    // 文字黑色描边效果
+    // Text black stroke effect
     .text-stroke-black {
         -webkit-text-stroke: 2px black;
         text-stroke: 2px black;
         paint-order: stroke fill;
     }
 
-    // 白色阴影文本
+    // White shadow text
     .text-shadow-white {
         font-size: 16px;
         // font-weight: bold;
@@ -214,7 +214,7 @@
         paint-order: stroke fill;
     }
 
-    // Select 下拉菜单选中项样式
+    // Select dropdown menu selected item style
     :global {
         .ant-select-item-option-selected:not(.ant-select-item-option-disabled) {
             background-color: #E8FF8B !important;

@@ -15,7 +15,7 @@ import { add_userapikey } from "../api/agent_c";
 
 const Page = () => {
   const router = useRouter();
-  // 判断是否需要显示 Passphrase 字段
+  // Determine whether to show passphrase field
   const [list] = useState(platformListData.map(item => {
     return {
       ...item,
@@ -25,7 +25,7 @@ const Page = () => {
   const [selectedExchange, setSelectedExchange] = useState(platformListData[0].name);
   const needsPassphrase = selectedExchange === "OKX" || selectedExchange === "Bitget";
   const { t } = useTranslation();
-  // 表单状态
+  // Form state
   const [loading, setLoading] = useState(false);
   const [apiKey, setApiKey] = useState("");
   const [secretKey, setSecretKey] = useState("");
@@ -33,7 +33,7 @@ const Page = () => {
   const handleSubmit = async(e: React.FormEvent) => {
     e.preventDefault();
 
-    // 校验必填字段
+    // Validate required fields
     if (!selectedExchange) {
       message.error(t('apiForm.cexNameRequired'));
       return;
@@ -133,7 +133,7 @@ const Page = () => {
             <form onSubmit={handleSubmit} className="h-[100%] flex flex-col">
               <div className="text-[20px] font-bold mb-[16px] lg:mb-[3vh]">{t('apiForm.title')}</div>
 
-              {/* Exchange 下拉菜单 */}
+              {/* Exchange dropdown menu */}
               <div className="mb-[18px] lg:mb-[2.5vh]">
                 <label className="block text-[14px] font-bold mb-[6px] lg:mb-[1vh]">{t('apiForm.exchange')} <span className="text-red-500">*</span></label>
                 <Select
@@ -183,7 +183,7 @@ const Page = () => {
                 </Select>
               </div>
 
-              {/* ApiKey 输入框 */}
+              {/* ApiKey input field */}
               <div className="mb-[18px] lg:mb-[2.5vh]">
                 <label className="block text-[14px] font-bold mb-[6px] lg:mb-[1vh]">{t('apiForm.apiKey')} <span className="text-red-500">*</span></label>
                 <Input.Password
@@ -195,7 +195,7 @@ const Page = () => {
                 />
               </div>
 
-              {/* SecretKey 输入框 */}
+              {/* SecretKey input field */}
               <div className="mb-[18px] lg:mb-[2.5vh]">
                 <label className="block text-[14px] font-bold mb-[6px] lg:mb-[1vh]">{t('apiForm.secretKey')} <span className="text-red-500">*</span></label>
                 <Input.Password
@@ -207,7 +207,7 @@ const Page = () => {
                 />
               </div>
 
-              {/* Passphrase 输入框 (仅 OKX 和 Bitget 显示) */}
+              {/* Passphrase input field (only shown for OKX and Bitget) */}
               {needsPassphrase && (
                 <div className="mb-[18px] lg:mb-[2.5vh]">
                   <label className="block text-[14px] font-bold mb-[6px] lg:mb-[1vh]">{t('apiForm.passphrase')} <span className="text-red-500">*</span></label>
@@ -221,7 +221,7 @@ const Page = () => {
                 </div>
               )}
 
-              {/* 提交按钮 */}
+              {/* Submit button */}
               <div className="mt-[20px] lg:mt-[4vh]">
                 <LLButton
                   className="bg-white h-[50px] lg:h-[5vh]"
@@ -271,7 +271,7 @@ const Page = () => {
               <form onSubmit={handleSubmit} className="h-[100%] flex flex-col">
                 <div className="text-[20px] font-bold mb-[16px] lg:mb-[3vh]">{t('apiForm.title')}</div>
 
-                {/* Exchange 下拉菜单 */}
+                {/* Exchange dropdown menu */}
                 <div className="mb-[18px] lg:mb-[2.5vh]">
                   <label className="block text-[14px] font-bold mb-[6px] lg:mb-[1vh]">{t('apiForm.exchange')} <span className="text-red-500">*</span></label>
                   <Select
@@ -321,7 +321,7 @@ const Page = () => {
                   </Select>
                 </div>
 
-                {/* ApiKey 输入框 */}
+                {/* ApiKey input field */}
                 <div className="mb-[18px] lg:mb-[2.5vh]">
                   <label className="block text-[14px] font-bold mb-[6px] lg:mb-[1vh]">{t('apiForm.apiKey')} <span className="text-red-500">*</span></label>
                   <Input.Password
@@ -333,7 +333,7 @@ const Page = () => {
                   />
                 </div>
 
-                {/* SecretKey 输入框 */}
+                {/* SecretKey input field */}
                 <div className="mb-[18px] lg:mb-[2.5vh]">
                   <label className="block text-[14px] font-bold mb-[6px] lg:mb-[1vh]">{t('apiForm.secretKey')} <span className="text-red-500">*</span></label>
                   <Input.Password
@@ -345,7 +345,7 @@ const Page = () => {
                   />
                 </div>
 
-                {/* Passphrase 输入框 (仅 OKX 和 Bitget 显示) */}
+                {/* Passphrase input field (only shown for OKX and Bitget) */}
                 {needsPassphrase && (
                   <div className="mb-[18px] lg:mb-[2.5vh]">
                     <label className="block text-[14px] font-bold mb-[6px] lg:mb-[1vh]">{t('apiForm.passphrase')} <span className="text-red-500">*</span></label>
@@ -359,7 +359,7 @@ const Page = () => {
                   </div>
                 )}
 
-                {/* 提交按钮 */}
+                {/* Submit button */}
                 <div className="mt-[20px] lg:mt-[4vh]">
                   <LLButton
                     className="bg-white h-[50px] lg:h-[5vh]"

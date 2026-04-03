@@ -7,61 +7,61 @@ import { useWalletLogin } from "../hooks/useWalletLogin";
 
 interface LoginButtonProps {
   /**
-   * button文案，defaultuse翻译 "home.login"
+   * Button text, defaults to translation "home.login"
    */
   buttonText?: string;
   /**
-   * buttonstylepair象
+   * Button style object
    */
   buttonStyle?: React.CSSProperties;
   /**
-   * buttonclass名
+   * Button class name
    */
   buttonClassName?: string;
   /**
-   * loginSuccessaftercallback
+   * Callback after successful login
    */
   onLoginSuccess?: (address: string) => void;
   /**
-   * loginFailedaftercallback
+   * Callback after failed login
    */
   onLoginError?: (error: Error) => void;
   /**
-   * isnoDisplay完整logininterface（package括down拉menu等）
-   * defaultfor false，只Displayloginbutton
+   * Whether to display complete login interface (including dropdown menu, etc.)
+   * Defaults to false, only display login button
    */
   showFullInterface?: boolean;
   /**
-   * isnohide已loginstate（loginafterstillDisplaybutton）
-   * defaultfor false，loginafterhidebutton
+   * Whether to hide button when logged in (still display button after login)
+   * Defaults to false, hide button after login
    */
   hideWhenLoggedIn?: boolean;
 }
 
 /**
- * loginbuttoncomponent
+ * Login button component
  *
- * support自Define文案、styleandloginSuccesscallback
- * 复用了 Connect componentalllogin逻辑
+ * Supports custom text, style, and loginSuccess callback
+ * Reuses all login logic from Connect component
  *
  * @example
  * ```tsx
- * // 基础用法
+ * // Basic usage
  * <LoginButton />
  *
- * // 自Define文案andstyle
+ * // Custom text and style
  * <LoginButton
  *   buttonText="Login By Wallet"
  *   buttonStyle={{ background: '#E9FF93' }}
  *   buttonClassName="custom-class"
  * />
  *
- * // 带loginSuccesscallback
+ * // With loginSuccess callback
  * <LoginButton
  *   onLoginSuccess={(address) => console.log('Logged in:', address)}
  * />
  *
- * // loginafterstillDisplaybutton
+ * // Still display button after login
  * <LoginButton
  *   hideWhenLoggedIn={false}
  *   buttonText={address ? `${address.slice(0, 6)}...${address.slice(-4)}` : 'Login'}
@@ -84,7 +84,7 @@ const LoginButton = ({
     onLoginError,
   });
 
-  // ifalreadylogin且settings了hide，不Displaybutton
+  // If already logged in and hide is set, do not display button
   if (isLogin && hideWhenLoggedIn) {
     return null;
   }

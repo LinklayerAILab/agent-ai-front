@@ -10,7 +10,7 @@ export interface PriceData {
   symbol: string;
   price: ReactNode;
   date: ReactNode;
-  index: 1 | 2 | 3; // 1: quarter, 2: annual, 3: 积分
+  index: 1 | 2 | 3; // 1: quarter, 2: annual, 3: points
 }
 interface PriceCardProps {
   className?: string;

@@ -50,7 +50,7 @@ import smallPeople from "@/app/images/loginPanel/smallPeople.svg";
 import smallMoney from "@/app/images/loginPanel/smallMoney.svg";
 
 const INVITE_CODE_KEY = "invite_code";
-// internalcomponenthandle URL parameter
+// Internal component to handle URL parameter
 const URLParamsHandler = () => {
   const searchParams = useSearchParams();
   useEffect(() => {
@@ -87,7 +87,7 @@ const URLParamsHandler = () => {
 const Connect = () => {
   const { t } = useTranslation();
   const isLogin = useSelector((state: RootState) => state.user.isLogin);
-  const [hasManualLogout, setHasManualLogout] = useState(false); // 标记用户是否主动退出登�?
+  const [hasManualLogout, setHasManualLogout] = useState(false); // Mark whether user manually logged out
 
   const points = useSelector((state: RootState) => state.user.points);
   const dispatch = useDispatch<AppDispatch>();
@@ -101,21 +101,21 @@ const Connect = () => {
   const [messageApi, contextHolder] = message.useMessage();
   const router = useRouter();
 
-  // listen钱packageconnection状�?connectionafter自动trigger手�?SIWE signature
+  // listen wallet connection status�?after connection automatically trigger manual�?SIWE signature
   useEffect(() => {
-    // ifuser主动退出login，不自动trigger登�?
+    // if user actively logged out, do not automatically trigger log�?
     if (isConnected && address && !isLogin && !hasManualLogout) {
       localStorage.setItem("address", address);
-      // 钱packageconnectionSuccess且未login,调用手动 SIWE signature
+      // wallet connection success and not logged in, call manual SIWE signature
       handleManualSign();
     }
   }, [isConnected, address, isLogin, hasManualLogout]);
 
-  // listen钱package账号切换event
+  // listen to wallet account switch event
   useEffect(() => {
     const savedAddress = localStorage.getItem("address");
 
-    // when钱package已connection、已login、且address发生change�?账号切换)
+    // when wallet is connected, logged in, and address has changed (account switch))
     if (
       isConnected &&
       address &&
@@ -124,7 +124,7 @@ const Connect = () => {
       isLogin
     ) {
       setNewAddress(address);
-      // 弹出confirmpair话�?
+      // popup confirmation dialog�?
       setShowAccountChangeDialog(true);
     }
   }, [address, isConnected, isLogin]);
@@ -139,7 +139,7 @@ const Connect = () => {
       window.removeEventListener("unauthorized", authFailEvent);
     };
   }, []);
-  // loginSuccessaftersync积�?
+  // sync points after successful log�?
   useEffect(() => {
     if (isLogin) {
       dispatch(syncPoints());
@@ -162,7 +162,7 @@ const Connect = () => {
 
   const handleConfirmAccountChange = async () => {
     setShowAccountChangeDialog(false);
-    // 直接调用loginmethod
+    // directly call login method
     await handleManualSign();
   };
 
@@ -172,7 +172,7 @@ const Connect = () => {
 
   const { signMessageAsync } = useSignMessage();
 
-  // 手动 SIWE 一key登�?Ethereum
+  // Manual SIWE one-click login�?Ethereum
   const handleManualSign = async () => {
     if (!address || !isConnected) {
       console.error("Please connect wallet first");
@@ -200,12 +200,12 @@ const Connect = () => {
         chainId: CHAIN_ID,
         nonce: nonce,
       });
-      // 3. requestsignature - use walletProvider 来support社交登�?
+      // 3. Request signature - use walletProvider to support social login
       const message = siweMessage.prepareMessage();
 
       const signature = await signMessageAsync({ message });
       const invite_code = localStorage.getItem(INVITE_CODE_KEY) || "";
-      // 4. verificationsignature并获�?access_token
+      // 4. Verify signature and get access_token
       const result = await verifySiweMessage({
         message,
         signature,
@@ -215,16 +215,16 @@ const Connect = () => {
       // 5. save access_token
       localStorage.setItem("access_token", result.data.access_token);
 
-      // 6. 调用after端login API
+      // 6. call backend login API
 
       dispatch(setUserInfo(result.data));
 
-      // loginSuccessafterreset退出login标�?
+      // Reset logout flag after successful login
       setHasManualLogout(false);
 
       messageApi.success(t("login.success") || "Login successful!");
 
-      // 7. immediatelyrefresh积分anduser信�?
+      // 7. Immediately refresh points and user info
       dispatch(syncPoints());
       get_user_info().then((res: { data: unknown }) => {
         if (res) {
@@ -232,7 +232,7 @@ const Connect = () => {
         }
       });
 
-      // 8. trigger自Defineevent，notificationotherpageaddress已变�?
+      // 8. Trigger custom event to notify other pages that address has changed
       const addressChangedEvent = new CustomEvent("addressChanged", {
         detail: { address: address },
       });
@@ -247,11 +247,11 @@ const Connect = () => {
     }
   };
 
-  // down拉框open时sync积�?
+  // Sync points when dropdown opens
   const handleDropdownClick = async () => {
     if (!dropdownOpen && isLogin) {
       handleRefreshUserInfo();
-      // fetch奖励积分
+      // fetch reward points
       try {
         await user_rewardpoints();
         // if (res && res.data) {
@@ -266,7 +266,7 @@ const Connect = () => {
 
   const handleLogout = async () => {
     try {
-      // disconnect钱packageconnection
+      // Disconnect wallet connection
       await disconnect(config);
     } catch (error) {
       console.error("Disconnect wallet failed:", error);
@@ -276,16 +276,16 @@ const Connect = () => {
     setDropdownOpen(false);
     localStorage.removeItem("access_token");
     localStorage.removeItem("address");
-    // settingslogo，表示user主动退出登�?
+    // Set flag indicating user actively logged out
     setHasManualLogout(true);
   };
 
   const handleLogin = async () => {
     try {
       setLoading(true);
-      // user手动点击login，reset退出login标�?
+      // User manually clicked login, reset logout flag
       setHasManualLogout(false);
-      // use Reown AppKit openconnectionmodalproceed社交login
+      // Use Reown AppKit to open connection modal for social login
       await open();
     } catch (err) {
       console.error("Social auth error:", err);
@@ -327,7 +327,7 @@ const Connect = () => {
   const handleShare = () => {
     if (typeof window === "undefined") return;
 
-    // handle分享逻辑
+    // handle share logic
     const link = createLink();
     const backUrl = window.location.origin;
     const baseUrl = `${window.location.origin}/toDapp?toUrl=`;
@@ -335,12 +335,12 @@ const Connect = () => {
       baseUrl + encodeURIComponent(link)
     }&backUrl=${encodeURIComponent(backUrl)}`;
     if (fullLink) {
-      // 直接复制link并弹出复制Success消�?
+      // directly copy link and popup copy success message�?
       copyToClipboardLocal(fullLink);
     }
   };
 
-  // 复制到剪贴板辅助函�?
+  // Copy to clipboard auxiliary function�?
   const copyToClipboardLocal = async (text: string) => {
     try {
       if (navigator.clipboard && navigator.clipboard.writeText) {
@@ -356,24 +356,24 @@ const Connect = () => {
         document.execCommand("copy");
         document.body.removeChild(textArea);
       }
-      message.success(t("common.copySuccess") || "链接已复制到剪贴");
+      message.success(t("common.copySuccess") || "link copied to clipboard");
     } catch (error) {
-      console.error("复制失败:", error);
-      message.error(t("common.copyError") || "复制失败，请手动复制");
+      console.error("copy failed:", error);
+      message.error(t("common.copyError") || "copy failed, please copy manually");
     }
   };
 
-  // refreshuserinformation
+  // refresh user information
   const handleRefreshUserInfo = async () => {
     try {
       const res = await get_user_info();
       if (res && res.data) {
         dispatch(setOtherInfo(res.data));
-        // 同时refresh积分
+        // also refresh points
         dispatch(syncPoints());
       }
     } catch (error) {
-      console.error("刷新用户信息失败:", error);
+      console.error("failed to refresh user info:", error);
     }
   };
 
@@ -502,7 +502,7 @@ const Connect = () => {
           alt="bgaite"
           className="absolute left-[-26px] top-[-22px]"
         ></Image>
-        {/* 用户可以在这里自定义内容 */}
+        {/* Users can customize content here */}
         <Image src={bg3} alt="bg3"></Image>
         {/* {t("wallet.inviteTip")} */}
       </div>

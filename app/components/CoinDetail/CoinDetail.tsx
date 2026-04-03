@@ -34,17 +34,17 @@ export interface CoinDetail {
 }
 
 export interface CoinDetailProps {
-  /** whenbefore选in币种 */
+  /** Currently selected coin */
   currentCoin?: CoinItem;
-  /** Detailsdata */
+  /** Details data */
   detail?: CoinDetail;
-  /** isno正inloadDetails */
+  /** Whether currently loading details */
   loading: boolean;
-  /** load进度 */
+  /** Loading progress */
   loadingPercent: number;
-  /** closeDetailscallback */
+  /** Close details callback */
   onClose: () => void;
-  /** containerheight */
+  /** Container height */
   containerHeight?: string;
 }
 
@@ -60,7 +60,7 @@ const CoinDetail: React.FC<CoinDetailProps> = ({
 
   return (
     <div className={`detail-box flex flex-col w-[100%] ${containerHeight} rounded-[8px] overflow-hidden`}>
-      {/* 详情头部 */}
+      {/* Detail header */}
       <div className="flex justify-between items-center w-[100%] text-[18px] lg:px-[14px] h-[5vh] bg-[#F3F3F3]">
         <div className="flex items-center">
           <LeftOutlined onClick={onClose} className="cursor-pointer" />
@@ -70,7 +70,7 @@ const CoinDetail: React.FC<CoinDetailProps> = ({
         </div>
       </div>
 
-      {/* 币种信息 */}
+      {/* Coin information */}
       <div className="flex h-[100px] lg:h-[14vh] gap-[14px] lg:gap-[2vh] bg-[#f5f5f5] mt-[1vh] lg:mx-[14px] border-[2px] border-solid border-black rounded-[8px] px-[14px]">
         <div className="flex-1 flex items-center justify-center">
           <Image
@@ -110,7 +110,7 @@ const CoinDetail: React.FC<CoinDetailProps> = ({
         </div>
       </div>
 
-      {/* 分析结果 */}
+      {/* Analysis result */}
       <div className="flex-1 mt-[14px] lg:mt-[1vh] lg:h-[100%] border-[2px] mb-[14px] lg:mb-[0] border-solid border-black bg-white rounded-[8px] lg:mx-[14px] overflow-y-scroll h-[50vh]">
         <div className="h-[100%]">
           {loading ? (

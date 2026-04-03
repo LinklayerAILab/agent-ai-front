@@ -60,7 +60,7 @@
     }
 }
 
-    // 隐藏滚动条
+    // Hide scrollbar
     .hide-scrollbar {
         /* For WebKit browsers (Chrome, Safari, Edge) */
         &::-webkit-scrollbar {
@@ -96,7 +96,7 @@
         }
     }
 
-    // API Input.Password 自定义样式
+    // API Input.Password custom styles
     .api-input {
         height: 48px !important;
         border: 2px solid black !important;

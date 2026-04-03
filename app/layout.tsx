@@ -3,7 +3,7 @@ import "./globals.css";
 import "./styles/animate.scss";
 import "./common.scss";
 import React from "react";
-import "./styles/antd.scss";// BinanceTokenScreenResponseData binance_token_screen 响应数据
+import "./styles/antd.scss";
 
 import { Viewport } from "next";
 import './styles/common.scss';

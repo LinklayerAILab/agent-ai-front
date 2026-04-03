@@ -7,13 +7,13 @@ import { useTranslation } from "react-i18next";
 
 import Script from "next/script";
 import './page.scss';
-// 导入组件
+// Import components
 import ChatBox from "../components/ChatBox";
 import { ChatMessage } from "../components/ChatMessage";
-// import { Messageitem } from "../components/ChatMessage";
+// import { MessageItem } from "../components/ChatMessage";
 import { AppDispatch, RootState } from "../store";
 import { syncPoints } from "../store/userSlice";
-// 导入API
+// Import APIs
 import { analyse_coin_c_steaming, recommend_coin_c_steaming } from "../api/agent_c";
 import TrendBox from "./TrendBox";
 import { MessageChunk } from "./types";
@@ -46,21 +46,21 @@ const Page = () => {
   const points = useSelector((state: RootState) => state.user.points);
   const [status, setStatus] = useState<'init' | 'loading' | 'generating' | 'end'>('init');
 
-  // Turnstile 相关状态
+  // Turnstile related state
   const [turnstileWidgetId, setTurnstileWidgetId] = useState<string>("");
   const turnstileContainerRef = useRef<HTMLDivElement>(null);
 
-  // 存储当前流式请求的 AbortController
+  // Store AbortController for current streaming request
   const streamAbortController = useRef<AbortController | null>(null);
 
-  // 动态初始化 Turnstile widget - 只在需要时创建，使用 callback 方式
+  // Dynamically initialize Turnstile widget - create on demand using callback method
   const initTurnstileOnDemand = async (): Promise<string> => {
     return new Promise((resolve, reject) => {
-      // 详细检查各项条件
-      console.log('🔧 Turnstile 初始化检查:');
-      console.log('- window.turnstile 存在:', !!window.turnstile);
-      console.log('- turnstileContainerRef.current 存在:', !!turnstileContainerRef.current);
-      console.log('- 容器元素详情:', turnstileContainerRef.current);
+      // Detailed check of all conditions
+      console.log('🔧 Turnstile initialization check:');
+      console.log('- window.turnstile exists:', !!window.turnstile);
+      console.log('- turnstileContainerRef.current exists:', !!turnstileContainerRef.current);
+      console.log('- Container element details:', turnstileContainerRef.current);
 
       if (!window.turnstile) {
         const error = new Error('Turnstile script not loaded');
@@ -77,13 +77,13 @@ const Page = () => {
       }
 
       const siteKey = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY || "1x00000000000000000000AA";
-      console.log('🔑 Turnstile 配置信息:');
-      console.log('- 环境变量 NEXT_PUBLIC_TURNSTILE_SITE_KEY:', process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY);
-      console.log('- 实际使用的 siteKey:', siteKey);
-      console.log('- 当前域名:', window.location.hostname);
-      console.log('- 当前完整URL:', window.location.href);
+      console.log('🔑 Turnstile configuration info:');
+      console.log('- Environment variable NEXT_PUBLIC_TURNSTILE_SITE_KEY:', process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY);
+      console.log('- Actual siteKey in use:', siteKey);
+      console.log('- Current domain:', window.location.hostname);
+      console.log('- Current full URL:', window.location.href);
 
-      // 验证 Site Key 格式
+      // Validate Site Key format
       if (!siteKey || (!siteKey.startsWith('0x') && !siteKey.startsWith('1x') && !siteKey.startsWith('2x') && !siteKey.startsWith('3x'))) {
         const error = new Error(`Invalid Turnstile site key format: ${siteKey}`);
         console.error('❌', error.message);
@@ -91,7 +91,7 @@ const Page = () => {
         return;
       }
 
-      // 如果已有 widget，先删除
+      // If widget exists, remove it first
       if (turnstileWidgetId) {
         try {
           window.turnstile.remove(turnstileWidgetId);
@@ -102,11 +102,11 @@ const Page = () => {
       }
 
       try {
-        // 创建新的 widget，依赖 callback 获取 token
+        // Create new widget, rely on callback to get token
         const widgetId = window.turnstile.render(turnstileContainerRef.current, {
           sitekey: siteKey,
           callback: (token: string) => {
-            console.log('✅ Turnstile callback received token:', token ? 'Token获取成功' : 'Token为空');
+            console.log('✅ Turnstile callback received token:', token ? 'Token obtained successfully' : 'Token is empty');
             if (token) {
               resolve(token);
             } else {
@@ -129,8 +129,8 @@ const Page = () => {
         setTurnstileWidgetId(widgetId);
         console.log('Turnstile widget created with ID:', widgetId);
 
-        // Turnstile invisible widget 会自动触发验证，无需手动调用 execute
-        // 等待 callback 被调用即可
+        // Turnstile invisible widget will automatically trigger verification, no need to manually call execute
+        // Just wait for callback to be invoked
 
       } catch (error) {
         console.error('Failed to create Turnstile widget:', error);
@@ -139,7 +139,7 @@ const Page = () => {
     });
   };
 
-  // 推荐功能 - 点击语言卡片时触发
+  // Recommendation feature - triggered when clicking language card
   const handleRecommend = async (consultParam: string) => {
     if (!isLogin) {
       messageApi.warning("please login first");
@@ -165,24 +165,24 @@ const Page = () => {
     try {
       setLoading(true);
 
-      // 按需初始化 Turnstile 并获取 token
+      // Initialize Turnstile on demand and get token
       let token = "";
       try {
-        console.log('🔐 正在按需初始化 Turnstile 并获取 token...');
+        console.log('🔐 Initializing Turnstile on demand and getting token...');
 
-        // 等待 Turnstile 脚本加载完成
+        // Wait for Turnstile script to load
         if (!window.turnstile) {
-          console.log('⏳ 等待 Turnstile 脚本加载...');
+          console.log('⏳ Waiting for Turnstile script to load...');
 
           await new Promise<void>((resolve, reject) => {
             const timeout = setTimeout(() => {
-              console.error('❌ Turnstile 脚本加载超时');
+              console.error('❌ Turnstile script load timeout');
               reject(new Error('Turnstile script load timeout after 10 seconds'));
             }, 10000);
 
             const checkTurnstile = setInterval(() => {
               if (window.turnstile) {
-                console.log('✅ Turnstile 脚本加载完成');
+                console.log('✅ Turnstile script loaded');
                 clearInterval(checkTurnstile);
                 clearTimeout(timeout);
                 resolve();
@@ -191,11 +191,11 @@ const Page = () => {
           });
         }
 
-        // 按需创建 widget 并获取 token
+        // Create widget on demand and get token
         token = await initTurnstileOnDemand();
-        console.log('✅ 成功获取 Turnstile token:', token ? 'Token获取成功' : 'Token为空');
+        console.log('✅ Successfully obtained Turnstile token:', token ? 'Token obtained successfully' : 'Token is empty');
       } catch (tokenError) {
-        console.error('❌ 获取 Turnstile token 失败:', tokenError);
+        console.error('❌ Failed to get Turnstile token:', tokenError);
         messageApi.error("Human verification failed, please try again");
         setLoading(false);
         setStatus('init');
@@ -203,7 +203,7 @@ const Page = () => {
       }
 
       if (!token) {
-        console.error('❌ Turnstile token 为空');
+        console.error('❌ Turnstile token is empty');
         messageApi.error("Verification token is empty, please try again");
         setLoading(false);
         setStatus('init');
@@ -211,67 +211,67 @@ const Page = () => {
       }
 
       await delayFunction()
-      // 初始化一个空的消息对象用于累积内容
+      // Initialize empty message object for accumulating content
       let accumulatedContent = '';
 
-      console.log('🚀 开始调用流式接口:', consultParam);
+      console.log('🚀 Starting to call streaming API:', consultParam);
 
-      // 创建新的 AbortController 用于控制流式请求
+      // Create new AbortController to control streaming request
       streamAbortController.current = new AbortController();
 
-      // 将 token 和 AbortController 传递给推荐接口
+      // Pass token and AbortController to recommendation API
       const streamGenerator = recommend_coin_c_steaming(consultParam, token, undefined, streamAbortController.current);
-      console.log('🚀 流式生成器已创建:', streamGenerator);
-      console.log('🚀 生成器类型:', typeof streamGenerator);
-      console.log('🚀 生成器是否为AsyncGenerator:', streamGenerator[Symbol.asyncIterator] ? 'YES' : 'NO');
+      console.log('🚀 Stream generator created:', streamGenerator);
+      console.log('🚀 Generator type:', typeof streamGenerator);
+      console.log('🚀 Generator is AsyncGenerator:', streamGenerator[Symbol.asyncIterator] ? 'YES' : 'NO');
 
-      console.log('🚀 开始进入for await循环...');
+      console.log('🚀 Starting for await loop...');
 
-      // 测试第一次迭代
+      // Test first iteration
       try {
         const iterator = streamGenerator[Symbol.asyncIterator]();
-        console.log('🔧 获取iterator:', iterator);
+        console.log('🔧 Got iterator:', iterator);
         const firstResult = await iterator.next();
-        console.log('🔧 第一次next()结果:', firstResult);
+        console.log('🔧 First next() result:', firstResult);
 
         if (!firstResult.done) {
-          console.log('📦 第一个数据块:', firstResult.value);
-          // 手动处理第一个数据块
+          console.log('📦 First data chunk:', firstResult.value);
+          // Manually handle first data chunk
           // const chunk = firstResult.value;
-          // ... 处理逻辑
+          // ... handling logic
           setTimeout(() => {
             setLoading(false)
           }, 1000)
         }
       } catch (err) {
-        console.error('🔧 手动测试迭代器失败:', err);
+        console.error('🔧 Manual iterator test failed:', err);
       }
 
       for await (const chunk of streamGenerator) {
-        // 检查是否被中止
+        // Check if aborted
         if (streamAbortController.current?.signal.aborted) {
-          console.log('🚫 流式请求已被中止，停止处理数据块');
+          console.log('🚫 Streaming request aborted, stopping data chunk processing');
           break;
         }
 
-        console.log('📦 -------------- 收到流式数据块:', chunk);
-        console.log('📦 --------------数据类型:', typeof chunk);
-        console.log('📦 --------------数据结构:', Object.keys(chunk || {}));
+        console.log('📦 -------------- Received streaming data chunk:', chunk);
+        console.log('📦 --------------Data type:', typeof chunk);
+        console.log('📦 --------------Data structure:', Object.keys(chunk || {}));
 
 
-        // 检查数据结构并提取消息内容
+        // Check data structure and extract message content
         let newContent = '';
 
         if (chunk && typeof chunk === 'object') {
-          console.log('🔍 处理数据块:', chunk);
+          console.log('🔍 Processing data chunk:', chunk);
 
-          // 处理我们的SSE事件格式
+          // Handle our SSE event format
           if ('event' in chunk && chunk.event === 'message' && 'answer' in chunk && chunk.answer !== undefined) {
-            // 我们的消息事件，提取answer字段
+            // Our message event, extract answer field
             newContent = chunk.answer;
-            console.log('✅ 提取到answer内容:', newContent);
+            console.log('✅ Extracted answer content:', newContent);
 
-            // 添加新的消息块
+            // Add new message chunk
             const newChunk: MessageChunk = {
               id: `chunk_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
               content: newContent,
@@ -279,7 +279,7 @@ const Page = () => {
             };
 
             setMessageChunks(prev => {
-              // 如果这是第一个消息块，设置状态为 'generating'
+              // If this is the first message chunk, set status to 'generating'
               if (prev.length === 0) {
                 setStatus('generating');
               }
@@ -288,18 +288,18 @@ const Page = () => {
 
 
           } else if ('event' in chunk && chunk.event === 'workflow_started') {
-            console.log('🚀 工作流开始');
-            // 不添加内容，但可以更新状态
+            console.log('🚀 Workflow started');
+            // Don't add content, but can update status
           } else if ('event' in chunk && chunk.event === 'workflow_finished') {
-            console.log('🏁 工作流完成');
-            // 工作流完成时清除 AbortController
+            console.log('🏁 Workflow finished');
+            // Clear AbortController when workflow finishes
             streamAbortController.current = null;
           } else if ('event' in chunk && chunk.event === 'message_end') {
-            console.log('📝 消息结束');
-            // 消息结束时也清除 AbortController
+            console.log('📝 Message ended');
+            // Clear AbortController when message ends
             streamAbortController.current = null;
           } else {
-            // 处理其他可能的数据格式
+            // Handle other possible data formats
             if ('data' in chunk && chunk.data?.recommend_result?.output?.output) {
               newContent = chunk.data.recommend_result.output.output;
             } else if ('data' in chunk && (chunk.data?.text || chunk.data?.content)) {
@@ -314,41 +314,41 @@ const Page = () => {
           }
         }
 
-        // 如果获取到新内容，累积显示
+        // If new content obtained, accumulate and display
         if (newContent && newContent.trim()) {
           accumulatedContent += newContent;
-          console.log('✅ 提取到内容:', newContent);
-          console.log('📝 累积内容长度:', accumulatedContent.length);
+          console.log('✅ Extracted content:', newContent);
+          console.log('📝 Accumulated content length:', accumulatedContent.length);
         }
       }
 
     } catch (error) {
-      // 检查是否是用户主动中止的请求
+      // Check if user actively aborted request
       if (error instanceof DOMException && error.name === 'AbortError') {
-        console.log('✅ 流式请求已被用户中止');
+        console.log('✅ Streaming request aborted by user');
         return;
       }
 
-      console.error('流式推荐失败:', error);
+      console.error('Streaming recommendation failed:', error);
 
-      // 接口异常时重置所有状态
+      // Reset all states when API fails
       setLoading(false);
       setMessageChunks([]);
       setStatus('init');
 
-      // 触发完成事件,重置打字机状态
+      // Trigger completion event, reset typewriter state
       if (typeof window !== 'undefined') {
         window.dispatchEvent(new Event('textLoaded'));
       }
 
-      // 显示错误提示
+      // Show error message
       messageApi.error(t('common.recommendFailed') || 'Recommendation failed, please try again');
     } finally {
-      // 确保无论如何都清理状态
+      // Ensure cleanup regardless of outcome
       streamAbortController.current = null;
     }
   };
-  // 事件监听器设置 - 独立的useEffect，避免被其他状态影响
+  // Event listener setup - independent useEffect to avoid being affected by other states
   useEffect(() => {
     const handleTextLoading = () => {
       setStatus('generating');
@@ -367,21 +367,21 @@ const Page = () => {
     }
   }, [])
 
-  // Turnstile Widget 和 AbortController 清理
+  // Turnstile Widget and AbortController cleanup
   useEffect(() => {
     return () => {
-      // 清理流式请求的 AbortController
+      // Cleanup streaming request AbortController
       if (streamAbortController.current) {
         streamAbortController.current.abort();
         streamAbortController.current = null;
       }
 
-      // 清理 Turnstile Widget
+      // Cleanup Turnstile Widget
       if (turnstileWidgetId && window.turnstile) {
         try {
           window.turnstile.remove(turnstileWidgetId);
         } catch (error) {
-          console.warn('清理 Turnstile widget 失败:', error);
+          console.warn('Failed to cleanup Turnstile widget:', error);
         }
       }
 
@@ -391,37 +391,37 @@ const Page = () => {
 
 
   const stopCreation = () => {
-    console.log('🛑 停止内容生成');
+    console.log('🛑 Stopping content generation');
 
-    // 1. 停止流式请求
+    // 1. Stop streaming request
     if (streamAbortController.current) {
       streamAbortController.current.abort();
       streamAbortController.current = null;
-      console.log('✅ 流式请求已停止');
+      console.log('✅ Streaming request stopped');
     }
 
-    // 2. 重置所有推荐相关状态
+    // 2. Reset all recommendation related states
     setLoading(false);
     setMessageChunks([]);
     setStatus('init');
 
-    // 3. 清除 Turnstile Widget（如果存在）
+    // 3. Clear Turnstile Widget (if exists)
     if (turnstileWidgetId && window.turnstile) {
       try {
         window.turnstile.remove(turnstileWidgetId);
         setTurnstileWidgetId("");
-        console.log('✅ Turnstile widget 已清除');
+        console.log('✅ Turnstile widget cleared');
       } catch (error) {
-        console.warn('清除 Turnstile widget 失败:', error);
+        console.warn('Failed to clear Turnstile widget:', error);
       }
     }
 
-    // 4. 触发文本加载完成事件（重置打字机效果状态）
+    // 4. Trigger text load completion event (reset typewriter effect state)
     if (typeof window !== 'undefined') {
       window.dispatchEvent(new Event('textLoaded'));
     }
 
-    console.log('✅ 所有状态已重置，用户可以开始新的推荐');
+    console.log('✅ All states reset, user can start new recommendation');
   }
 
 
@@ -429,7 +429,7 @@ const Page = () => {
   const [selectedStrategy, setSelectedStrategy] = useState<{ label: string; value: string } | null>(null);
 
   const handleAnalize = (strategy: { label: string; value: string }) => {
-    console.log('分析策略:', strategy.value);
+    console.log('Analyzing strategy:', strategy.value);
     const { isMobile } = getSystemInfo();
 
     setSelectedStrategy(strategy);
@@ -437,10 +437,10 @@ const Page = () => {
       setShowDetail(true);
     }
 
-    // 先清除 ChatMessage 组件内的富文本内容
+    // First clear rich text content in ChatMessage component
     setMessageChunks([]);
 
-    // 再调用 handleRecommend 方法
+    // Then call handleRecommend method
     handleRecommend(`${strategy.label} ${strategy.value} `);
   }
 
@@ -456,17 +456,17 @@ const Page = () => {
     setTab(tabIndex)
   }
 
-  // 币种分析相关状态
+  // Coin analysis related states
   const [selectCoin, setSelectCoin] = useState<CoinItem>();
-  const [type, setType] = useState<number>(1); // 1-现货 2-合约
+  const [type, setType] = useState<number>(1); // 1-spot 2-futures
   const isStreamingRef = useRef<boolean>(false);
 
-  // 调试：监听 status 变化
+  // Debug: monitor status changes
   useEffect(() => {
     console.log('📊 Status changed to:', status);
   }, [status])
 
-  // 事件监听器设置
+  // Event listener setup
   useEffect(() => {
     const handleTextLoading = () => {
       console.log('🎬 textLoading event received, setting status to generating');
@@ -474,7 +474,7 @@ const Page = () => {
     }
 
     const handleTextLoaded = () => {
-      // 只有在流式传输已经结束时，才响应 textLoaded 事件
+      // Only respond to textLoaded event when streaming has ended
       if (!isStreamingRef.current) {
         console.log('🏁 textLoaded event received (stream ended), setting status to end');
         setStatus('end')
@@ -490,24 +490,24 @@ const Page = () => {
       window.removeEventListener('textLoading', handleTextLoading)
       window.removeEventListener('textLoaded', handleTextLoaded)
 
-      // 清理流式请求的 AbortController
+      // Cleanup streaming request AbortController
       if (streamAbortController.current) {
         streamAbortController.current.abort();
         streamAbortController.current = null;
       }
 
-      // 清理 Turnstile Widget
+      // Cleanup Turnstile Widget
       if (turnstileWidgetId && window.turnstile) {
         try {
           window.turnstile.remove(turnstileWidgetId);
         } catch (error) {
-          console.warn('清理 Turnstile widget 失败:', error);
+          console.warn('Failed to cleanup Turnstile widget:', error);
         }
       }
     }
   }, [turnstileWidgetId])
 
-  // 币种分析功能 - 继续执行分析的函数
+  // Coin analysis feature - function to continue analysis
   const proceedWithCoinAnalysis = async (v: CoinItem, coinType: number) => {
     const { isMobile } = getSystemInfo()
 
@@ -523,30 +523,30 @@ const Page = () => {
     }
     setStatus('loading')
 
-    // 标记流式传输开始
+    // Mark streaming start
     isStreamingRef.current = true;
 
     try {
       setLoading(true);
 
-      // 按需初始化 Turnstile 并获取 token
+      // Initialize Turnstile on demand and get token
       let token = "";
       try {
-        console.log('🔐 正在按需初始化 Turnstile 并获取 token...');
+        console.log('🔐 Initializing Turnstile on demand and getting token...');
 
-        // 等待 Turnstile 脚本加载完成
+        // Wait for Turnstile script to load
         if (!window.turnstile) {
-          console.log('⏳ 等待 Turnstile 脚本加载...');
+          console.log('⏳ Waiting for Turnstile script to load...');
 
           await new Promise<void>((resolve, reject) => {
             const timeout = setTimeout(() => {
-              console.error('❌ Turnstile 脚本加载超时');
+              console.error('❌ Turnstile script load timeout');
               reject(new Error('Turnstile script load timeout after 10 seconds'));
             }, 10000);
 
             const checkTurnstile = setInterval(() => {
               if (window.turnstile) {
-                console.log('✅ Turnstile 脚本加载完成');
+                console.log('✅ Turnstile script loaded');
                 clearInterval(checkTurnstile);
                 clearTimeout(timeout);
                 resolve();
@@ -555,11 +555,11 @@ const Page = () => {
           });
         }
 
-        // 按需创建 widget 并获取 token
+        // Create widget on demand and get token
         token = await initTurnstileOnDemand();
-        console.log('✅ 成功获取 Turnstile token:', token ? 'Token获取成功' : 'Token为空');
+        console.log('✅ Successfully obtained Turnstile token:', token ? 'Token obtained successfully' : 'Token is empty');
       } catch (tokenError) {
-        console.error('❌ 获取 Turnstile token 失败:', tokenError);
+        console.error('❌ Failed to get Turnstile token:', tokenError);
         messageApi.error("Human verification failed, please try again");
         setLoading(false);
         setStatus('init');
@@ -567,54 +567,54 @@ const Page = () => {
       }
 
       if (!token) {
-        console.error('❌ Turnstile token 为空');
+        console.error('❌ Turnstile token is empty');
         messageApi.error("Verification token is empty, please try again");
         setLoading(false);
         setStatus('init');
         return;
       }
 
-      console.log('🚀 开始调用流式分析接口:', symbol);
+      console.log('🚀 Starting to call streaming analysis API:', symbol);
 
-      // 创建新的 AbortController 用于控制流式请求
+      // Create new AbortController to control streaming request
       streamAbortController.current = new AbortController();
 
-      // 将 token 和 AbortController 传递给分析接口
+      // Pass token and AbortController to analysis API
       const streamGenerator = analyse_coin_c_steaming(`${t('agent.analyze')} ${symbol} ${coinType === 2 ? t('agent.contract') : ''}`, token, undefined, streamAbortController.current);
 
       try {
         const iterator = streamGenerator[Symbol.asyncIterator]();
-        console.log('🔧 获取iterator:', iterator);
+        console.log('🔧 Got iterator:', iterator);
         const firstResult = await iterator.next();
-        console.log('🔧 第一次next()结果:', firstResult);
+        console.log('🔧 First next() result:', firstResult);
 
         if (!firstResult.done) {
-          console.log('📦 第一个数据块:', firstResult.value);
+          console.log('📦 First data chunk:', firstResult.value);
           setTimeout(() => {
             setLoading(false)
           }, 1000)
         }
       } catch (err) {
-        console.error('🔧 手动测试迭代器失败:', err);
+        console.error('🔧 Manual iterator test failed:', err);
       }
 
       for await (const chunk of streamGenerator) {
-        // 检查是否被中止
+        // Check if aborted
         if (streamAbortController.current?.signal.aborted) {
-          console.log('🚫 流式请求已被中止，停止处理数据块');
+          console.log('🚫 Streaming request aborted, stopping data chunk processing');
           break;
         }
 
-        console.log('📦 收到流式数据块:', chunk);
+        console.log('📦 Received streaming data chunk:', chunk);
 
         let newContent = '';
 
         if (chunk && typeof chunk === 'object') {
-          console.log('🔍 处理数据块:', chunk);
+          console.log('🔍 Processing data chunk:', chunk);
 
           if ('event' in chunk && chunk.event === 'message' && 'answer' in chunk && chunk.answer !== undefined) {
             newContent = chunk.answer;
-            console.log('✅ 提取到answer内容:', newContent);
+            console.log('✅ Extracted answer content:', newContent);
 
             const newChunk: MessageChunk = {
               id: `chunk_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
@@ -623,7 +623,7 @@ const Page = () => {
             };
 
             setMessageChunks(prev => {
-              // 如果这是第一个消息块，设置状态为 'generating'
+              // If this is the first message chunk, set status to 'generating'
               if (prev.length === 0) {
                 setStatus('generating');
               }
@@ -631,12 +631,12 @@ const Page = () => {
             });
 
           } else if ('event' in chunk && chunk.event === 'workflow_started') {
-            console.log('🚀 工作流开始');
+            console.log('🚀 Workflow started');
           } else if ('event' in chunk && chunk.event === 'workflow_finished') {
-            console.log('🏁 工作流完成');
+            console.log('🏁 Workflow finished');
             streamAbortController.current = null;
           } else if ('event' in chunk && chunk.event === 'message_end') {
-            console.log('📝 消息结束');
+            console.log('📝 Message ended');
             streamAbortController.current = null;
           } else {
             if ('data' in chunk && chunk.data?.analyse_result?.output?.output) {
@@ -664,46 +664,46 @@ const Page = () => {
         }
       }
 
-      // for 循环正常结束,说明流式请求已完成
-      console.log('🎉 流式请求正常完成');
+      // for loop ended normally, indicating streaming request completed
+      console.log('🎉 Streaming request completed normally');
 
-      // 标记流式传输结束
+      // Mark streaming end
       isStreamingRef.current = false;
 
-      // 直接设置 status 为 end（不依赖事件）
+      // Set status to end directly (don't rely on event)
       setStatus('end');
 
     } catch (error) {
-      // 检查是否是用户主动中止的请求
+      // Check if user actively aborted request
       if (error instanceof DOMException && error.name === 'AbortError') {
-        console.log('✅ 流式请求已被用户中止');
+        console.log('✅ Streaming request aborted by user');
         return;
       }
 
-      console.error('流式分析失败:', error);
+      console.error('Streaming analysis failed:', error);
 
-      // 标记流式传输结束
+      // Mark streaming end
       isStreamingRef.current = false;
 
-      // 接口异常时重置所有状态
+      // Reset all states when API fails
       setLoading(false);
       setMessageChunks([]);
       setStatus('init');
 
-      // 触发完成事件,重置打字机状态
+      // Trigger completion event, reset typewriter state
       if (typeof window !== 'undefined') {
         window.dispatchEvent(new Event('textLoaded'));
       }
 
-      // 显示错误提示
+      // Show error message
       messageApi.error(t('common.analysisFailed') || 'Analysis failed, please try again');
     } finally {
-      // 确保无论如何都清理状态
+      // Ensure cleanup regardless of outcome
       streamAbortController.current = null;
     }
   };
 
-  // 分析功能 - 点击consult AI时触发
+  // Analysis feature - triggered when clicking consult AI
   const handleCoinAnalyze = async (v: CoinItem, coinType: number) => {
     if (!isLogin) {
       messageApi.warning("please login first");
@@ -720,14 +720,14 @@ const Page = () => {
       return;
     }
 
-    // 重置状态，确保每次分析前状态正确
+    // Reset state to ensure correct state before each analysis
     setStatus('init');
 
     if (loading) {
       setLoading(false)
     }
 
-    // 直接调用 proceedWithCoinAnalysis，该函数内部会获取 token
+    // Call proceedWithCoinAnalysis directly, this function will get token internally
     proceedWithCoinAnalysis(v, coinType);
   };
 
@@ -749,9 +749,9 @@ const Page = () => {
             showDetail ? (
               <div className="lg:min-h-[86vh] bg-white py-2 rounded-[8px]">
                 <div className="px-4" onClick={handleBack}><LeftOutlined></LeftOutlined></div>
-                {/* 根据是否有选中的策略或币种显示不同的信息 */}
+                {/* Display different information based on selected strategy or coin */}
                 {selectedStrategy ? (
-                  // 显示策略信息
+                  // Display strategy information
                   <div className="border-[1px] border-solid border-[black] rounded-[8px] h-[100px] m-4 bg-[#F5F5F5] flex p-4">
                     <div className="flex items-center justify-center w-[70px]">
                       <Image src={botBig} alt="bot" width={60} height={60} />
@@ -770,7 +770,7 @@ const Page = () => {
                     </div>
                   </div>
                 ) : selectCoin ? (
-                  // 显示币种信息
+                  // Display coin information
                   <div className="border-[1px] border-solid border-[black] rounded-[8px] h-[100px] m-4 bg-[#F5F5F5] flex p-4">
                     <div className="flex items-center justify-center w-[70px]">
                       <SmaltImage
@@ -821,7 +821,7 @@ const Page = () => {
         </div>
       </div>
 
-      {/* 隐藏的 Turnstile 容器元素 */}
+      {/* Hidden Turnstile container element */}
       <div
         id="turnstile-container-piloter"
         ref={turnstileContainerRef}
@@ -836,7 +836,7 @@ const Page = () => {
         }}
       />
 
-      {/* 只加载 Turnstile 脚本，不自动初始化小部件 */}
+      {/* Only load Turnstile script, don't auto-initialize widget */}
       <Script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async />
     </div>
   );

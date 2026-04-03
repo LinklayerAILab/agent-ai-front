@@ -1,6 +1,6 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 
-// 从环境变量中读取 API 密钥
+// Read API key from environment variables
 const apiKey = process.env.GPTBOT_API_KEY;
 export const headers = {
     'Authorization': `Bearer ${apiKey}`,

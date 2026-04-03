@@ -15,22 +15,22 @@ interface SwapBoxProps {
 
 export const SwapBox: React.FC<SwapBoxProps> = ({ className = "" }) => {
   const { t } = useTranslation();
-  // Swap 状态管理
+  // Swap state management
   const [fromToken, setFromToken] = useState<'LLAx' | 'LLA'>('LLA');
   const [swapAmount, setSwapAmount] = useState<string>('');
 
-  // 模拟余额数据
+  // Simulated balance data
   const [balances] = useState({
     LLAx: 0,
     LLA: 0
   });
 
-  // 获取目标代币
+  // Get target token
   const getToToken = () => {
     return fromToken === 'LLAx' ? 'LLA' : 'LLAx';
   };
 
-  // 获取当前 from 和 to 代币
+  // Get current from and to tokens
   const getSwapTokens = () => {
     const to = getToToken();
     return {
@@ -41,22 +41,22 @@ export const SwapBox: React.FC<SwapBoxProps> = ({ className = "" }) => {
     };
   };
   const [messageApi,messageContext] = message.useMessage()
-  // 设置快速金额
+  // Set quick amount
   const handleQuickAmount = (percentage: number) => {
     const { fromBalance } = getSwapTokens();
     const amount = (fromBalance * percentage / 100).toFixed(2);
     setSwapAmount(amount);
   };
 
-  // 处理兑换
+  // Handle swap
   const handleSwap = () => {
     if (!swapAmount || parseFloat(swapAmount) <= 0) {
       messageApi.warning(t('common.coming'))
       return;
     }
     const { from, to } = getSwapTokens();
-    console.log(`兑换 ${swapAmount} ${from} 到 ${to}`);
-    // 这里添加实际的 Web3 交换逻辑
+    console.log(`Swap ${swapAmount} ${from} to ${to}`);
+    // Add actual Web3 swap logic here
   };
 
   return (
@@ -98,7 +98,7 @@ export const SwapBox: React.FC<SwapBoxProps> = ({ className = "" }) => {
              <div className="flex items-center gap-2"><span className="text-[#999] text-sm">
               {t('exchange.balance')}: {getSwapTokens().fromBalance.toFixed(2)}
             </span>
-             {/* 快速选择按钮 */}
+             {/* Quick select buttons */}
           <div className="flex gap-2 border-l-[1px] border-solid border-l-[#eee] pl-[10px]">
             <button
               onClick={() => handleQuickAmount(50)}
@@ -117,7 +117,7 @@ export const SwapBox: React.FC<SwapBoxProps> = ({ className = "" }) => {
 
         </div>
 
-        {/* 交换箭头按钮 */}
+        {/* Swap arrow button */}
         {/* <div className="flex justify-center -my-2 relative z-10">
           <button
             onClick={handleSwapDirection}
@@ -168,7 +168,7 @@ export const SwapBox: React.FC<SwapBoxProps> = ({ className = "" }) => {
 
 
       </div>
-              {/* 兑换按钮 */}
+              {/* Swap button */}
         <ReceiveBtn
           className='w-[100%]'
           onClick={handleSwap}

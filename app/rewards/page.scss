@@ -5,8 +5,8 @@
   }
   .net-bg {
     background: url('../images/rewards/net.svg') no-repeat;
-    background-size: calc(100% - 60px) auto; // 左右各14px，总共28px
-    background-position: center bottom 30px; // 水平居中，距离底部14px
+    background-size: calc(100% - 60px) auto; // 14px on each side, 28px total
+    background-position: center bottom 30px; // Horizontal center, 14px from bottom
   }
   .tab-item {
     background-color: #424242;

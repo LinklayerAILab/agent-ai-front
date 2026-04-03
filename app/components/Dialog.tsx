@@ -15,17 +15,17 @@ const Dialog: React.FC<DialogProps> = ({ isOpen, onClose, children }) => {
   useEffect(() => {
     if (isOpen) {
       setShouldRender(true);
-      // use setTimeout 确保 DOM 已render
+      // Use setTimeout to ensure DOM has been rendered
       const timer = setTimeout(() => {
         setIsAnimating(true);
       }, 10);
       return () => clearTimeout(timer);
     } else {
       setIsAnimating(false);
-      // awaitanimationendafter再uninstallcomponent
+      // Wait for animation to end before unmounting component
       const timer = setTimeout(() => {
         setShouldRender(false);
-      }, 300); // 与 CSS transition 时间匹配
+      }, 300); // Match CSS transition duration
       return () => clearTimeout(timer);
     }
   }, [isOpen]);

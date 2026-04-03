@@ -1,5 +1,5 @@
 /**
- * 链configurationandnamemap
+ * Chain configuration and name mapping
  */
 
 export interface ChainInfo {
@@ -73,7 +73,7 @@ export const chainConfigs: Record<number, ChainInfo> = {
 }
 
 /**
- * based on chainId fetch链information
+ * Get chain info by chainId
  */
 export const getChainInfo = (chainId: number | undefined): ChainInfo | null => {
   if (!chainId) return null
@@ -81,7 +81,7 @@ export const getChainInfo = (chainId: number | undefined): ChainInfo | null => {
 }
 
 /**
- * based on chainId fetch链name
+ * Get chain name by chainId
  */
 export const getChainName = (chainId: number | undefined): string => {
   const chainInfo = getChainInfo(chainId)
@@ -89,7 +89,7 @@ export const getChainName = (chainId: number | undefined): string => {
 }
 
 /**
- * based on chainId fetch链简称
+ * Get chain short name by chainId
  */
 export const getChainShortName = (chainId: number | undefined): string => {
   const chainInfo = getChainInfo(chainId)
@@ -97,7 +97,7 @@ export const getChainShortName = (chainId: number | undefined): string => {
 }
 
 /**
- * checkisnofortest网
+ * Check if it's a testnet
  */
 export const isTestnet = (chainId: number | undefined): boolean => {
   const chainInfo = getChainInfo(chainId)
@@ -105,7 +105,7 @@ export const isTestnet = (chainId: number | undefined): boolean => {
 }
 
 /**
- * fetch区块浏览器link
+ * Get block explorer URL
  */
 export const getBlockExplorerUrl = (chainId: number | undefined): string => {
   const chainInfo = getChainInfo(chainId)
@@ -113,7 +113,7 @@ export const getBlockExplorerUrl = (chainId: number | undefined): string => {
 }
 
 /**
- * fetch交易浏览器link
+ * Get transaction explorer URL
  */
 export const getTxUrl = (chainId: number | undefined, txHash: string): string => {
   const explorerUrl = getBlockExplorerUrl(chainId)
@@ -121,7 +121,7 @@ export const getTxUrl = (chainId: number | undefined, txHash: string): string =>
 }
 
 /**
- * fetchaddress浏览器link  
+ * Get address explorer URL
  */
 export const getAddressUrl = (chainId: number | undefined, address: string): string => {
   const explorerUrl = getBlockExplorerUrl(chainId)

@@ -6,7 +6,7 @@
   box-shadow: 1px 1px 1px 0px rgba(0, 0, 0, 0.2);
   transition: all 0.2s ease;
 
-  // 尺寸相关的内圆大�?
+  // Inner circle size variations
   &.status-small {
     &::after {
       width: 6px;
@@ -35,7 +35,7 @@
     }
   }
 
-  // 内圆�?
+  // Inner circle style
   &::after {
     content: '';
     position: absolute;
@@ -45,7 +45,7 @@
     border-radius: 50%;
   }
 
-  // 状态颜�?
+  // Status colors
   &.status-green {
     background-color: #4ade80;
     // &::after {
@@ -91,7 +91,7 @@
     }
   }
 
-  // 脉冲动画
+  // Pulse animation
   &.status-pulse {
     &.status-green {
       animation: gradientFade1 2s ease-in-out infinite;
@@ -114,7 +114,7 @@
     }
   }
 
-  // 悬浮效果
+  // Hover effect
   &:hover {
     transform: scale(1.05);
     box-shadow: 2px 2px 2px 0px rgba(0, 0, 0, 0.3);
@@ -125,7 +125,7 @@
   }
 }
 
-// 动画定义
+// Animation definitions
 @keyframes pulse-green {
   0%, 100% {
     background-color: #4ade80;
@@ -235,7 +235,7 @@
   }
 }
 
-// 响应式调�?
+// Responsive adjustment
 @media (max-width: 1024px) {
   .status-indicator {
     &:hover {

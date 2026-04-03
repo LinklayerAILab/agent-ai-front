@@ -29,7 +29,7 @@ export function SendMessageInput(props: SendMessageInputProps) {
     <div className="p-4 border-t border-gray-300">
       <div className="relative">
         <textarea
-          placeholder="请输入"
+          placeholder="Enter your message"
           style={{ resize: "none" }}
           className="w-full h-24 rounded-lg border border-gray-300 p-2 pr-12"
           value={text}

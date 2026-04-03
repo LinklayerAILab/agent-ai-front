@@ -20,18 +20,18 @@ export function Brc20() {
   const [loading, setLoading] = useState(true);
   const [total, setTotal] = useState(0);
 
-  // fetch币安代币筛选list
+  // Fetch Binance token screening list
   useEffect(() => {
     const fetchTokens = async () => {
       try {
         setLoading(true);
-        // 先fetch筛选list，immediatelyrender
+        // First fetch screening list, render immediately
         const response = await getBinanceTokenScreen();
         const tokenList = response.data.results || [];
         setTokens(tokenList);
         setTotal(tokenList.length);
 
-        // asyncfetch价格data
+        // Asynchronously fetch price data
         if (tokenList.length > 0) {
           fetchPrices(tokenList);
         }
@@ -45,7 +45,7 @@ export function Brc20() {
     fetchTokens();
   }, []);
 
-  // fetch价格data
+  // Fetch price data
   const fetchPrices = async (tokenList: BinanceTokenScreenItem[]) => {
     try {
       const contractAddresses = tokenList.map(token => token.contractAddress).filter(Boolean);
@@ -57,13 +57,13 @@ export function Brc20() {
       const priceResponse = await getBinanceTokenPrice(contractAddresses);
       const prices = priceResponse.data.prices || [];
 
-      // Create价格map表
+      // Create price map table
       const priceMap = new Map<string, number>();
       prices.forEach(item => {
         priceMap.set(item.token_address.toLowerCase(), item.price);
       });
 
-      // update tokens，Add价格information
+      // Update tokens, add price information
       setTokens(prevTokens =>
         prevTokens.map(token => ({
           ...token,
@@ -171,7 +171,7 @@ export function Brc20() {
           className="brc20-list flex flex-wrap w-full sm:gap-[2vw] lg:gap-[0.96vw] gap-[14px]"
         >
           {loading ? (
-            // loadinstate - use Ant Design 骨架屏
+            // Loading state - use Ant Design skeleton screen
             Array.from({ length: 9 }).map((_, index) => (
               <div
                 key={`skeleton-${index}`}
@@ -197,12 +197,12 @@ export function Brc20() {
               </div>
             ))
           ) : tokens.length > 0 ? (
-            // renderdatalist
+            // Render data list
             tokens.map((token, index) => (
               <Brc20Card key={token.tokenId || index} token={token} />
             ))
           ) : (
-            // nullstate
+            // Empty state
             <div className="w-full text-center py-[4vh] text-gray-500">
               {t('brc20.noTokensAvailable')}
             </div>

@@ -66,7 +66,7 @@ import { message } from "antd";
 import { CoinSlide } from "../components/Home/CoinSlide";
 import { isMobileDevice } from "@/app/utils/walletConnect";
 
-// 加密货币数据数组
+// Cryptocurrency data array
 const cryptoData = [
   { asset: "BTC", free: "", logo: btcIcon },
   { asset: "ETH", free: "", logo: ethIcon },
@@ -97,7 +97,7 @@ export default function InsightPage() {
   }, [longScore, shortScore]);
   const [tab, setTab] = useState(1);
 
-  // 币种分析相关状态
+  // Coin analysis related states
   const [messageChunks, setMessageChunks] = useState<MessageChunk[]>([]);
   const [status, setStatus] = useState<
     "init" | "loading" | "generating" | "end"
@@ -105,7 +105,7 @@ export default function InsightPage() {
   const [loading, setLoading] = useState(false);
   const streamAbortController = useRef<AbortController | null>(null);
 
-  // Turnstile 相关状态
+  // Turnstile related state
   const [turnstileWidgetId, setTurnstileWidgetId] = useState<string>("");
   const turnstileContainerRef = useRef<HTMLDivElement>(null);
 
@@ -176,7 +176,7 @@ export default function InsightPage() {
     }
   };
 
-  // 动态初始化 Turnstile widget - 只在需要时创建，使用 callback 方式
+  // Dynamically initialize Turnstile widget - create on demand using callback method
   const initTurnstileOnDemand = async (): Promise<string> => {
     return new Promise((resolve, reject) => {
       if (!window.turnstile) {
@@ -195,7 +195,7 @@ export default function InsightPage() {
         process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY ||
         "1x00000000000000000000AA";
 
-      // 如果已有 widget，先删除
+      // If widget exists, remove it first
       if (turnstileWidgetId) {
         try {
           window.turnstile.remove(turnstileWidgetId);

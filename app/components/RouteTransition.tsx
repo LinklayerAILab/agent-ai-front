@@ -5,7 +5,7 @@ import { CSSTransition, SwitchTransition, TransitionGroup } from "react-transiti
 import { useSelector } from "react-redux";
 import { RootState } from "../store";
 import "./fade-transition.scss";
-import "./Menus.scss"; // 导入Menus.scss以获取scroll动画样式
+import "./Menus.scss"; // Import Menus.scss to get scroll animation styles
 
 interface RouteTransitionProps {
   children: ReactNode;
@@ -16,9 +16,9 @@ export default function RouteTransition({ children }: RouteTransitionProps) {
   const direction = useSelector((state: RootState) => state.pageDirection.direction);
   const nodeRef = useMemo(() => React.createRef<HTMLDivElement>(), []);
 
-  // 判断是否使用渐入渐出动画
+  // Determine whether to use fade-in/fade-out animation
   const shouldUseFadeAnimation = () => {
-    // sendEmail 和 checkCaptcha 页面使用渐入渐出动画
+    // sendEmail and checkCaptcha pages use fade-in/fade-out animation
     const fadeRoutes = ['/sendEmail', '/checkCaptcha'];
     if (!pathname) return false;
     return fadeRoutes.includes(pathname) || 
@@ -26,25 +26,25 @@ export default function RouteTransition({ children }: RouteTransitionProps) {
            fadeRoutes.some(route => pathname.startsWith(route + '?'));
   };
 
-  // 动态根据pathname和direction决定动画类型
+  // Dynamically determine animation type based on pathname and direction
   const getAnimationType = () => {
     const useFade = shouldUseFadeAnimation();
-    
+
     if (useFade) {
-      // sendEmail/checkCaptcha 页面强制使用fade
+      // sendEmail/checkCaptcha pages force use fade
       return { type: 'fade', timeout: 400 };
     } else if (direction) {
-      // 有direction设置，使用scroll动画
+      // Has direction setting, use scroll animation
       return { type: direction, timeout: 300 };
     } else {
-      // 默认使用fade
+      // Default use fade
       return { type: 'fade', timeout: 400 };
     }
   };
-  
+
   const { type: animationType, timeout } = getAnimationType();
-  
-  // 临时调试信息
+
+  // Temporary debug information
   const useFade = shouldUseFadeAnimation();
   console.log('🎬 Animation Debug:', {
     pathname,

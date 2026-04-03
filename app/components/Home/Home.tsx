@@ -70,7 +70,7 @@ import { syncPoints } from "@/app/store/userSlice";
 import { message } from "antd";
 import { CoinSlide } from "./CoinSlide";
 import { isMobileDevice } from "@/app/utils/walletConnect";
-// 加密货币数据数组
+// Cryptocurrency data array
 const cryptoData = [
   { asset: "BTC", free: "", logo: btcIcon },
   { asset: "ETH", free: "", logo: ethIcon },
@@ -100,7 +100,7 @@ export default function Home() {
   }, [longScore, shortScore]);
   const [tab, setTab] = useState(1);
 
-  // 币种分析相关状态
+  // Coin analysis related state
   const [messageChunks, setMessageChunks] = useState<MessageChunk[]>([]);
   const [status, setStatus] = useState<
     "init" | "loading" | "generating" | "end"
@@ -108,7 +108,7 @@ export default function Home() {
   const [loading, setLoading] = useState(false);
   const streamAbortController = useRef<AbortController | null>(null);
 
-  // Turnstile 相关状态
+  // Turnstile related state
   const [turnstileWidgetId, setTurnstileWidgetId] = useState<string>("");
   const turnstileContainerRef = useRef<HTMLDivElement>(null);
 
@@ -179,17 +179,17 @@ export default function Home() {
     }
   };
 
-  // 动态初始化 Turnstile widget - 只在需要时创建，使用 callback 方式
+  // Dynamically initialize Turnstile widget - only create when needed, using callback method
   const initTurnstileOnDemand = async (): Promise<string> => {
     return new Promise((resolve, reject) => {
-      // 详细检查各项条件
-      console.log("🔧 Turnstile 初始化检查:");
-      console.log("- window.turnstile 存在:", !!window.turnstile);
+      // Detailed check of each condition
+      console.log("🔧 Turnstile initialization check:");
+      console.log("- window.turnstile exists:", !!window.turnstile);
       console.log(
-        "- turnstileContainerRef.current 存在:",
+        "- turnstileContainerRef.current exists:",
         !!turnstileContainerRef.current
       );
-      console.log("- 容器元素详情:", turnstileContainerRef.current);
+      console.log("- Container element details:", turnstileContainerRef.current);
 
       if (!window.turnstile) {
         const error = new Error("Turnstile script not loaded");
@@ -208,16 +208,16 @@ export default function Home() {
       const siteKey =
         process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY ||
         "1x00000000000000000000AA";
-      console.log("🔑 Turnstile 配置信息:");
+      console.log("🔑 Turnstile configuration info:");
       console.log(
-        "- 环境变量 NEXT_PUBLIC_TURNSTILE_SITE_KEY:",
+        "- Environment variable NEXT_PUBLIC_TURNSTILE_SITE_KEY:",
         process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY
       );
-      console.log("- 实际使用的 siteKey:", siteKey);
-      console.log("- 当前域名:", window.location.hostname);
-      console.log("- 当前完整URL:", window.location.href);
+      console.log("- Actually used siteKey:", siteKey);
+      console.log("- Current domain:", window.location.hostname);
+      console.log("- Current complete URL:", window.location.href);
 
-      // 验证 Site Key 格式
+      // Verify Site Key format
       if (
         !siteKey ||
         (!siteKey.startsWith("0x") &&
@@ -233,7 +233,7 @@ export default function Home() {
         return;
       }
 
-      // 如果已有 widget，先删除
+      // If widget already exists, remove it first
       if (turnstileWidgetId) {
         try {
           window.turnstile.remove(turnstileWidgetId);
@@ -244,7 +244,7 @@ export default function Home() {
       }
 
       try {
-        // 创建新的 widget，依赖 callback 获取 token
+        // Create new widget, rely on callback to get token
         const widgetId = window.turnstile.render(
           turnstileContainerRef.current,
           {
@@ -252,7 +252,7 @@ export default function Home() {
             callback: (token: string) => {
               console.log(
                 "✅ Turnstile callback received token:",
-                token ? "Token获取成功" : "Token为空"
+                token ? "Token obtained successfully" : "Token is empty"
               );
               if (token) {
                 resolve(token);
@@ -277,8 +277,8 @@ export default function Home() {
         setTurnstileWidgetId(widgetId);
         console.log("Turnstile widget created with ID:", widgetId);
 
-        // Turnstile invisible widget 会自动触发验证，无需手动调用 execute
-        // 等待 callback 被调用即可
+        // Turnstile invisible widget will automatically trigger verification, no need to manually call execute
+        // Just wait for callback to be invoked
       } catch (error) {
         console.error("Failed to create Turnstile widget:", error);
         reject(error);
@@ -321,25 +321,25 @@ export default function Home() {
       setLoading(false);
     }
 
-    // 先清除 ChatMessage 组件内的富文本内容
+    // First clear rich text content in ChatMessage component
     setMessageChunks([]);
     setStatus("loading");
 
     try {
       setLoading(true);
 
-      // 按需初始化 Turnstile 并获取 token
+      // Initialize Turnstile on demand and get token
       let token = "";
       try {
-        console.log("🔐 正在按需初始化 Turnstile 并获取 token...");
+        console.log("🔐 Initializing Turnstile on demand and getting token...");
 
-        // 等待 Turnstile 脚本加载完成
+        // Wait for Turnstile script to finish loading
         if (!window.turnstile) {
-          console.log("⏳ 等待 Turnstile 脚本加载...");
+          console.log("⏳ Waiting for Turnstile script to load...");
 
           await new Promise<void>((resolve, reject) => {
             const timeout = setTimeout(() => {
-              console.error("❌ Turnstile 脚本加载超时");
+              console.error("❌ Turnstile script loading timeout");
               reject(
                 new Error("Turnstile script load timeout after 10 seconds")
               );
@@ -347,7 +347,7 @@ export default function Home() {
 
             const checkTurnstile = setInterval(() => {
               if (window.turnstile) {
-                console.log("✅ Turnstile 脚本加载完成");
+                console.log("✅ Turnstile script loading completed");
                 clearInterval(checkTurnstile);
                 clearTimeout(timeout);
                 resolve();
@@ -356,14 +356,14 @@ export default function Home() {
           });
         }
 
-        // 按需创建 widget 并获取 token
+        // Create widget on demand and get token
         token = await initTurnstileOnDemand();
         console.log(
-          "✅ 成功获取 Turnstile token:",
-          token ? "Token获取成功" : "Token为空"
+          "✅ Successfully obtained Turnstile token:",
+          token ? "Token obtained successfully" : "Token is empty"
         );
       } catch (tokenError) {
-        console.error("❌ 获取 Turnstile token 失败:", tokenError);
+        console.error("❌ Failed to obtain Turnstile token:", tokenError);
         message.error("Human verification failed, please try again");
         setLoading(false);
         setStatus("init");
@@ -371,7 +371,7 @@ export default function Home() {
       }
 
       if (!token) {
-        console.error("❌ Turnstile token 为空");
+        console.error("❌ Turnstile token is empty");
         message.error("Verification token is empty, please try again");
         setLoading(false);
         setStatus("init");
@@ -379,14 +379,14 @@ export default function Home() {
       }
 
       console.log(
-        "🚀 开始调用 position_risk_management 流式接口:",
+        "🚀 Starting to call position_risk_management streaming interface:",
         data.symbol
       );
 
-      // 创建新的 AbortController 用于控制流式请求
+      // Create new AbortController to control streaming request
       streamAbortController.current = new AbortController();
 
-      // 调用流式接口，传递 token 和 AbortController
+      // Call streaming interface, passing token and AbortController
       const streamGenerator = position_risk_management(
         `${t("agent.analyze")}|symbol:${data.symbol}|${selectCex}`,
         token,
@@ -395,20 +395,20 @@ export default function Home() {
       );
 
       for await (const chunk of streamGenerator) {
-        // 检查是否被中止
+        // Check if aborted
         if (streamAbortController.current?.signal.aborted) {
-          console.log("🚫 流式请求已被中止，停止处理数据块");
+          console.log("🚫 Streaming request has been aborted, stop processing data chunks");
           break;
         }
 
-        console.log("📦 收到流式数据块:", chunk);
+        console.log("📦 Received streaming data chunk:", chunk);
 
         let newContent = "";
 
         if (chunk && typeof chunk === "object") {
-          console.log("🔍 处理数据块:", chunk);
+          console.log("🔍 Processing data chunk:", chunk);
 
-          // 处理 SSE 事件格式
+          // Handle SSE event format
           if (
             "event" in chunk &&
             chunk.event === "message" &&
@@ -416,7 +416,7 @@ export default function Home() {
             chunk.answer !== undefined
           ) {
             newContent = chunk.answer;
-            console.log("✅ 提取到answer内容:", newContent);
+            console.log("✅ Extracted answer content:", newContent);
 
             const newChunk: MessageChunk = {
               id: `chunk_${Date.now()}_${Math.random()
@@ -427,22 +427,22 @@ export default function Home() {
             };
 
             setMessageChunks((prev) => {
-              // 如果这是第一个消息块，设置状态为 'generating'
+              // If this is the first message chunk, set status to 'generating'
               if (prev.length === 0) {
                 setStatus("generating");
               }
               return [...prev, newChunk];
             });
           } else if ("event" in chunk && chunk.event === "workflow_started") {
-            console.log("🚀 工作流开始");
+            console.log("🚀 Workflow started");
           } else if ("event" in chunk && chunk.event === "workflow_finished") {
-            console.log("🏁 工作流完成");
+            console.log("🏁 Workflow finished");
             streamAbortController.current = null;
           } else if ("event" in chunk && chunk.event === "message_end") {
-            console.log("📝 消息结束");
+            console.log("📝 Message ended");
             streamAbortController.current = null;
           } else {
-            // 处理其他可能的数据格式
+            // Handle other possible data formats
             if ("data" in chunk && chunk.data?.analyse_result?.output?.output) {
               newContent = chunk.data.analyse_result.output.output;
             } else if (
@@ -478,34 +478,34 @@ export default function Home() {
         }
       }
 
-      // 流式请求正常完成
-      console.log("🎉 流式请求正常完成");
+      // Streaming request completed normally
+      console.log("🎉 Streaming request completed normally");
       setStatus("end");
     } catch (error) {
-      // 检查是否是用户主动中止的请求
+      // Check if this is a user-initiated abort
       if (error instanceof DOMException && error.name === "AbortError") {
-        console.log("✅ 流式请求已被用户中止");
+        console.log("✅ Streaming request has been aborted by user");
         return;
       }
 
-      console.error("流式分析失败:", error);
+      console.error("Streaming analysis failed:", error);
 
-      // 接口异常时重置所有状态
+      // Reset all states when interface is abnormal
       setLoading(false);
       setMessageChunks([]);
       setStatus("init");
 
-      // 触发完成事件,重置打字机状态
+      // Trigger completion event, reset typewriter state
       if (typeof window !== "undefined") {
         window.dispatchEvent(new Event("textLoaded"));
       }
 
-      // 显示错误提示
+      // Display error message
       message.error(
         t("common.analysisFailed") || "Analysis failed, please try again"
       );
     } finally {
-      // 确保无论如何都清理状态
+      // Ensure cleanup of states regardless of outcome
       streamAbortController.current = null;
     }
   };
@@ -514,31 +514,31 @@ export default function Home() {
     router.push("/apiForm");
   };
 
-  // 停止分析
+  // Stop analysis
   const stopCreation = () => {
-    console.log("🛑 停止内容生成");
+    console.log("🛑 Stopping content generation");
 
-    // 1. 停止流式请求
+    // 1. Stop streaming request
     if (streamAbortController.current) {
       streamAbortController.current.abort();
       streamAbortController.current = null;
-      console.log("✅ 流式请求已停止");
+      console.log("✅ Streaming request has been stopped");
     }
 
-    // 2. 重置所有相关状态
+    // 2. Reset all related states
     setLoading(false);
     setMessageChunks([]);
     setStatus("init");
 
-    // 3. 触发文本加载完成事件（重置打字机效果状态）
+    // 3. Trigger text loading completion event (reset typewriter effect state)
     if (typeof window !== "undefined") {
       window.dispatchEvent(new Event("textLoaded"));
     }
 
-    console.log("✅ 所有状态已重置");
+    console.log("✅ All states have been reset");
   };
 
-  // 事件监听器设置 - 监听 textLoading 和 textLoaded 事件
+  // Event listener setup - listen to textLoading and textLoaded events
   useEffect(() => {
     const handleTextLoading = () => {
       setStatus("generating");
@@ -555,36 +555,36 @@ export default function Home() {
       window.removeEventListener("textLoading", handleTextLoading);
       window.removeEventListener("textLoaded", handleTextLoaded);
 
-      // 清理流式请求的 AbortController
+      // Clean up streaming request AbortController
       if (streamAbortController.current) {
         streamAbortController.current.abort();
         streamAbortController.current = null;
       }
 
-      // 清理 Turnstile Widget
+      // Clean up Turnstile Widget
       if (turnstileWidgetId && window.turnstile) {
         try {
           window.turnstile.remove(turnstileWidgetId);
         } catch (error) {
-          console.warn("清理 Turnstile widget 失败:", error);
+          console.warn("Failed to clean up Turnstile widget:", error);
         }
       }
     };
   }, [turnstileWidgetId]);
 
-  // 处理币种点击
+  // Handle coin click
   const handleCryptoClick = async (crypto: GetAssetWithLogoItem) => {
     try {
-      // 先同步积分
+      // First sync points
       const result = await dispatch(syncPoints()).unwrap();
 
-      // 检查积分是否足够
+      // Check if points are sufficient
       if (result < 10) {
         message.warning(t("home.insufficientPoints"));
         return;
       }
 
-      // 积分足够，跳转页面
+      // Points sufficient, navigate to page
       const currentPath = encodeURIComponent(pathname!);
       router.push(`/crypto-analysis/${crypto.asset}?backUrl=${currentPath}`);
     } catch {
@@ -602,7 +602,7 @@ export default function Home() {
       dispatch(getContractExpertScore("binance"));
       dispatch(getSpotExpertScore("binance"));
 
-      // 每10秒轮询一次 getContractExpertScore
+      // Poll getContractExpertScore every 10 seconds
       const scoreInterval = setInterval(() => {
         dispatch(getContractExpertScore("binance"));
       }, 10000);
@@ -702,7 +702,7 @@ export default function Home() {
       } catch {
         setPositionSymbols(initData);
       }
-      // 每10秒轮询一次 liquidation_calculated
+      // Poll liquidation_calculated every 10 seconds
       const calculatedInterval = setInterval(() => {
         liquidation_calculated({ cex_name: selectCex }).then((res) => {
           setCalculated(res);
@@ -712,6 +712,7 @@ export default function Home() {
       return () => {
         clearInterval(calculatedInterval);
       };
+    } else {
     } else {
       setClaimInfo([...initClaimList]); 
       setUndue(undefined);
@@ -739,7 +740,7 @@ export default function Home() {
                   />
                 </div>
 
-                {/* 标签 */}
+                {/* Label */}
                 {/* <div className="absolute left-0 right-0 flex items-center justify-center top-[4px] lg:top-[4vh] xl:top-[1vh]">
                     <div className="lg:h-[6vh] flex items-center px-[6px] py-[4px] lg:px-[8px] lg:py-[8px] rounded-[4px] lg:rounded-[4px] font-bold text-[11px] lg:text-[14px] text-black cursor-pointer select-none">
                       <div className="flex items-center gap-[4px]">
@@ -859,7 +860,7 @@ export default function Home() {
             </div>
             <div className="platform-box rounded-[8px] bg-black lg:bg-[#F2F2F2] h-[48px] lg:h-[7vh] xl:h-[10vh] px-[14px] flex items-center gap-3">
               <div className="flex w-[100%] items-center h-[33px] lg:h-[100%] select-none">
-                {/* 左侧导航按钮 */}
+                {/* Left navigation button */}
                 <div className="crypto-swiper-button-prev flex items-center justify-center cursor-pointer hover:opacity-70 transition-opacity pr-[10px]">
                   <LeftOutlined
                     style={{ fontSize: "16px" }}
@@ -946,7 +947,7 @@ export default function Home() {
                   </Swiper>
                 }
 
-                {/* 右侧导航按钮 */}
+                {/* Right navigation button */}
                 <div className="crypto-swiper-button-next flex items-center justify-center cursor-pointer hover:opacity-70 transition-opacity pl-[10px]">
                   <RightOutlined
                     style={{ fontSize: "16px" }}
@@ -1119,7 +1120,7 @@ export default function Home() {
                         scrollbarColor: "#cf0 #eee",
                       }}
                     >
-                      {/* 示例横向滚动项 */}
+                      {/* Example horizontal scroll item */}
                       {claimInfo.map((item,idx) => (
                         <div
                           key={idx}
@@ -1183,11 +1184,11 @@ export default function Home() {
                           {t("home.agentAdvice")}
                         </div>
                       </div>
-                      {/* 当没有分析数据时显示提示 */}
+                      {/* Show prompt when there is no analysis data */}
                       {/* {messageChunks.length === 0 && status === 'init' && (
                         <div id="no-data" className="h-[45vh] flex items-center justify-center">Click Your Perps Position Pairs below to get real-time analysis....</div>
                       )} */}
-                      {/* 当有分析数据时显示 HomeAnalysisResult */}
+                      {/* Show HomeAnalysisResult when there is analysis data */}
                       <div className="lg:h-[47vh]">
                         <HomeAnalysisResult
                           status={status}
@@ -1255,7 +1256,7 @@ export default function Home() {
         </div>
       </div>
 
-      {/* 隐藏的 Turnstile 容器元素 */}
+      {/* Hidden Turnstile container element */}
       <div
         id="turnstile-container-home"
         ref={turnstileContainerRef}
@@ -1270,7 +1271,7 @@ export default function Home() {
         }}
       />
 
-      {/* 只加载 Turnstile 脚本，不自动初始化小部件 */}
+      {/* Only load Turnstile script, do not automatically initialize widget */}
       <Script
         src="https://challenges.cloudflare.com/turnstile/v0/api.js"
         async

@@ -9,24 +9,24 @@ import { createAppKit } from '@reown/appkit/react'
 interface WagmiProviderProps {
   children: ReactNode
 }
-// 5. Create modal with both adapters (mobileoptimizationconfiguration)
+// Create modal with both adapters (mobile optimization configuration)
 export const appkit = createAppKit({
   networks: [getChain()],
   metadata,
   projectId,
   adapters: [wagmiAdapter],
   defaultNetwork: getChain(),
-  // SIWE configuration - disable自动 SIWE,改用手动signature
+  // SIWE configuration - disable auto SIWE, use manual signature
   // siweConfig,
   features: {
     analytics: true,
     onramp: false,
     swaps: false,
     history: false,
-    email: false, // 启用邮箱登录
-    socials: [], // 启用社交登录
-    // email: true, // enable邮箱login
-    // socials: ['google', 'x', 'discord', 'github', 'apple'], // enable社交login
+    email: false, // Enable email login
+    socials: [], // Enable social login
+    // email: true, // enable email login
+    // socials: ['google', 'x', 'discord', 'github', 'apple'], // enable social login
   },
   allowUnsupportedChain: true,
   enableWalletConnect: true,

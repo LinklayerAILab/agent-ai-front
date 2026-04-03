@@ -1,6 +1,6 @@
 import { NextRequest } from 'next/server';
 
-// 通用flowAPI代理 - handleallHTTPmethod
+// Universal streaming API proxy - handle all HTTP methods
 export async function GET(request: NextRequest, { params }: { params: Promise<{ path: string[] }> }) {
   const resolvedParams = await params;
   return handleAPIProxy(request, 'GET', resolvedParams.path);
@@ -28,42 +28,42 @@ export async function DELETE(request: NextRequest, { params }: { params: Promise
 
 async function handleAPIProxy(request: NextRequest, method: string, pathSegments: string[]) {
   try {
-    // 重建原始APIpath
+    // Reconstruct the original API path
     const apiPath = '/' + pathSegments.join('/');
-    
-    // build目标URL - based onEnvironmentvariableorconfiguration确定after端service器address
+
+    // Build target URL - determine backend server address based on environment variables or configuration
     const url = new URL(request.url);
-    
-    // 避免自loop：确定正确after端service器address
+
+    // Avoid self-loop: determine correct backend server address
     let backendUrl: string;
-    
+
     if (process.env.NEXT_PUBLIC_BACKEND_URL) {
-      // ifsettings了after端URLEnvironmentvariable，use它
+      // If backend URL environment variable is set, use it
       backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
     } else {
-      // nothenusedefaultconfiguration，避免与Next.js端口冲突
-      const backendPort = process.env.BACKEND_PORT || '8000'; // 默认8000端口
+      // Otherwise use default configuration, avoid conflict with Next.js port
+      const backendPort = process.env.BACKEND_PORT || '8000'; // Default port 8000
       const backendHost = process.env.BACKEND_HOST || 'localhost';
       backendUrl = `http://${backendHost}:${backendPort}`;
     }
-    
+
     const targetUrl = new URL(`${backendUrl}${apiPath}`);
-    // 转发allqueryparameter
+    // Forward all query parameters
     url.searchParams.forEach((value, key) => {
       targetUrl.searchParams.set(key, value);
     });
-    
-    // fetchrequest体
+
+    // Fetch request body
     let body: string | undefined;
     if (method !== 'GET' && method !== 'HEAD') {
       try {
         body = await request.text();
       } catch {
-        // 忽略readbodyFailedcase
+        // Ignore cases where reading body fails
       }
     }
-    
-    // 转发request头
+
+    // Forward request headers
     const forwardHeaders = new Headers();
     const skipHeaders = [
       'host', 'connection', 'content-length', 'content-encoding', 
@@ -75,14 +75,14 @@ async function handleAPIProxy(request: NextRequest, method: string, pathSegments
         forwardHeaders.set(key, value);
       }
     });
-    
-    // Addflowoptimizationhead
+
+    // Add streaming optimization headers
     forwardHeaders.set('Cache-Control', 'no-cache, no-store, must-revalidate');
     forwardHeaders.set('Pragma', 'no-cache');
     forwardHeaders.set('X-Accel-Buffering', 'no');
-    
 
-    // sendrequest到after端service器
+
+    // Send request to backend server
     const response = await fetch(targetUrl.toString(), {
       method,
       headers: forwardHeaders,
@@ -91,7 +91,7 @@ async function handleAPIProxy(request: NextRequest, method: string, pathSegments
 
     if (!response.ok) {
       const errorText = await response.text();
-      console.error(`API代理错误: ${response.status} ${response.statusText}`, errorText);
+      console.error(`API proxy error: ${response.status} ${response.statusText}`, errorText);
       return new Response(errorText || `Proxy error: ${response.statusText}`, { 
         status: response.status,
         headers: {
@@ -100,15 +100,15 @@ async function handleAPIProxy(request: NextRequest, method: string, pathSegments
       });
     }
 
-    // checkisnoforflowresponse
+    // Check if it's a streaming response
     const contentType = response.headers.get('content-type') || '';
-    const isStreamingResponse = contentType.includes('text/event-stream') || 
+    const isStreamingResponse = contentType.includes('text/event-stream') ||
                                contentType.includes('application/x-ndjson') ||
                                contentType.includes('text/plain');
 
     if (isStreamingResponse && response.body) {
-      
-      // flowresponse：零缓冲转发
+
+      // Streaming response: zero-buffer forwarding
       const stream = new ReadableStream({
         async start(controller) {
           const reader = response.body!.getReader();
@@ -126,26 +126,26 @@ async function handleAPIProxy(request: NextRequest, method: string, pathSegments
                 break;
               }
 
-              // check controller isno已close
+              // Check if controller is already closed
               if (isClosed) {
                 break;
               }
 
-              // immediately转发eachdata块
+              // Immediately forward each data chunk
               controller.enqueue(value);
             }
           } catch (error) {
-            console.error('API代理流式转发错误:', error);
+            console.error('API proxy streaming forwarding error:', error);
             if (!isClosed) {
               isClosed = true;
               controller.error(error);
             }
           } finally {
-            // 确保 reader 被释放
+            // Ensure reader is released
             try {
               reader.releaseLock();
             } catch (e) {
-              // reader possiblealready释放
+              // Reader may already be released
               console.log(e)
             }
           }
@@ -153,18 +153,18 @@ async function handleAPIProxy(request: NextRequest, method: string, pathSegments
     
       });
 
-      // buildflowresponse头
+      // Build streaming response headers
       const responseHeaders = new Headers();
-      
-      // 转发重要response头
+
+      // Forward important response headers
       response.headers.forEach((value, key) => {
         const lowerKey = key.toLowerCase();
         if (!['connection', 'transfer-encoding', 'content-length'].includes(lowerKey)) {
           responseHeaders.set(key, value);
         }
       });
-      
-      // 强制settingsflowresponse头
+
+      // Force set streaming response headers
       responseHeaders.set('Cache-Control', 'no-cache, no-store, must-revalidate');
       responseHeaders.set('Pragma', 'no-cache');
       responseHeaders.set('Expires', '0');
@@ -177,8 +177,8 @@ async function handleAPIProxy(request: NextRequest, method: string, pathSegments
         headers: responseHeaders,
       });
     } else {
-      
-      // 非flowresponse：正常转发
+
+      // Non-streaming response: normal forwarding
       const responseBody = await response.arrayBuffer();
       
       const responseHeaders = new Headers();
@@ -194,7 +194,7 @@ async function handleAPIProxy(request: NextRequest, method: string, pathSegments
     }
 
   } catch (error) {
-    console.error('API代理严重错误:', error);
+    console.error('API proxy critical error:', error);
     return new Response(`Internal proxy error: ${error.message}`, { 
       status: 500,
       headers: {

@@ -12,19 +12,19 @@ interface Brc20CardProps {
 }
 
 /**
- * format化代币价格，handle极小numberand科学计数法
- * @param price 价格数value
- * @returns format化after价格string
+ * Format token price, handle very small numbers and scientific notation
+ * @param price Price value
+ * @returns Formatted price string
  */
 const formatPrice = (price: number): string => {
   if (price === 0) return '0';
 
-  // pair于极小number（less than 0.000001），Display完整小数形式
+  // For very small numbers (less than 0.000001), display complete decimal form
   if (price < 0.000001 && price > 0) {
-    // Convertforstring，去除科学计数法
+    // Convert to string, remove scientific notation
     const str = price.toPrecision();
     const num = parseFloat(str);
-    // use toLocaleString 确保Display完整小数位
+    // Use toLocaleString to ensure complete decimal places are displayed
     return num.toLocaleString('en-US', {
       minimumFractionDigits: 15,
       maximumFractionDigits: 15,
@@ -32,17 +32,17 @@ const formatPrice = (price: number): string => {
     });
   }
 
-  // pair于小number（0.000001 - 0.01），Display最多8位小数
+  // For small numbers (0.000001 - 0.01), display up to 8 decimal places
   if (price < 0.01) {
     return price.toFixed(8).replace(/\.?0+$/, '');
   }
 
-  // pair于极大number（greater than 1,000,000），use千分位
+  // For very large numbers (greater than 1,000,000), use thousand separators
   if (price >= 1000000) {
     return price.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
   }
 
-  // 正常rangenumber，保留最多6位小数，去除末尾0
+  // Normal range numbers, keep up to 6 decimal places, remove trailing zeros
   return parseFloat(price.toFixed(6)).toString();
 };
 

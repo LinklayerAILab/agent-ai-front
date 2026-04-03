@@ -144,7 +144,7 @@
   justify-content: center;
   align-items: center;
 
-  /* 隐藏滚动条 */
+  /* Hide scrollbar */
   &::-webkit-scrollbar {
     display: none;
   }
@@ -202,9 +202,9 @@
     display: block;
   }
 }
-/* 优化的路由切换动画 */
+/* Optimized route switching animation */
 
-/* 上滑 */
+/* Scroll up */
 .scroll-top-enter {
   opacity: 0;
   transform: translateY(100%);
@@ -231,7 +231,7 @@
   filter: blur(1px);
 }
 
-/* 下滑 */
+/* Scroll down */
 .scroll-down-enter {
   opacity: 0;
   transform: translateY(-100%);
@@ -258,7 +258,7 @@
   filter: blur(1px);
 }
 
-/* 添加硬件加速优化 */
+/* Add hardware acceleration optimization */
 .scroll-top-enter,
 .scroll-top-enter-active,
 .scroll-top-exit,
@@ -273,13 +273,13 @@
   perspective: 1000px;
 }
 
-/* 为容器添加溢出隐藏，确保动画更干净 */
+/* Add overflow hidden to container for cleaner animations */
 .router-wrapper {
   overflow: hidden;
   position: relative;
 }
 
-/* 添加弹性进入动画变体（可选） */
+/* Add bounce enter animation variant (optional) */
 @keyframes bounceInUp {
   0% {
     opacity: 0;
@@ -318,7 +318,7 @@
   }
 }
 
-/* 弹性动画变体类（可以通过添加.bounce类启用） */
+/* Bounce animation variant classes (can be enabled by adding .bounce class) */
 .scroll-top-enter-active.bounce {
   animation: bounceInUp 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
@@ -327,8 +327,8 @@
   animation: bounceInDown 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
 
-/* 快速响应的动画变体 */
-/* 上滑动画 - 快速版本 */
+/* Fast response animation variant */
+/* Scroll up animation - fast version */
 .scroll-top-fast-enter {
   opacity: 0;
   transform: translateY(-20%) scale(0.99) translateZ(0);
@@ -355,7 +355,7 @@
   transition: all 0.1s ease-out;
 }
 
-/* 下滑动画 - 快速版本 */
+/* Scroll down animation - fast version */
 .scroll-down-fast-enter {
   opacity: 0;
   transform: translateY(20%) scale(0.99) translateZ(0);
@@ -382,7 +382,7 @@
   transition: all 0.1s ease-out;
 }
 
-/* 快速动画的硬件加速优化 */
+/* Hardware acceleration optimization for fast animations */
 .scroll-top-fast-enter,
 .scroll-top-fast-enter-active,
 .scroll-top-fast-exit,

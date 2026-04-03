@@ -7,33 +7,33 @@ const GlobalLoading = () => {
   const timeoutsRef = useRef<{ fadeOut?: NodeJS.Timeout; remove?: NodeJS.Timeout }>({});
 
   useEffect(() => {
-    let isMounted = true; // 追踪组件挂载状态
+    let isMounted = true; // Track component mount status
 
     const hideLoading = () => {
-      // 延时0.2secondsaftertrigger淡出animation
+      // Delay 0.2 seconds before triggering fade-out animation
       timeoutsRef.current.fadeOut = setTimeout(() => {
         if (isMounted) {
           setLoading(false);
-          // 淡出animationcompleteafter再移除component
+          // Remove component after fade-out animation completes
           timeoutsRef.current.remove = setTimeout(() => {
             if (isMounted) {
               setVisible(false);
             }
-          }, 1000); // 1000ms 淡出动画时长
+          }, 1000); // 1000ms fade-out animation duration
         }
-      }, 200); // 200ms 延时
+      }, 200); // 200ms delay
     };
 
-    // checkpageisnoalreadyloadcomplete
+    // Check if page is already loaded completely
     if (document.readyState === 'complete') {
-      // pagealreadyloadcomplete，直接execute
+      // Page already loaded completely, execute directly
       hideLoading();
     } else {
-      // page还inload，listen load event
+      // Page still loading, listen for load event
       window.addEventListener("load", hideLoading);
     }
 
-    // 兜底：最长 5 secondsafter强制hide loading，避免permanentDisplay
+    // Fallback: Force hide loading after maximum 5 seconds to avoid permanent display
     const maxTimeout = setTimeout(() => {
       if (isMounted && visible) {
         setLoading(false);
@@ -48,7 +48,7 @@ const GlobalLoading = () => {
     return () => {
       isMounted = false;
       window.removeEventListener("load", hideLoading);
-      // Clearall定时器
+      // Clear all timers
       if (timeoutsRef.current.fadeOut) clearTimeout(timeoutsRef.current.fadeOut);
       if (timeoutsRef.current.remove) clearTimeout(timeoutsRef.current.remove);
       clearTimeout(maxTimeout);

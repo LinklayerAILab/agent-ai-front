@@ -23,7 +23,7 @@ export interface MessageChunk {
   timestamp: number;
 }
 
-// use memo package装stopbutton，防止不必要re-render
+// Use memo to wrap stopbutton, prevent unnecessary re-render
 const StopButton = memo(({ onClick }: { onClick?: () => void }) => {
   const lottieAnimation = useMemo(() => (
     <DotLottieReact
@@ -60,24 +60,24 @@ export const ChatMessage = (props: {
 }) => {
   const [t] = useTranslation();
   const messageRef = useRef<HTMLDivElement>(null);
-  const [isAtBottom, setIsAtBottom] = useState(true); // 记录是否在底部
-  const [isTypingComplete, setIsTypingComplete] = useState(false); // 记录打字机是否完成
+  const [isAtBottom, setIsAtBottom] = useState(true); // Track whether at bottom
+  const [isTypingComplete, setIsTypingComplete] = useState(false); // Track whether typewriter is complete
 
   const handleStop = (e: Event) => {
     e.stopPropagation();
   }
 
-  // checkisno滚动到bottom
+  // Check if scrolled to bottom
   const checkIfAtBottom = () => {
     if (messageRef.current) {
       const { scrollTop, scrollHeight, clientHeight } = messageRef.current;
-      // 允许一定误差range（10px），避免精度issues
+      // Allow certain error range (10px) to avoid precision issues
       const isBottom = scrollHeight - scrollTop - clientHeight < 10;
       setIsAtBottom(isBottom);
     }
   };
 
-  // 滚动到bottom - use requestAnimationFrame 确保 DOM updatecomplete
+  // Scroll to bottom - use requestAnimationFrame to ensure DOM update complete
   const scrollToBottom = () => {
     if (messageRef.current) {
       requestAnimationFrame(() => {
@@ -88,7 +88,7 @@ export const ChatMessage = (props: {
     }
   };
 
-  // listen滚动event
+  // Listen to scroll event
   const handleScroll = () => {
     checkIfAtBottom();
   };
@@ -108,10 +108,10 @@ export const ChatMessage = (props: {
     }
   }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
-  // whenmessageupdate时，ifinbottom且stateis generating or end，自动滚动
+  // When message updates, if at bottom and state is generating or end, auto scroll
   useEffect(() => {
     if ((props.status === 'generating' || props.status === 'end') && isAtBottom) {
-      // 双重 requestAnimationFrame 确保 DOM 完全render
+      // Double requestAnimationFrame to ensure complete DOM render
       requestAnimationFrame(() => {
         requestAnimationFrame(() => {
           scrollToBottom();
@@ -120,7 +120,7 @@ export const ChatMessage = (props: {
     }
   }, [props.messages, props.status, isAtBottom])
 
-  // use MutationObserver listencontentchange，实时滚动
+  // Use MutationObserver to listen to content changes, real-time scroll
   useEffect(() => {
     if (!messageRef.current || (props.status !== 'generating' && props.status !== 'end') || !isAtBottom) {
       return;
@@ -179,14 +179,14 @@ export const ChatMessage = (props: {
   }
 
   useEffect(() => {
-    // Checkwhenbefore loading or者 Generateinterfaceisno正inexecute
+    // Check if before loading or generating interface is currently executing
     if ((props.status === 'loading' || props.status === 'generating') && !localStorage.getItem('showCreateCollectionTip')) {
       setOpen(true)
     }
 
     const handleTextLoaded = () => {
       setOpen(false);
-      setIsTypingComplete(true); // 打字机完成时设置标志
+      setIsTypingComplete(true); // Set flag when typewriter completes
     };
 
     window.addEventListener('textLoaded', handleTextLoaded);
@@ -196,14 +196,14 @@ export const ChatMessage = (props: {
 
   }, [props.status])
 
-  // when status 变for loading or generating 时，reset打字completestate
+  // When status changes to loading or generating, reset typing complete state
   useEffect(() => {
     if (props.status === 'loading' || props.status === 'generating') {
       setIsTypingComplete(false);
     }
   }, [props.status])
 
-  // CheckisnoDisplaystopbutton：onlyin loading/generating state，or者 end state但打字机还未complete时Display
+  // Check whether to display stop button: only in loading/generating state, or end state but typewriter not yet complete
   const showStopButton = props.status === 'loading' || props.status === 'generating' || (props.status === 'end' && !isTypingComplete);
 
   return (
@@ -222,7 +222,7 @@ export const ChatMessage = (props: {
           initNodeClassName="h-[60vh] lg:h-[73.4vh]"
         />
       </div>
-      {/* 始终渲染按钮，通过 CSS 控制显示/隐藏，避免卸载导致闪烁 */}
+      {/* Always render button, control show/hide via CSS to avoid flickering from unmounting */}
       <div
         className='absolute right-[50%] mr-[-20px] lg:mr-[0] lg:right-[20px] bottom-[20px] lg:bottom-[40px]'
         style={{

@@ -11,7 +11,7 @@ interface TopProgressBarProps {
 const TopProgressBar: React.FC<TopProgressBarProps> = ({
   color = '#ccff00',
   height = 3,
-  duration = 500 // 增加持续时间，让用户能看到完成的动画
+  duration = 500 // Increase duration to allow users to see completion animation
 }) => {
   const [loading, setLoading] = useState(false);
   const [progress, setProgress] = useState(0);
@@ -28,13 +28,13 @@ const TopProgressBar: React.FC<TopProgressBarProps> = ({
       progressInterval = setInterval(() => {
         setProgress(prev => {
           if (prev >= 85) {
-            return 85; // 在 85% 停止，等待页面真正加载完成
+            return 85; // Stop at 85%, wait for page to actually complete loading
           }
-          // use更平缓进度增长
+          // Use smoother progress increment
           const increment = Math.max(1, Math.random() * 8);
           return Math.min(prev + increment, 85);
         });
-      }, 150); // 稍微放慢更新频率
+      }, 150); // Slightly slower update frequency
     };
 
     const completeLoading = () => {
@@ -48,7 +48,7 @@ const TopProgressBar: React.FC<TopProgressBarProps> = ({
       }, duration);
     };
 
-    // listenalllink点击event
+    // Listen to all link click events
     const handleLinkClick = (e: Event) => {
       const target = e.target as HTMLElement;
       const link = target.closest('a');
@@ -56,15 +56,15 @@ const TopProgressBar: React.FC<TopProgressBarProps> = ({
       if (link && link.href && !link.href.startsWith('mailto:') && !link.href.startsWith('tel:')) {
         const url = new URL(link.href);
         const currentUrl = new URL(window.location.href);
-        
-        // checkisnoisexternallink
+
+        // Check if it's an external link
         const isExternalLink = url.hostname !== currentUrl.hostname;
-        
-        // onlywhenlink指向differentpage时only thenDisplayprogress bar
+
+        // Only display progress bar when link points to a different page
         if (url.pathname !== currentUrl.pathname || isExternalLink) {
           startLoading();
-          
-          // ifisexternallink，settings一个短暂delayafter自动complete
+
+          // If it's an external link, set a short delay before auto-completing
           if (isExternalLink) {
             setTimeout(() => {
               completeLoading();
@@ -74,12 +74,12 @@ const TopProgressBar: React.FC<TopProgressBarProps> = ({
       }
     };
 
-    // listen浏览器before进after退
+    // Listen to browser forward and back navigation
     const handlePopState = () => {
       startLoading();
     };
 
-    // listen自Define路由进度event
+    // Listen to custom route progress events
     const handleRouterProgressStart = () => {
       startLoading();
     };
@@ -88,7 +88,7 @@ const TopProgressBar: React.FC<TopProgressBarProps> = ({
       completeLoading();
     };
 
-    // Addeventlisten
+    // Add event listeners
     document.addEventListener('click', handleLinkClick, true);
     window.addEventListener('popstate', handlePopState);
     window.addEventListener('routerProgressStart', handleRouterProgressStart);
@@ -104,31 +104,31 @@ const TopProgressBar: React.FC<TopProgressBarProps> = ({
     };
   }, [duration]);
 
-  // handlepathchange - awaitpage实际loadcomplete
+  // Handle path change - wait for page to actually complete loading
   useEffect(() => {
     if (loading) {
-      // 给page更多time来completeload，package括datafetchandrender
-      const minLoadingTime = 800; // 最小加载时间
-      const maxLoadingTime = 3000; // 最大加载时间
-      
+      // Give page more time to complete load, including data fetch and render
+      const minLoadingTime = 800; // Minimum loading time
+      const maxLoadingTime = 3000; // Maximum loading time
+
       let isCompleted = false;
-      
-      // checkpageisnotrue正loadcompletefunction
+
+      // Check if page is truly fully loaded function
       const checkPageReady = () => {
-        // checkdocumentationisno完全load
+        // Check if document is completely loaded
         const isDocumentReady = document.readyState === 'complete';
-        
-        // checkisno有正inproceednetworkrequest（简单check）
+
+        // Check if there are active network requests (simple check)
         const hasActiveRequests = performance.getEntriesByType('navigation')
           .some((entry: PerformanceNavigationTiming) => entry.loadEventEnd === 0);
-        
-        // checkpagecontentisno已render
-        const hasMainContent = document.querySelector('main') || 
+
+        // Check if page content has been rendered
+        const hasMainContent = document.querySelector('main') ||
                                document.querySelector('[role="main"]') ||
                                document.querySelector('.main-content') ||
-                               document.body.children.length > 2; // 大于2个子元素
-        
-        // checkisno有loadstateelement（commonload指示器）
+                               document.body.children.length > 2; // More than 2 child elements
+
+        // Check if there are loading state elements (common loading indicators)
         const hasLoadingIndicators = !!(
           document.querySelector('.loading') ||
           document.querySelector('[data-loading="true"]') ||
@@ -136,20 +136,20 @@ const TopProgressBar: React.FC<TopProgressBarProps> = ({
           document.querySelector('.ant-spin') ||
           document.querySelector('[aria-busy="true"]')
         );
-        
-        // check Next.js 特有loadstate
+
+        // Check Next.js specific loading state
         const nextJsReady = !document.querySelector('#__next-dev-overlay-root') ||
                            !document.querySelector('[data-nextjs-scroll-focus-boundary]');
-        
+
         return isDocumentReady && !hasActiveRequests && hasMainContent && !hasLoadingIndicators && nextJsReady;
       };
-      
-      // 定期checkpageisno准备then绪
+
+      // Periodically check if page is ready
       const checkInterval = setInterval(() => {
         if (checkPageReady() && !isCompleted) {
           isCompleted = true;
           clearInterval(checkInterval);
-          
+
           setProgress(100);
           setTimeout(() => {
             setLoading(false);
@@ -157,13 +157,13 @@ const TopProgressBar: React.FC<TopProgressBarProps> = ({
           }, duration);
         }
       }, 50);
-      
-      // minimumloadtime保障
+
+      // Minimum loading time guarantee
       const minTimeout = setTimeout(() => {
         if (checkPageReady() && !isCompleted) {
           isCompleted = true;
           clearInterval(checkInterval);
-          
+
           setProgress(100);
           setTimeout(() => {
             setLoading(false);
@@ -171,8 +171,8 @@ const TopProgressBar: React.FC<TopProgressBarProps> = ({
           }, duration);
         }
       }, minLoadingTime);
-      
-      // maximumloadtime兜底
+
+      // Maximum loading time fallback
       const maxTimeout = setTimeout(() => {
         if (!isCompleted) {
           isCompleted = true;
