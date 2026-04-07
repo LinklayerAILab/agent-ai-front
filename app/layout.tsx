@@ -5,7 +5,7 @@ import "./common.scss";
 import React from "react";
 import "./styles/antd.scss";
 
-import { Viewport } from "next";
+import { Metadata, Viewport } from "next";
 import './styles/common.scss';
 import './styles/reown-appkit.css';
 import StoreProvider from "./components/StoreProvider";
@@ -17,6 +17,10 @@ import TopLoadingBar from "./components/TopLoadingBar";
 export const dynamic = 'force-dynamic';
 
 
+
+export const metadata: Metadata = {
+  manifest: "/manifest.webmanifest",
+};
 
 export const viewport: Viewport = {
   width: 'device-width',
@@ -34,6 +38,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
+      <head>
+        <link rel="manifest" href="/manifest.webmanifest" />
+      </head>
       <body
         className={`antialiased`}
       >

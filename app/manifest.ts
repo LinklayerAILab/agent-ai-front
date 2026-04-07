@@ -15,21 +15,21 @@ export default function manifest(): MetadataRoute.Manifest {
     icons: [
       {
         src: "/defai1.png",
-        sizes: "1500x1500",
+        sizes: "160x160",
         type: "image/png",
       },
     ],
     screenshots: [
       {
         src: "/install-pc.png",
-        sizes: "1416x945",
+        sizes: "1553x944",
         type: "image/png",
         form_factor: "wide",
         label: "Wonder Widgets",
       },
       {
         src: "/install-h5.png",
-        sizes: "387x840",
+        sizes: "374x666",
         type: "image/png",
         form_factor: "narrow",
         label: "Wonder Widgets s",
