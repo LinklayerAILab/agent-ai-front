@@ -713,7 +713,6 @@ export default function Home() {
         clearInterval(calculatedInterval);
       };
     } else {
-    } else {
       setClaimInfo([...initClaimList]); 
       setUndue(undefined);
       setCalculated(undefined);

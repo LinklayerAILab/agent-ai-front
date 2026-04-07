@@ -14,7 +14,7 @@
 
 # testing
 /coverage
-
+.playwright-mcp
 # environment variables
 .env
 .env*
