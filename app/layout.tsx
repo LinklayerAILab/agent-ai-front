@@ -11,7 +11,9 @@ import './styles/reown-appkit.css';
 import { GoogleAnalytics } from "@next/third-parties/google";
 import { isProd } from "./enum";
 import GlobalLoading from "./components/GlobalLoading";
+import { Suspense } from "react";
 import TopLoadingBar from "./components/TopLoadingBar";
+
 import ClientProviders from "./components/ClientProviders";
 
 
@@ -42,7 +44,9 @@ export default function RootLayout({
       <body
         className={`antialiased`}
       >
-        <TopLoadingBar />
+        <Suspense>
+          <TopLoadingBar />
+        </Suspense>
         <div id="portal-root"></div>
         <GlobalLoading />
 

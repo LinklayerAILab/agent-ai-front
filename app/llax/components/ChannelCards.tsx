@@ -14,7 +14,6 @@ interface ChannelCardsProps {
     successful_referrals: number;
   };
   walletSnapshot: LLAxWalletSnapshotData | null;
-  isLogin: boolean;
 }
 
 function ChannelCards({ referralStats, walletSnapshot }: ChannelCardsProps) {

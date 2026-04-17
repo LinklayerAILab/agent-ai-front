@@ -4,7 +4,7 @@ import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { LeftOutlined } from "@ant-design/icons";
 import { useRouter } from "next/navigation";
-import { message, Skeleton } from "antd";
+import { Skeleton } from "antd";
 import { useSelector } from "react-redux";
 import { RootState } from "../store";
 import {
@@ -27,7 +27,7 @@ import Announcements from "./components/Announcements";
 function Page() {
   const router = useRouter();
   const { t } = useTranslation();
-  const [messageApi, messageContext] = message.useMessage();
+
   const isLogin = useSelector((state: RootState) => state.user.isLogin);
 
   // Public data
@@ -101,7 +101,6 @@ function Page() {
      <div className="page-my-llax w-[100%] h-auto lg:h-[83vh] overflow-y-auto flex flex-col page-home-inner lg:border-solid lg:border-black lg:border-2 rounded-[8px]">
   
     <div className="llax-page">
-      {messageContext}
       <div className="llax-header">
         <div className="back-btn" onClick={() => router.back()}>
           <LeftOutlined />
