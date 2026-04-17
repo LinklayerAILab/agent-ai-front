@@ -36,7 +36,6 @@ async function handleAPIProxy(request: NextRequest, method: string, pathSegments
 
     // Avoid self-loop: determine correct backend server address
     let backendUrl: string;
-
     if (process.env.NEXT_PUBLIC_BACKEND_URL) {
       // If backend URL environment variable is set, use it
       backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;

@@ -71,6 +71,8 @@ const Page = () => {
 
     message.success(t('apiForm.submitSuccess'));
     router.replace('/');
+    } catch(err){
+      message.error(err.message);
     }finally{
     setLoading(false)
 

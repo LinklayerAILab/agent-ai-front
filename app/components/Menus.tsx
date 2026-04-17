@@ -249,9 +249,9 @@ export default function Menus(props: MenusProps) {
                     checked={pathname === "/" ? true : false}
                     onClick={() => handleTo("/")}
                   >
-                    {t("menu.alpha")}
+                    {t("menu.brc20")}
                   </MenuButton>
-                  {/* <MenuButton
+                   <MenuButton
                     checked={pathname === "/alpha" ? true : false}
                     onClick={() => handleTo("/alpha")}
                   >
@@ -273,7 +273,7 @@ export default function Menus(props: MenusProps) {
                         </svg>
                       </div>
                     </div>
-                  </MenuButton> */}
+                  </MenuButton>
                   <MenuButton
                     key={"/insight"}
                     checked={pathname === "/insight" ? true : false}
@@ -336,49 +336,6 @@ export default function Menus(props: MenusProps) {
                       </div>
                     </div>
                   </MenuButton>
- 
-                  {/* <MenuButton
-                    checked={pathname === "/ranking" ? true : false}
-                    onClick={() => handleTo("/ranking")}
-                  >
-                    <div className="flex justify-between lg:justify-center w-[100%]">
-                      <div className="font-size-16px">{t("menu.tribe")}</div>
-                      <div className="flex lg:hidden items-center">
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          width="16"
-                          height="16"
-                          viewBox="0 0 1024 1024"
-                        >
-                          <path
-                            fill="currentColor"
-                            d="M338.752 104.704a64 64 0 0 0 0 90.496l316.8 316.8l-316.8 316.8a64 64 0 0 0 90.496 90.496l362.048-362.048a64 64 0 0 0 0-90.496L429.248 104.704a64 64 0 0 0-90.496 0"
-                          />
-                        </svg>
-                      </div>
-                    </div>
-                  </MenuButton> */}
-                  {/* <MenuButton
-                    checked={pathname === "/rewards" ? true : false}
-                    onClick={() => handleTo("/rewards")}
-                  >
-                    <div className="flex justify-between lg:justify-center w-[100%]">
-                      <div className="font-size-16px">{t("menu.exchange")}</div>
-                      <div className="flex lg:hidden items-center">
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          width="16"
-                          height="16"
-                          viewBox="0 0 1024 1024"
-                        >
-                          <path
-                            fill="currentColor"
-                            d="M338.752 104.704a64 64 0 0 0 0 90.496l316.8 316.8l-316.8 316.8a64 64 0 0 0 90.496 90.496l362.048-362.048a64 64 0 0 0 0-90.496L429.248 104.704a64 64 0 0 0-90.496 0"
-                          />
-                        </svg>
-                      </div>
-                    </div>
-                  </MenuButton> */}
     
                 </div>
               </div>

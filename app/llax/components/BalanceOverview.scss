@@ -1,0 +1,39 @@
+.balance-overview {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
+
+  @media (min-width: 640px) {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .balance-card {
+    background: #fff;
+    border-radius: 12px;
+    padding: 16px 20px;
+    border: 1px solid #f0f0f0;
+    transition: box-shadow 0.2s;
+
+    &:hover {
+      box-shadow: 0 2px 12px rgba(122, 153, 0, 0.1);
+    }
+
+    .balance-card-value {
+      font-size: 24px;
+      font-weight: 700;
+      line-height: 1.2;
+    }
+
+    .balance-card-label {
+      font-size: 13px;
+      color: #666;
+      margin-top: 6px;
+    }
+
+    .balance-card-token {
+      font-size: 11px;
+      color: #999;
+      margin-top: 2px;
+    }
+  }
+}

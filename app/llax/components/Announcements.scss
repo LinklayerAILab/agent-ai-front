@@ -1,0 +1,52 @@
+.announcements {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+
+  .announcement-item {
+    background: #fff;
+    border-radius: 10px;
+    padding: 14px 16px;
+    border: 1px solid #f0f0f0;
+    transition: box-shadow 0.2s;
+
+    &:hover {
+      box-shadow: 0 2px 8px rgba(122, 153, 0, 0.08);
+    }
+
+    .announcement-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 6px;
+      flex-wrap: wrap;
+    }
+
+    .announcement-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: #333;
+    }
+
+    .pinned-tag {
+      font-size: 10px;
+      padding: 1px 6px;
+      border-radius: 4px;
+      background: rgba(122, 153, 0, 0.1);
+      color: #7A9900;
+      font-weight: 500;
+    }
+
+    .announcement-date {
+      font-size: 11px;
+      color: #bbb;
+      margin-left: auto;
+    }
+
+    .announcement-content {
+      font-size: 13px;
+      color: #666;
+      line-height: 1.6;
+    }
+  }
+}

@@ -1,7 +1,7 @@
 
 import insight from '@/app/images/components/menus/insight.svg'
 // import ranking from '@/app/images/components/menus/ranking.svg'
-// import alpha from '@/app/images/components/menus/alpha.svg'
+import alpha from '@/app/images/components/menus/alpha.svg'
 // import rewards from '@/app/images/components/menus/rewards.svg'
 import piloter from '@/app/images/components/menus/piloter.svg'
 import subscribe from '@/app/images/components/menus/subscribe.svg'
@@ -22,23 +22,23 @@ export const MENU_ROUTES = [
   {
     path: "/",
     index: 1,
-    name: "menu.alpha",
+    name: "menu.brc20",
     prev: "/rewards",
     needLogin: false,
-    next: "/insight",
+    next: "/alpha",
     type: "route",
     icon: brc20
   },
-  //   {
-  //   path: "/alpha",
-  //   index: 2,
-  //   type: "route",
-  //   name: "menu.alpha",
-  //   prev: "/",
-  //   needLogin: false,
-  //   next: "/insight",
-  //   icon: alpha
-  // },
+    {
+    path: "/alpha",
+    index: 2,
+    type: "route",
+    name: "menu.alpha",
+    prev: "/",
+    needLogin: false,
+    next: "/insight",
+    icon: alpha
+  },
     {
     path: "/insight",
     index: 3,

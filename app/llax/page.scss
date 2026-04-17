@@ -1,0 +1,62 @@
+.llax-page {
+  width: 100%;
+  padding: 16px;
+  max-width: 1200px;
+  margin: 0 auto;
+
+  @media (min-width: 1024px) {
+    padding: 24px 32px;
+  }
+
+  .llax-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+    gap: 12px;
+
+    .back-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      background: rgba(122, 153, 0, 0.1);
+      color: #7A9900;
+      cursor: pointer;
+      transition: background 0.2s;
+
+      &:hover {
+        background: rgba(122, 153, 0, 0.2);
+      }
+    }
+
+    .llax-title {
+      font-size: 20px;
+      font-weight: 600;
+      color: #1a1a1a;
+    }
+  }
+
+  .llax-content {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
+
+  .llax-section-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 12px;
+    padding-left: 8px;
+    border-left: 3px solid #7A9900;
+  }
+
+  .llax-login-tip {
+    text-align: center;
+    padding: 40px 16px;
+    color: #999;
+    font-size: 14px;
+  }
+}

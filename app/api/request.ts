@@ -122,7 +122,6 @@ export async function* streamingRequest<TResponse>(
   try {
     const response = await fetch(finalUrl, config);
     clearTimeout(timeoutId);
-    
     if (!response.ok) {
       const errorData = await response.json();
       if (errorData.code === 401) {

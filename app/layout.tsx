@@ -8,13 +8,11 @@ import "./styles/antd.scss";
 import { Metadata, Viewport } from "next";
 import './styles/common.scss';
 import './styles/reown-appkit.css';
-import StoreProvider from "./components/StoreProvider";
-import WagmiProvider from "./components/WagmiProvider";
 import { GoogleAnalytics } from "@next/third-parties/google";
 import { isProd } from "./enum";
 import GlobalLoading from "./components/GlobalLoading";
 import TopLoadingBar from "./components/TopLoadingBar";
-export const dynamic = 'force-dynamic';
+import ClientProviders from "./components/ClientProviders";
 
 
 
@@ -49,9 +47,7 @@ export default function RootLayout({
         <GlobalLoading />
 
         <div>
-          <WagmiProvider>
-            <StoreProvider>{children}</StoreProvider>
-          </WagmiProvider>
+          <ClientProviders>{children}</ClientProviders>
           {isProd && <GoogleAnalytics gaId="G-HY9CWG33BL" />}
         </div>
 

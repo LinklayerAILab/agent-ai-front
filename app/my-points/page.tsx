@@ -44,6 +44,7 @@ interface CoinListItem {
   icon: string;
   disabled: boolean;
   contract?: string
+  decimal?:number
 }
 
 const getActualRecords = (records: QueryTasksItem[]) =>
@@ -73,7 +74,6 @@ const Page = () => {
   const isBscMainnet = chainId === 56;
   const isBscTestnet = chainId === 97;
 
-  const decimals = isBscTestnet ? 6 : 18;
 
   const [list, setList] = useState<ListItem[]>([
     {
@@ -103,7 +103,8 @@ const Page = () => {
       select: true,
       icon: usdt,
       disabled: false,
-      contract: USDT_MAINNET
+      contract: USDT_MAINNET,
+      decimal: Number(process.env.NEXT_PUBLIC_USDT_DECIMAL) || 18
     },
     {
       label: "USDC",
@@ -111,7 +112,8 @@ const Page = () => {
       select: false,
       icon: usdc,
       disabled: false,
-      contract: USDC_MAINNET
+      contract: USDC_MAINNET,
+      decimal: Number(process.env.NEXT_PUBLIC_USDC_DECIMAL) || 18
     },
     {
       label: "LLA",
@@ -312,7 +314,7 @@ const Page = () => {
     }
 
     // Check balance
-    const requiredAmount = parseUnits(selectedItem.money, decimals);
+    const requiredAmount = parseUnits(selectedItem.money, selectedCoin.decimal!);
     let latestBalance: bigint | null = null;
 
     try {

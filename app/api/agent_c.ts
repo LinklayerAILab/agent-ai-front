@@ -810,3 +810,158 @@ export const update_time = () => {
     cache: "no-store",
   },{timeout:300000});
 };
+
+// ==================== LLAx Module ====================
+
+// LLAx Balance
+export interface LLAxBalanceData {
+  balance: number;
+  total_earned: number;
+  total_consumed: number;
+}
+export interface LLAxBalanceResponse extends AgentCResponse {
+  data: LLAxBalanceData;
+}
+export const get_llax_balance = () => {
+  return request<LLAxBalanceResponse>(`${AGENT_C_API}/v1/llax/balance`, {
+    method: "get",
+    cache: "no-store",
+  });
+};
+
+// LLAx Issuance Records
+export interface LLAxIssuanceRecord {
+  id: number;
+  channel_id: number;
+  channel_name: string;
+  amount: number;
+  before_balance: number;
+  after_balance: number;
+  created_at: number;
+}
+export interface LLAxIssuanceRecordsResponse extends AgentCResponse {
+  data: {
+    records: LLAxIssuanceRecord[];
+    total: number;
+  };
+}
+export const get_llax_issuance_records = (params: { page: number; size: number }) => {
+  return request<LLAxIssuanceRecordsResponse>(
+    `${AGENT_C_API}/v1/llax/issuance-records?page=${params.page}&size=${params.size}`,
+    {
+      method: "get",
+      cache: "no-store",
+    }
+  );
+};
+
+// LLAx Pools
+export interface LLAxPool {
+  channel_id: number;
+  channel_name: string;
+  total_cap: number;
+  issued: number;
+  remaining: number;
+  usage_percent: number;
+  is_exhausted: boolean;
+}
+export interface LLAxPoolsResponse extends AgentCResponse {
+  data: LLAxPool[];
+}
+export const get_llax_pools = () => {
+  return request<LLAxPoolsResponse>(`${AGENT_C_API}/v1/llax/pools`, {
+    method: "get",
+    cache: "no-store",
+  });
+};
+
+// LLAx Pool Progress Report
+export interface LLAxPoolProgressReport extends AgentCResponse {
+  data: {
+    pools: LLAxPool[];
+    trend: Array<{ date: string; [key: string]: number | string }>;
+  };
+}
+export const get_llax_pool_progress = () => {
+  return request<LLAxPoolProgressReport>(`${AGENT_C_API}/v1/llax/reports/pool-progress`, {
+    method: "get",
+    cache: "no-store",
+  });
+};
+
+// LLAx Announcements
+export interface LLAxAnnouncement {
+  id: number;
+  title: string;
+  content: string;
+  priority: number;
+  is_pinned: boolean;
+  created_at: number;
+}
+export interface LLAxAnnouncementsResponse extends AgentCResponse {
+  data: {
+    announcements: LLAxAnnouncement[];
+  };
+}
+export const get_llax_announcements = () => {
+  return request<LLAxAnnouncementsResponse>(`${AGENT_C_API}/v1/llax/announcements`, {
+    method: "get",
+    cache: "no-store",
+  });
+};
+
+// LLAx Referral Stats
+export interface LLAxReferralStatsResponse extends AgentCResponse {
+  data: {
+    total_referrals: number;
+    total_rewards: number;
+    successful_referrals: number;
+  };
+}
+export const get_llax_referral_stats = () => {
+  return request<LLAxReferralStatsResponse>(`${AGENT_C_API}/v1/llax/referral/stats`, {
+    method: "get",
+    cache: "no-store",
+  });
+};
+
+// LLAx Referral Rewards
+export interface LLAxReferralReward {
+  id: number;
+  invitee_id: string;
+  reward_amount: number;
+  order_tx_hash: string;
+  created_at: number;
+}
+export interface LLAxReferralRewardsResponse extends AgentCResponse {
+  data: {
+    rewards: LLAxReferralReward[];
+    total: number;
+  };
+}
+export const get_llax_referral_rewards = (params: { page: number; size: number }) => {
+  return request<LLAxReferralRewardsResponse>(
+    `${AGENT_C_API}/v1/llax/referral/rewards?page=${params.page}&size=${params.size}`,
+    {
+      method: "get",
+      cache: "no-store",
+    }
+  );
+};
+
+// LLAx Wallet Snapshot Status
+export interface LLAxWalletSnapshotData {
+  is_eligible: boolean;
+  is_claimed: boolean;
+  claim_amount: number;
+  wallet_address: string;
+}
+export interface LLAxWalletSnapshotResponse extends AgentCResponse {
+  data: LLAxWalletSnapshotData;
+}
+export const get_llax_wallet_snapshot_status = () => {
+  return request<LLAxWalletSnapshotResponse>(`${AGENT_C_API}/v1/llax/wallet/snapshot/status`, {
+    method: "get",
+    cache: "no-store",
+  });
+};

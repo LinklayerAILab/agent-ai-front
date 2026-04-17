@@ -100,7 +100,7 @@ const Connect = () => {
   const { address, isConnected } = useAccount();
   const [messageApi, contextHolder] = message.useMessage();
   const router = useRouter();
-
+  const localAddress = useSelector((state: RootState) => state.user.address);
   // listen wallet connection status�?after connection automatically trigger manual�?SIWE signature
   useEffect(() => {
     // if user actively logged out, do not automatically trigger log�?
@@ -597,7 +597,7 @@ const Connect = () => {
               isLogin ? "" : "px-2"
             }`}
           >
-            {isLogin && address ? (
+            {isLogin ? (
               <Dropdown
                 open={dropdownOpen}
                 onOpenChange={setDropdownOpen}
@@ -610,7 +610,7 @@ const Connect = () => {
                   onClick={handleDropdownClick}
                 >
                   <div
-                    title={address}
+                    title={localAddress}
                     className="flex items-center justify-center gap-1 lg:gap-2 text-[12px] lg:text-[16px]"
                   >
                     {otherInfo.image ? (
@@ -625,7 +625,7 @@ const Connect = () => {
                       <div className="w-5 h-5 rounded-full bg-gray-300 hidden lg:block"></div>
                     )}
                     <span className="flex">
-                      {addressDots(address || "", 4, 4)}
+                      {addressDots(localAddress || "", 4, 4)}
                     </span>
                   </div>
                   <CaretDownOutlined className="text-gray-500 ml-1" />

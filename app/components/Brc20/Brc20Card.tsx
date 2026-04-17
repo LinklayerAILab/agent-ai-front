@@ -87,7 +87,7 @@ export function Brc20Card({ token }: Brc20CardProps) {
               <div className="text-[10px]">{t('brc20.optimal')}</div>
             </div>
             <div>
-              1111
+              {/* 1111 */}
             </div>
             </div>
           </div>
