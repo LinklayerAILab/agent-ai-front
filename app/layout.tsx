@@ -9,7 +9,7 @@ import { Metadata, Viewport } from "next";
 import './styles/common.scss';
 import './styles/reown-appkit.css';
 import { GoogleAnalytics } from "@next/third-parties/google";
-import { isProd } from "./enum";
+import { isProd, isTest } from "./enum";
 import GlobalLoading from "./components/GlobalLoading";
 import { Suspense } from "react";
 import TopLoadingBar from "./components/TopLoadingBar";
@@ -52,7 +52,7 @@ export default function RootLayout({
 
         <div>
           <ClientProviders>{children}</ClientProviders>
-          {isProd && <GoogleAnalytics gaId="G-HY9CWG33BL" />}
+          {isProd || isTest && <GoogleAnalytics gaId="G-HY9CWG33BL" />}
         </div>
 
 
