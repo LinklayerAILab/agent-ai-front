@@ -653,7 +653,7 @@
         "referralTier3": "等级3: 5,000 LLAx",
         "walletSnapshotDesc": "连接持有代币的 BSC 钱包获取一次性 LLAx 奖励",
         "eligible": "符合条件",
-        "notEligible": "不符合条件",
+        "notEligible": "未发放",
         "alreadyClaimed": "已领取",
         "claimAmount": "领取金额",
         "claimNow": "立即领取",

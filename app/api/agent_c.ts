@@ -1,3 +1,4 @@
+
 import { request, streamingRequest } from "./request";
 import { ApiResponse } from "./user";
 
@@ -42,7 +43,7 @@ export const get_gain_ranking_c = () => {
   const timeoutPromise = new Promise<never>((_, reject) => {
     timeoutId = setTimeout(
       () => reject(new Error("get_gain_ranking_c timeout")),
-      5000
+      5000,
     );
   });
 
@@ -51,7 +52,7 @@ export const get_gain_ranking_c = () => {
     {
       method: "get",
       cache: "no-store",
-    }
+    },
   );
 
   return Promise.race([reqPromise, timeoutPromise]).finally(() => {
@@ -100,15 +101,14 @@ export const cancel_collect_c = (symbol: string) => {
   });
 };
 
-
 export interface inviterInfoResponse extends ApiResponse {
   data: {
-     my_user_id:string   // My user ID
-  my_image:string    // My image
-  inviter_id:string    // User ID of the inviter
-  inviter_image:string // Inviter's image
-  cex_names: string[]     // Exchange names of all API keys uploaded by inviter
-  }
+    my_user_id: string; // My user ID
+    my_image: string; // My image
+    inviter_id: string; // User ID of the inviter
+    inviter_image: string; // Inviter's image
+    cex_names: string[]; // Exchange names of all API keys uploaded by inviter
+  };
 }
 export const inviter_info = () => {
   return request<inviterInfoResponse>(`${AGENT_C_API}/v1/inviter_info`, {
@@ -118,15 +118,15 @@ export const inviter_info = () => {
 };
 
 export interface MyInviteeItem {
-  user_id:string
-  image: string
-  cex_names: string[]
+  user_id: string;
+  image: string;
+  cex_names: string[];
 }
 
 export interface MyInviteeInfoResponse extends ApiResponse {
   data: {
-    invitees:MyInviteeItem[]
-  }
+    invitees: MyInviteeItem[];
+  };
 }
 // /my_invitee_info
 export const my_invitee_info = () => {
@@ -135,7 +135,6 @@ export const my_invitee_info = () => {
     cache: "no-store",
   });
 };
-
 
 export interface AnalyseCoinCResponse extends AgentCResponse {
   data: {
@@ -244,7 +243,7 @@ export const analyse_coin_c_steaming = (
   str: string,
   token?: string,
   endFun?: () => void,
-  abortController?: AbortController
+  abortController?: AbortController,
 ) => {
   const requestBody: { input: string; token?: string } = {
     input: str,
@@ -270,7 +269,7 @@ export const analyse_coin_c_steaming = (
     {
       endFun,
       abortController,
-    }
+    },
   );
 };
 
@@ -278,7 +277,7 @@ export const recommend_coin_c_steaming = (
   str: string,
   token?: string,
   endFun?: () => void,
-  abortController?: AbortController
+  abortController?: AbortController,
 ) => {
   const requestBody: { input: string; token?: string } = {
     input: str,
@@ -304,16 +303,15 @@ export const recommend_coin_c_steaming = (
     {
       endFun,
       abortController,
-    }
+    },
   );
 };
-
 
 export const position_risk_management = (
   str: string,
   token?: string,
   endFun?: () => void,
-  abortController?: AbortController
+  abortController?: AbortController,
 ) => {
   const requestBody: { input: string; token?: string } = {
     input: str,
@@ -339,14 +337,14 @@ export const position_risk_management = (
     {
       endFun,
       abortController,
-    }
+    },
   );
 };
 
 export const liquidity_check_dify = (
   str: string,
   endFun?: () => void,
-  abortController?: AbortController
+  abortController?: AbortController,
 ) => {
   const requestBody: { input: string } = {
     input: str,
@@ -366,7 +364,7 @@ export const liquidity_check_dify = (
       endFun,
       abortController,
       parseMode: "sse",
-    }
+    },
   );
 };
 
@@ -497,7 +495,7 @@ export interface AddPassCommonApiKeyParams extends AddCommonApiKeyParams {
 }
 
 export const add_common_apikey = (
-  data: AddCommonApiKeyParams | AddPassCommonApiKeyParams
+  data: AddCommonApiKeyParams | AddPassCommonApiKeyParams,
 ) => {
   return request<AgentCResponse>(`${AGENT_C_API}/v1/add_userapikey`, {
     method: "post",
@@ -511,7 +509,7 @@ export const add_common_apikey = (
 
 // /add_userapikey
 export const add_userapikey = (
-  data: AddCommonApiKeyParams | AddPassCommonApiKeyParams
+  data: AddCommonApiKeyParams | AddPassCommonApiKeyParams,
 ) => {
   return request<AgentCResponse>(`${AGENT_C_API}/v1/add_userapikey`, {
     method: "post",
@@ -548,7 +546,7 @@ export const get_asset_with_logo = (data: QueryDexParams) => {
       headers: {
         "Content-Type": "application/json; charset=UTF-8",
       },
-    }
+    },
   );
 };
 
@@ -569,7 +567,7 @@ export const contract_expert_score = (data: QueryDexParams) => {
       headers: {
         "Content-Type": "application/json; charset=UTF-8",
       },
-    }
+    },
   );
 };
 
@@ -635,7 +633,7 @@ export const liquidation_calculated = (data: LiquidationCalculatedRequest) => {
       headers: {
         "Content-Type": "application/json; charset=UTF-8",
       },
-    }
+    },
   );
 };
 
@@ -649,7 +647,7 @@ export const liquidation_undue = (data: LiquidationCalculatedRequest) => {
       headers: {
         "Content-Type": "application/json; charset=UTF-8",
       },
-    }
+    },
   );
 };
 
@@ -689,47 +687,43 @@ export const position_symbols = (data: PositionSymbolsParams) => {
       method: "post",
       body: JSON.stringify(data),
       cache: "no-store",
-    }
+    },
   );
 };
 
-
-export interface ClaimInfoItem{
-  claim_amount:number
-claim_flag:boolean
-claim_time:number
-period_end:number
-period_start:number
+export interface ClaimInfoItem {
+  claim_amount: number;
+  claim_flag: boolean;
+  claim_time: number;
+  period_end: number;
+  period_start: number;
 }
 // /claim_info
 export interface ClaimInfoResponse extends AgentCResponse {
   data: {
-    claim_info:ClaimInfoItem[]
-    total_count:number
-
+    claim_info: ClaimInfoItem[];
+    total_count: number;
   };
 }
-export const get_claim_info = (params:{
-  cex_name:string
-}) => {
+export const get_claim_info = (params: { cex_name: string }) => {
   return request<ClaimInfoResponse>(`${AGENT_C_API}/v1/claim_info`, {
     method: "post",
     cache: "no-store",
     body: JSON.stringify(params),
   });
-}
+};
 
 // Alpha token info interfaces
 export interface AlphaTokenItem {
   symbol: string;
   icon_url: string;
-  token_address: string
-  price?: number
-  level?: number
-  color?: string
-  d2_result?:  {
-    slope: number
-  }
+  token_address: string;
+  price?: number;
+  level?: number;
+  color?: string;
+  d2_result?: {
+    slope: number;
+  };
 }
 
 export interface AlphaTokenInfoResponse extends AgentCResponse {
@@ -740,84 +734,98 @@ export interface AlphaTokenInfoResponse extends AgentCResponse {
 
 // /alpha_token_info
 export const alpha_token_info = () => {
-  return request<AlphaTokenInfoResponse>(`${AGENT_C_API}/v1/alpha_token_info`, {
-    method: "get",
-    cache: "no-store",
-  },{timeout:300000});
+  return request<AlphaTokenInfoResponse>(
+    `${AGENT_C_API}/v1/alpha_token_info`,
+    {
+      method: "get",
+      cache: "no-store",
+    },
+    { timeout: 300000 },
+  );
 };
-
 
 // /alpha_token_price
 export interface AlphaTokenPriceItem {
-  symbol: string
-  token_address: string
-  price: number
+  symbol: string;
+  token_address: string;
+  price: number;
 }
 export interface AlphaTokenPriceParams {
-  token_addresses: string[]
+  token_addresses: string[];
 }
 export interface AlphaTokenPriceResponse extends ApiResponse {
   data: {
-    prices:AlphaTokenPriceItem[]
-  }
+    prices: AlphaTokenPriceItem[];
+  };
 }
-export const alpha_token_price = (params:AlphaTokenPriceParams) => {
-  return request<AlphaTokenPriceResponse>(`${AGENT_C_API}/v1/alpha_token_price`, {
-    method: "post",
-    cache: "no-store",
-    body: JSON.stringify(params),
-  },{timeout:300000});
+export const alpha_token_price = (params: AlphaTokenPriceParams) => {
+  return request<AlphaTokenPriceResponse>(
+    `${AGENT_C_API}/v1/alpha_token_price`,
+    {
+      method: "post",
+      cache: "no-store",
+      body: JSON.stringify(params),
+    },
+    { timeout: 300000 },
+  );
 };
 
-
-
 export interface LiquidityCheckItem {
-token_address:string  // Token address
-  symbol:string        // Token symbol
-  d1_result:string     // D1 result
-  d2_result?:  {
-    slope: number
-  }   // D2 result
-  color:string        // Liquidity status color
-  level: number        // Liquidity status level (Yellow sub-level)
-  description: string   // Status description
+  token_address: string; // Token address
+  symbol: string; // Token symbol
+  d1_result: string; // D1 result
+  d2_result?: {
+    slope: number;
+  }; // D2 result
+  color: string; // Liquidity status color
+  level: number; // Liquidity status level (Yellow sub-level)
+  description: string; // Status description
 }
 export interface LiquidityCheckResponse extends ApiResponse {
   data: {
-    results:LiquidityCheckItem[]
-  }
+    results: LiquidityCheckItem[];
+  };
 }
 
 // liquidity_check
-export const liquidity_check = (params:AlphaTokenPriceParams) => {
-  return request<LiquidityCheckResponse>(`${AGENT_C_API}/v1/liquidity_check`, {
-    method: "post",
-    cache: "no-store",
-    body: JSON.stringify(params),
-  },{timeout:300000});
+export const liquidity_check = (params: AlphaTokenPriceParams) => {
+  return request<LiquidityCheckResponse>(
+    `${AGENT_C_API}/v1/liquidity_check`,
+    {
+      method: "post",
+      cache: "no-store",
+      body: JSON.stringify(params),
+    },
+    { timeout: 300000 },
+  );
 };
-
 
 // /update_time
 export interface UpdateTimeResponse extends ApiResponse {
   data: {
-    block_time:number
-  }
+    block_time: number;
+  };
 }
 export const update_time = () => {
-  return request<UpdateTimeResponse>(`${AGENT_C_API}/v1/update_time`, {
-    method: "get",
-    cache: "no-store",
-  },{timeout:300000});
+  return request<UpdateTimeResponse>(
+    `${AGENT_C_API}/v1/update_time`,
+    {
+      method: "get",
+      cache: "no-store",
+    },
+    { timeout: 300000 },
+  );
 };
 
 // ==================== LLAx Module ====================
 
 // LLAx Balance
 export interface LLAxBalanceData {
-  balance: number;
-  total_earned: number;
-  total_consumed: number;
+  balance: {
+    balance: number;
+    total_earned: number;
+    total_consumed: number;
+  };
 }
 export interface LLAxBalanceResponse extends AgentCResponse {
   data: LLAxBalanceData;
@@ -837,7 +845,7 @@ export interface LLAxIssuanceRecord {
   amount: number;
   before_balance: number;
   after_balance: number;
-  created_at: number;
+  created_at: string;
 }
 export interface LLAxIssuanceRecordsResponse extends AgentCResponse {
   data: {
@@ -845,25 +853,32 @@ export interface LLAxIssuanceRecordsResponse extends AgentCResponse {
     total: number;
   };
 }
-export const get_llax_issuance_records = (params: { page: number; size: number }) => {
+export const get_llax_issuance_records = (params: {
+  page: number;
+  size: number;
+}) => {
   return request<LLAxIssuanceRecordsResponse>(
     `${AGENT_C_API}/v1/llax/issuance-records?page=${params.page}&size=${params.size}`,
     {
       method: "get",
       cache: "no-store",
-    }
+    },
   );
 };
 
 // LLAx Pools
 export interface LLAxPool {
-  channel_id: number;
-  channel_name: string;
-  total_cap: number;
-  issued: number;
-  remaining: number;
-  usage_percent: number;
+  created_at: string;
+  id: number;
+  is_active: boolean;
   is_exhausted: boolean;
+  issued_amount: number;
+  last_warning_sent: null;
+  name: string;
+  remaining_amount: number;
+  total_cap: number;
+  updated_at: string;
+  usage_percent: number;
 }
 export interface LLAxPoolsResponse extends AgentCResponse {
   data: LLAxPool[];
@@ -883,10 +898,13 @@ export interface LLAxPoolProgressReport extends AgentCResponse {
   };
 }
 export const get_llax_pool_progress = () => {
-  return request<LLAxPoolProgressReport>(`${AGENT_C_API}/v1/llax/reports/pool-progress`, {
-    method: "get",
-    cache: "no-store",
-  });
+  return request<LLAxPoolProgressReport>(
+    `${AGENT_C_API}/v1/llax/reports/pool-progress`,
+    {
+      method: "get",
+      cache: "no-store",
+    },
+  );
 };
 
 // LLAx Announcements
@@ -904,25 +922,32 @@ export interface LLAxAnnouncementsResponse extends AgentCResponse {
   };
 }
 export const get_llax_announcements = () => {
-  return request<LLAxAnnouncementsResponse>(`${AGENT_C_API}/v1/llax/announcements`, {
-    method: "get",
-    cache: "no-store",
-  });
+  return request<LLAxAnnouncementsResponse>(
+    `${AGENT_C_API}/v1/llax/announcements`,
+    {
+      method: "get",
+      cache: "no-store",
+    },
+  );
 };
 
 // LLAx Referral Stats
 export interface LLAxReferralStatsResponse extends AgentCResponse {
   data: {
-    total_referrals: number;
-    total_rewards: number;
+    total_invitees: number;
     successful_referrals: number;
+    total_reward_earned: number;
+    max_referees: number;
   };
 }
 export const get_llax_referral_stats = () => {
-  return request<LLAxReferralStatsResponse>(`${AGENT_C_API}/v1/llax/referral/stats`, {
-    method: "get",
-    cache: "no-store",
-  });
+  return request<LLAxReferralStatsResponse>(
+    `${AGENT_C_API}/v1/llax/referral/stats`,
+    {
+      method: "get",
+      cache: "no-store",
+    },
+  );
 };
 
 // LLAx Referral Rewards
@@ -939,29 +964,38 @@ export interface LLAxReferralRewardsResponse extends AgentCResponse {
     total: number;
   };
 }
-export const get_llax_referral_rewards = (params: { page: number; size: number }) => {
+export const get_llax_referral_rewards = (params: {
+  page: number;
+  size: number;
+}) => {
   return request<LLAxReferralRewardsResponse>(
     `${AGENT_C_API}/v1/llax/referral/rewards?page=${params.page}&size=${params.size}`,
     {
       method: "get",
       cache: "no-store",
-    }
+    },
   );
 };
 
 // LLAx Wallet Snapshot Status
 export interface LLAxWalletSnapshotData {
-  is_eligible: boolean;
-  is_claimed: boolean;
-  claim_amount: number;
-  wallet_address: string;
+   has_snapshot: boolean //该用户已有钱包快照记录                                                                                                                                                                                    
+  eligible: boolean // 该用户符合快照奖励资格（IsEligible，即持币满足条件）                                                                                                                                                          
+  is_issued: boolean // LLAx 奖励尚未发放。改为 true 表示已发放                                                                                                                                                                     
+  issued_at: null | number // 奖励发放时间，当前为 null 说明还没发放，发放后会写入具体时间                                                                                                                                                 
+  snapshot_block: number // 快照时的 BSC 区块高度，记录的是在哪个区块做的持币检查                                                                                                                                               
+  created_at: number // 快照记录的创建时间  
+
 }
 export interface LLAxWalletSnapshotResponse extends AgentCResponse {
   data: LLAxWalletSnapshotData;
 }
 export const get_llax_wallet_snapshot_status = () => {
-  return request<LLAxWalletSnapshotResponse>(`${AGENT_C_API}/v1/llax/wallet/snapshot/status`, {
-    method: "get",
-    cache: "no-store",
-  });
+  return request<LLAxWalletSnapshotResponse>(
+    `${AGENT_C_API}/v1/llax/wallet/snapshot/status`,
+    {
+      method: "get",
+      cache: "no-store",
+    },
+  );
 };

@@ -17,7 +17,7 @@ function IssuanceHistory({ isLogin }: IssuanceHistoryProps) {
   const [total, setTotal] = useState(0);
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(true);
-  const pageSize = 10;
+  const pageSize = 20;
 
   const channelIdMap: Record<number, string> = {
     1: t("llax.channelId1"),
@@ -70,7 +70,7 @@ function IssuanceHistory({ isLogin }: IssuanceHistoryProps) {
             <div className="col amount positive">+{Number(record.amount).toLocaleString()}</div>
             <div className="col before">{Number(record.before_balance).toLocaleString()}</div>
             <div className="col after">{Number(record.after_balance).toLocaleString()}</div>
-            <div className="col date">{formatDate(record.created_at / 1000)}</div>
+            <div className="col date">{formatDate(new Date(record.created_at).getTime(), 'YYYY.M.D HH:mm')}</div>
           </div>
         ))}
       </div>

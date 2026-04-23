@@ -1,28 +1,28 @@
-.page-home-inner {
-    // Horizontal scroll container styles
-    :global {
-        #date-swiper {
-            &::-webkit-scrollbar {
-                height: 4px;
-            }
-
-            &::-webkit-scrollbar-track {
-                background: #eee;
-            }
-
-            &::-webkit-scrollbar-thumb {
-                background-color: #ccff00;
-                border-radius: 4px;
-            }
-
-            &::-webkit-scrollbar-thumb:hover {
-                background-color: #abd501;
-            }
-        }
+// Horizontal scroll container styles
+#date-swiper {
+    &::-webkit-scrollbar {
+        height: 4px;
     }
+
+    &::-webkit-scrollbar-track {
+        background: #eee;
+    }
+
+    &::-webkit-scrollbar-thumb {
+        background-color: #ccff00;
+        border-radius: 4px;
+    }
+
+    &::-webkit-scrollbar-thumb:hover {
+        background-color: #abd501;
+    }
+}
+
 .ant-rate .ant-rate-star:not(:last-child) {
     margin-inline-end: 4px;
 }
+
+.page-home-inner {
     .context-box {
         background: url('../images/home/rb-bg.svg') no-repeat;
         background-position: right 0 bottom 0;
@@ -192,9 +192,7 @@
         paint-order: stroke fill;
     }
 
-    :global {
-        .ant-select-item-option-selected:not(.ant-select-item-option-disabled) {
-            background-color: #E8FF8B !important;
-        }
+    .ant-select-item-option-selected:not(.ant-select-item-option-disabled) {
+        background-color: #E8FF8B !important;
     }
 }

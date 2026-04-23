@@ -15,6 +15,7 @@ import { add_userapikey } from "../api/agent_c";
 
 const Page = () => {
   const router = useRouter();
+  const [messageApi,messageContextHolder] = message.useMessage();
   // Determine whether to show passphrase field
   const [list] = useState(platformListData.map(item => {
     return {
@@ -35,22 +36,22 @@ const Page = () => {
 
     // Validate required fields
     if (!selectedExchange) {
-      message.error(t('apiForm.cexNameRequired'));
+      messageApi.error(t('apiForm.cexNameRequired'));
       return;
     }
 
     if (!apiKey.trim()) {
-      message.error(t('apiForm.apiKeyRequired'));
+      messageApi.error(t('apiForm.apiKeyRequired'));
       return;
     }
 
     if (!secretKey.trim()) {
-      message.error(t('apiForm.secretKeyRequired'));
+      messageApi.error(t('apiForm.secretKeyRequired'));
       return;
     }
 
     if (needsPassphrase && !passphrase.trim()) {
-      message.error(t('apiForm.passphraseRequired'));
+      messageApi.error(t('apiForm.passphraseRequired'));
       return;
     }
 
@@ -62,17 +63,21 @@ const Page = () => {
     });
     try {
       setLoading(true)
-     await add_userapikey({
+      const res =await add_userapikey({
       apikey: apiKey,
       secretkey: secretKey,
       passphrase: needsPassphrase ? passphrase : undefined,
       cex_name: selectedExchange.toLowerCase()
     })
+    if(res.code !== 0){
+        messageApi.error(res.message || t('apiForm.submitFailed'));
+      return;
+    }
 
-    message.success(t('apiForm.submitSuccess'));
+    messageApi.success(t('apiForm.submitSuccess'));
     router.replace('/');
     } catch(err){
-      message.error(err.message);
+      messageApi.error(err.message);
     }finally{
     setLoading(false)
 
@@ -95,7 +100,7 @@ const Page = () => {
 
   return (
     <div className="page-agent w-[100%] h-auto lg:h-[83vh] lg:border-solid lg:border-black lg:border-2 bg-white rounded-[8px] flex flex-col page-home-inner">
-
+      {messageContextHolder}
       <div className="h-[40px] lg:h-[4vh] bg-[#cf0] rounded-t-[8px] hidden lg:flex items-center px-[14px] cursor-pointer select-none" onClick={() => router.push('/')}>
         <LeftOutlined></LeftOutlined> <span className="text-[16px] ml-[4px] font-bold" >{t('common.back')}</span>
       </div>

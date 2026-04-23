@@ -104,7 +104,7 @@ const Connect = () => {
   // listen wallet connection status�?after connection automatically trigger manual�?SIWE signature
   useEffect(() => {
     // if user actively logged out, do not automatically trigger log�?
-    if (isConnected && address && !isLogin && !hasManualLogout) {
+    if (isConnected && address && !isLogin && !hasManualLogout && !localStorage.getItem("access_token")) {
       localStorage.setItem("address", address);
       // wallet connection success and not logged in, call manual SIWE signature
       handleManualSign();

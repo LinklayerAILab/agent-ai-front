@@ -75,7 +75,7 @@ function PoolProgress({ pools }: PoolProgressProps) {
       },
       yAxis: {
         type: "category",
-        data: pools.map((p) => channelIdMap[p.channel_id] || p.channel_name),
+        data: pools.map((p) => channelIdMap[p.id] || p.name),
         axisLine: { lineStyle: { color: "#ddd" } },
         axisLabel: { color: "#666", fontSize: 12 },
       },
@@ -84,7 +84,7 @@ function PoolProgress({ pools }: PoolProgressProps) {
           name: t("llax.issued"),
           type: "bar",
           stack: "total",
-          data: pools.map((p) => Number(p.issued)),
+          data: pools.map((p) => Number(p.issued_amount)),
           itemStyle: {
             color: "#7A9900",
             borderRadius: [0, 0, 4, 4],
@@ -95,7 +95,7 @@ function PoolProgress({ pools }: PoolProgressProps) {
           name: t("llax.remaining"),
           type: "bar",
           stack: "total",
-          data: pools.map((p) => Number(p.remaining)),
+          data: pools.map((p) => Number(p.remaining_amount)),
           itemStyle: {
             color: "#D4E8A0",
             borderRadius: [4, 4, 0, 0],
@@ -124,9 +124,9 @@ function PoolProgress({ pools }: PoolProgressProps) {
       <div ref={chartRef} className="pool-chart" />
       <div className="pool-details">
         {pools.map((pool) => (
-          <div className="pool-detail-item" key={pool.channel_id}>
+          <div className="pool-detail-item" key={pool.id}>
             <div className="pool-detail-name">
-              {channelIdMap[pool.channel_id] || pool.channel_name}
+              {channelIdMap[pool.id] || pool.name}
             </div>
             <div className="pool-detail-bar">
               <div
@@ -137,7 +137,7 @@ function PoolProgress({ pools }: PoolProgressProps) {
             <div className="pool-detail-info">
               <span>{(Number(pool.usage_percent) || 0).toFixed(1)}%</span>
               <span className={pool.is_exhausted ? "exhausted" : ""}>
-                {pool.is_exhausted ? t("llax.exhausted") : `${Number(pool.remaining).toLocaleString()} ${t("llax.remaining")}`}
+                {pool.is_exhausted ? t("llax.exhausted") : `${Number(pool.remaining_amount).toLocaleString()} ${t("llax.remaining")}`}
               </span>
             </div>
           </div>

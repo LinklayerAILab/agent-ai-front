@@ -9,9 +9,10 @@ import "./ChannelCards.scss";
 
 interface ChannelCardsProps {
   referralStats: {
-    total_referrals: number;
-    total_rewards: number;
+    total_invitees: number;
+    total_reward_earned: number;
     successful_referrals: number;
+    max_referees?: number;
   };
   walletSnapshot: LLAxWalletSnapshotData | null;
 }
@@ -75,15 +76,15 @@ function ChannelCards({ referralStats, walletSnapshot }: ChannelCardsProps) {
         <div className="channel-card-stats">
           <div className="stat-row">
             <span>{t("llax.totalReferrals")}</span>
-            <span className="stat-value">{referralStats.total_referrals}</span>
+            <span className="stat-value">{referralStats.total_invitees ?? 0}</span>
           </div>
           <div className="stat-row">
             <span>{t("llax.successfulReferrals")}</span>
-            <span className="stat-value">{referralStats.successful_referrals}</span>
+            <span className="stat-value">{referralStats.successful_referrals ?? 0}</span>
           </div>
           <div className="stat-row">
             <span>{t("llax.totalReferralRewards")}</span>
-            <span className="stat-value">{Number(referralStats.total_rewards).toLocaleString()} LLAx</span>
+            <span className="stat-value">{(Number(referralStats.total_reward_earned) || 0).toLocaleString()} LLAx</span>
           </div>
           {otherInfo?.invite_code && (
             <div className="stat-row">
@@ -115,8 +116,8 @@ function ChannelCards({ referralStats, walletSnapshot }: ChannelCardsProps) {
               </div>
               <div className="stat-row">
                 <span>{t("llax.claimAmount")}</span>
-                <span className={`stat-value ${walletSnapshot.is_claimed ? "claimed" : "pending"}`}>
-                  {walletSnapshot.is_claimed ? t("llax.alreadyClaimed") : t("llax.eligible")}
+                <span className={`stat-value ${walletSnapshot.is_issued ? "claimed" : "pending"}`}>
+                  {walletSnapshot.is_issued ? t("llax.alreadyClaimed") : t("llax.notEligible")}
                 </span>
               </div>
             </>

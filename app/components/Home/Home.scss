@@ -1,6 +1,6 @@
 .page-home-inner {
     // Horizontal scroll container styles
-    :global {
+    ::global {
         #date-swiper {
             &::-webkit-scrollbar {
                 height: 4px;
@@ -215,7 +215,7 @@
     }
 
     // Select dropdown menu selected item style
-    :global {
+    ::global {
         .ant-select-item-option-selected:not(.ant-select-item-option-disabled) {
             background-color: #E8FF8B !important;
         }
