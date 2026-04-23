@@ -15,7 +15,7 @@ import dunIcon from "@/app/images/alpha/dun.svg";
 
 import {
   alpha_token_info,
-  alpha_token_price,
+  // alpha_token_price,
   liquidity_check,
   AlphaTokenItem,
   update_time,
@@ -93,50 +93,8 @@ export default function Alpha() {
         // Step 2: Extract token addresses
         const tokenAddresses = tokenList.map((item) => item.token_address).filter(Boolean);
 
-        // Step 3: Fetch prices and liquidity check independently in parallel
+        // Step 3: Fetch liquidity check only (price fetching disabled)
         if (tokenAddresses.length > 0) {
-          // Function to fetch and update token prices independently
-          const fetchTokenPrices = async () => {
-            try {
-              const priceResponse = await alpha_token_price({
-                token_addresses: tokenAddresses,
-              });
-
-              // Create price map for quick lookup
-              const priceMap = new Map<string, number>();
-              if (priceResponse.data?.prices) {
-                priceResponse.data.prices.forEach((priceItem) => {
-                  priceMap.set(priceItem.token_address, priceItem.price);
-                });
-              }
-
-              // Update state with price data immediately
-              setAlphaData((prevData) =>
-                prevData.map((item, index) => {
-                  const token = tokenList[index];
-                  const price = priceMap.get(token.token_address);
-
-                  return {
-                    ...item,
-                    price: typeof price === "number" ? price : item.price,
-                    priceLoaded: true,
-                  };
-                })
-              );
-            } catch (error) {
-              console.error("Failed to fetch token prices:", error);
-
-              // Update with error state for prices only
-              setAlphaData((prevData) =>
-                prevData.map((item) => ({
-                  ...item,
-                  price: Number.NaN,
-                  priceLoaded: true,
-                }))
-              );
-            }
-          };
-
           // Function to fetch and update liquidity data independently
           const fetchLiquidityData = async () => {
             try {
@@ -192,8 +150,6 @@ export default function Alpha() {
             }
           };
 
-          // Launch both API calls in parallel - they execute independently
-          fetchTokenPrices();
           fetchLiquidityData();
         } 
       } catch (error) {
@@ -498,7 +454,7 @@ export default function Alpha() {
                     <AlphaCard
                       key={item.id}
                       title={item.title}
-                      price={item.price == null ? "-" : Number.isNaN(item.price) ? "N/A" : item.price.toFixed(6)}
+                      price={"-"}
                       depth={formatDepth(item?.d2_result?.slope)}
                       data={item}
                       icon={item.icon_url}

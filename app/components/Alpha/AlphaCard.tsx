@@ -2,7 +2,7 @@
 import "./AlphaCard.scss";
 import LLButton from "../LLButton";
 import { Skeleton } from "antd";
-import zichan from "@/app/images/alpha/zichan.svg";
+// import zichan from "@/app/images/alpha/zichan.svg";
 import rise from "@/app/images/alpha/rise.svg";
 import downRed from "@/app/images/alpha/down-red.svg";
 import downYellow from "@/app/images/alpha/down-yellow.svg";
@@ -25,11 +25,9 @@ interface AlphaCardProps {
 
 export const AlphaCard = ({
   title = "Token Name",
-  price = "0.00",
   depth = "--",
   icon = '',
   color,
-  priceLoaded = false,
   liquidityLoaded = false,
   data
 }: AlphaCardProps) => {
@@ -101,7 +99,7 @@ export const AlphaCard = ({
   }
 
   return (
-    <div className="alpha-card flex gap-3 py-[14px] px-[14px] lg:px-[1.5vh] lg:py-[1.5vh] h-[184px] w-full">
+    <div className="alpha-card flex gap-3 py-[14px] px-[14px] lg:px-[1.5vh] lg:py-[1.5vh] h-[156px] w-full">
         <div className="flex items-center justify-center flex-col gap-2 border-[2px] border-solid border-black rounded-[8px] p-[10px] w-[76px]">
             <div className="w-[44px] h-[44px] lg:w-[5.6vh] lg:h-[5.6vh] xl:w-[5vh] xl:h-[5vh] rounded-full border-[2px] border-solid border-black">
                 {icon && icon.length > 0 ? (
@@ -114,21 +112,21 @@ export const AlphaCard = ({
                 <Skeleton.Avatar active size="large" className="w-[4vh] h-[4vh] rounded-full" />
             )}
         </div>
-      <div className="alpha-card-content flex-1 lg:px-2 flex flex-col gap-2">
+      <div className="alpha-card-content flex-1 flex flex-col gap-2">
         <div className="flex justify-between items-center">
             <div className=" font-bold text-[16px]">{title}</div>
             <div>--</div>
         </div>
-        <div className="flex justify-between items-center">
+        {/* <div className="flex justify-between items-center">
             <div className=" font-bold">{t('alpha.card.price')}</div>
             <div className="flex items-center gap-1"> <Image src={zichan} alt=""></Image> <span>{priceLoaded ? price : <Skeleton.Input active size="small" className="w-[60px]" />}</span></div>
-        </div>
+        </div> */}
                 <div className="flex justify-between items-center">
             <div className=" font-bold">{t('alpha.card.lpDepth')}</div>
             <div className={`20px lg:h-[2vh] border-[1px] border-solid ${handleClass()} rounded-full flex items-center justify-center px-2 text-[12px] font-bold`}> <Image src={handleIcon()} alt="" /> <span>{depth}(15m)</span></div>
         </div>
         <div className="h-[2px] bg-black my-[0.5vh]"></div>
-        <div className="flex justify-between items-center gap-4">
+        <div className="flex justify-between items-center gap-2">
             <LLButton outClassName="flex-1" style={{fontSize:'14px'}} onClick={handleExplorer}>{t('alpha.card.explorer')}</LLButton>
             <LLButton outClassName="flex-1" style={{fontSize:'14px'}} onClick={handleAanlize}>{t('alpha.card.agent') }</LLButton>
         </div>

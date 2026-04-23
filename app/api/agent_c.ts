@@ -999,3 +999,37 @@ export const get_llax_wallet_snapshot_status = () => {
     },
   );
 };
+
+// ==================== Binance Active Pools & Update Time ====================
+
+export interface BinanceActivePoolsCountResponseData {
+  count: number;
+}
+export interface GetBinanceActivePoolsCountResponse extends AgentCResponse {
+  data: BinanceActivePoolsCountResponseData;
+}
+export const get_binance_active_pools_count = () => {
+  return request<GetBinanceActivePoolsCountResponse>(
+    `${AGENT_C_API}/v1/binance_active_pools_count`,
+    {
+      method: "get",
+      cache: "no-store",
+    },
+  );
+};
+
+export interface BinanceUpdateTimeResponseData {
+  last_updated: number;
+}
+export interface GetBinanceUpdateTimeResponse extends AgentCResponse {
+  data: BinanceUpdateTimeResponseData;
+}
+export const get_binance_update_time = () => {
+  return request<GetBinanceUpdateTimeResponse>(
+    `${AGENT_C_API}/v1/binance_update_time`,
+    {
+      method: "get",
+      cache: "no-store",
+    },
+  );
+};
