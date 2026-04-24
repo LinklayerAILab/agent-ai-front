@@ -607,7 +607,7 @@
         "chainPulse": "BNBチェーンパルス",
         "healthyTokens": "健全なトークン",
         "activePools": "アクティブなプール",
-        "totalLiquidity": "総流動性",
+        "totalLiquidity": "流動性ステータス",
         "avgExitCost": "平均退出コスト",
         "lpDepth": "LP深度",
         "lpStability": "LP安定性",

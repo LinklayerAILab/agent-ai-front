@@ -604,7 +604,7 @@
         "chainPulse": "BNB链脉搏",
         "healthyTokens": "健康代币",
         "activePools": "活跃池子",
-        "totalLiquidity": "总流动性",
+        "totalLiquidity": "流动性状态",
         "avgExitCost": "平均退出成本",
         "lpDepth": "LP深度",
         "lpStability": "LP稳定性",

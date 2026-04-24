@@ -607,7 +607,7 @@
         "chainPulse": "BNB Chain Pulse",
         "healthyTokens": "Healthy Tokens",
         "activePools": "Active Pools",
-        "totalLiquidity": "Total Liquidity",
+        "totalLiquidity": "Liquidity Status",
         "avgExitCost": "Avg Exit Cost",
         "lpDepth": "LP Depth",
         "lpStability": "LP Stability",

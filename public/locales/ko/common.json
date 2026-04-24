@@ -604,7 +604,7 @@
         "chainPulse": "BNB 체인 펄스",
         "healthyTokens": "건전한 토큰",
         "activePools": "활성 풀",
-        "totalLiquidity": "총 유동성",
+        "totalLiquidity": "유동성 상태",
         "avgExitCost": "평균 출차 비용",
         "lpDepth": "LP 깊이",
         "lpStability": "LP 안정성",

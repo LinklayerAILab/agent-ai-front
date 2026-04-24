@@ -40,29 +40,25 @@ export default function Alpha() {
   const [loading, setLoading] = useState(true);
 
   const isLogin = useSelector((state: RootState) => state.user.isLogin);
-  const [updateTime, setUpdateTime] = useState(0)
-  const [relativeTime, setRelativeTime] = useState("0m ago");
+  const [updateTime, setUpdateTime] = useState<number | null>(null);
+  const [, setTick] = useState(0);
+
+  const formatRelativeTime = (timestamp: number | null): string => {
+    if (!timestamp) return "0m ago";
+    const now = Date.now();
+    const diff = now - timestamp;
+    if (diff < 0) return "0m ago";
+    const minutes = Math.floor(diff / 60000);
+    if (minutes < 1440) return `${minutes}m ago`;
+    const days = Math.floor(minutes / 1440);
+    const remainingMinutes = minutes % 1440;
+    return `${days}d${remainingMinutes}m`;
+  };
 
   useEffect(() => {
-    if (!updateTime) {
-      setRelativeTime("0m ago");
-      return;
-    }
-    const update = () => {
-      const diffMs = Date.now() - updateTime;
-      const minutes = Math.max(0, Math.floor(diffMs / 60000));
-      if (minutes >= 1440) {
-        const days = Math.floor(minutes / 1440);
-        const remainingMinutes = minutes % 1440;
-        setRelativeTime(`${days}d${remainingMinutes}m`);
-        return;
-      }
-      setRelativeTime(`${minutes}m ago`);
-    };
-    update();
-    const timer = setInterval(update, 1000);
+    const timer = setInterval(() => setTick(t => t + 1), 60_000);
     return () => clearInterval(timer);
-  }, [updateTime]);
+  }, []);
   // Fetch alpha tokens data and prices
   useEffect(() => {
     const fetchTokens = async () => {
@@ -358,7 +354,7 @@ export default function Alpha() {
                       paintOrder="stroke"
                       className="font-bold text-[0.875rem] lg:text-[0.78rem]"
                     >
-                      {relativeTime}
+                      {formatRelativeTime(updateTime)}
                     </text>
                     <g className="alpha-indicators-svg" aria-hidden="true">
                       <g>

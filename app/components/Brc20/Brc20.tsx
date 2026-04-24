@@ -136,24 +136,26 @@ export function Brc20() {
                 <Image src={topGreen} alt="topGreen" className="h-[14vh] w-[8vh]" width={45} height={50}></Image>
             </div>
             <div className="flex flex-wrap gap-[1vh] w-[60%]">
-                <div className="rounded-[8px] bg-[#F8FFDC] px-[14px] py-[10px] lg:px-[2vh] lg:py-[1.5vh] flex flex-col items-center justify-center h-[16vh] w-[calc(50%-0.5vh)]">
-              <div className="text-[16px] whitespace-nowrap">{t('brc20.healthyTokens')}</div>
-              <div className="font-bold text-center text-[16px]">{total}</div>
-            </div>
-            <div className="rounded-[8px] bg-[#F8FFDC] px-[14px] py-[10px] lg:px-[2vh] lg:py-[1.5vh] flex flex-col items-center justify-center h-[16vh] w-[calc(50%-0.5vh)]">
-              <div className="text-[16px] whitespace-nowrap">{t('brc20.activePools')}</div>
+               <div className="flex w-full gap-2">
+                            <div className="rounded-[8px] bg-[#F8FFDC] px-[14px] py-[10px] lg:px-[1vh] lg:py-[1vh] flex flex-col items-center justify-center h-[7.5vh] w-[calc(50%-0.5vh)]">
+              <div className="text-[13px] whitespace-nowrap">{t('brc20.activePools')}</div>
               <div className="font-bold text-center text-[16px]">{activePoolsCount ?? "-"}</div>
             </div>
+                 <div className="rounded-[8px] bg-[#F8FFDC] px-[14px] py-[10px] lg:px-[1vh] lg:py-[1vh] flex flex-col items-center justify-center h-[7.5vh] w-[calc(50%-0.5vh)]">
+              <div className="text-[13px] whitespace-nowrap">{t('brc20.healthyTokens')}</div>
+              <div className="font-bold text-center text-[16px]">{total}</div>
+            </div>
 
-{/* 
-            <div className="rounded-[8px] bg-[#F8FFDC] px-[14px] py-[10px] lg:px-[2vh] lg:py-[1.5vh] flex flex-col items-center justify-center h-[7.5vh] w-[calc(50%-0.5vh)]">
-              <div className="text-[12px] whitespace-nowrap">{t('brc20.totalLiquidity')}</div>
+               </div>
+
+
+            <div className="w-full">
+              <div className="rounded-[8px] bg-[#F8FFDC] px-[14px] py-[10px] lg:px-[1vh] lg:py-[1vh] flex flex-col items-center justify-center h-[7.5vh] w-full">
+              <div className="text-[13px] whitespace-nowrap">{t('brc20.totalLiquidity')}</div>
               <div className="font-bold text-center text-[16px]">-</div>
             </div>
-            <div className="rounded-[8px] bg-[#F8FFDC] px-[14px] py-[10px] lg:px-[2vh] lg:py-[1.5vh] flex flex-col items-center justify-center  h-[7.5vh] w-[calc(50%-0.5vh)]">
-              <div className="text-[12px] whitespace-nowrap">{t('brc20.avgExitCost')}</div>
-              <div className="font-bold text-center text-[16px]">-</div>
-            </div> */}
+            </div>
+            
             </div>
           </div>
         </div>
@@ -164,32 +166,32 @@ export function Brc20() {
               <div className="text-[12px] flex items-center gap-1"><Image src={time} alt="time" className="w-[14px]" width={18} height={18}></Image> {formatTimeAgo(updateTime)}</div>
             </div>
             <div className="bg-white rounded-[8px] mx-[6px] p-[14px] h-[10rem]">
-              <div className="h-full w-full brc20-h5bg flex py-[0.3rem]">
-                <div className="flex-1 flex flex-col justify-between">
-                  <div className="h-[3.5rem] flex flex-col items-center justify-center">
+              <div className="h-full w-full flex lg:py-[0.3rem] gap-2">
+                        <div className="w-[26%] flex items-center justify-center bg-[#F8FFDC] border-[1px] border-[#C4F402] rounded-[8px]">
+                  <Image src={topGreenH5} className="w-[4rem] ml-[-0.22rem]" alt="topGreenH5"></Image>
+                </div>
+               <div className="w-full flex flex-col gap-2">
+                 <div className="flex-1 flex justify-between gap-2">
+                  <div className="h-[3.8rem] flex flex-col items-center justify-center flex-1 bg-[#F8FFDC] border-[1px] border-[#C4F402] rounded-[8px]">
                     <div className="text-center text-[11px]">{t('brc20.healthyTokens')}</div>
                     <div className="text-center text-[16px] font-bold">{total}</div>
                   </div>
+       <div className="h-[3.8rem] flex flex-col items-center justify-center flex-1 bg-[#F8FFDC] border-[1px] border-[#C4F402] rounded-[8px]">
+                    <div className="text-center text-[11px]">{t('brc20.activePools')}</div>
+                    <div className="text-center text-[16px] font-bold">{activePoolsCount ?? "0"}</div>
+                  </div>
+            
+                </div>
+        
+                <div className="flex-1 flex justify-between">
+      
 
-                  <div className="h-[3.5rem] flex flex-col items-center justify-center">
+                 <div className="h-[3.8rem] flex flex-col items-center justify-center  bg-[#F8FFDC] border-[1px] border-[#C4F402] rounded-[8px] w-full">
                     <div className="text-center text-[11px]">{t('brc20.totalLiquidity')}</div>
                     <div className="text-center text-[16px] font-bold">-</div>
                   </div>
                 </div>
-                <div className="w-[26%] flex items-center justify-center">
-                  <Image src={topGreenH5} className="w-[4rem] ml-[-0.22rem]" alt="topGreenH5"></Image>
-                </div>
-                <div className="flex-1 flex flex-col justify-between">
-             <div className="h-[3.5rem] flex flex-col items-center justify-center">
-                    <div className="text-center text-[11px]">{t('brc20.activePools')}</div>
-                    <div className="text-center text-[16px] font-bold">{activePoolsCount ?? "-"}</div>
-                  </div>
-
-                 <div className="h-[3.5rem] flex flex-col items-center justify-center">
-                    <div className="text-center text-[11px]">{t('brc20.avgExitCost')}</div>
-                    <div className="text-center text-[16px] font-bold">-</div>
-                  </div>
-                </div>
+               </div>
               </div>
             </div>
           </div>

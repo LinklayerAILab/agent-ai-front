@@ -588,7 +588,7 @@
         "chainPulse": "Пульс BSC",
         "healthyTokens": "Здоровые токены",
         "activePools": "Активные пулы",
-        "totalLiquidity": "Общая ликвидность",
+        "totalLiquidity": "Статус ликвидности",
         "avgExitCost": "Средняя стоимость выхода",
         "lpDepth": "Глубина LP",
         "lpStability": "Стабильность LP",
