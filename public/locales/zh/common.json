@@ -56,7 +56,7 @@
         "tracker": "跟踪",
         "picker": "选择",
         "piloter": "领航员",
-        "brc20": "BRC20"
+        "brc20": "BEP20"
     },
     "header": {
         "wallet": "连接",
@@ -595,11 +595,11 @@
         }
     },
     "brc20": {
-        "title": "BRC20",
-        "description": "探索和管理BRC20代币",
+        "title": "BEP20",
+        "description": "探索和管理BEP20代币",
         "comingSoon": "即将推出",
-        "comingSoonDesc": "BRC20功能正在开发中，敬请期待！",
-        "scannerTitle": "BRC20优选",
+        "comingSoonDesc": "BEP20功能正在开发中，敬请期待！",
+        "scannerTitle": "BEP20优选",
         "scannerDesc": "实时链上筛选BNB链上流动性最佳的资产",
         "chainPulse": "BNB链脉搏",
         "healthyTokens": "健康代币",

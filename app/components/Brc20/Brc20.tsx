@@ -22,6 +22,7 @@ export function Brc20() {
   const [total, setTotal] = useState(0);
   const [activePoolsCount, setActivePoolsCount] = useState<number | null>(null);
   const [updateTime, setUpdateTime] = useState<number | null>(null);
+  const [, setTick] = useState(0);
 
   const formatTimeAgo = (timestamp: number | null): string => {
     if (!timestamp) return "0m ago";
@@ -35,6 +36,12 @@ export function Brc20() {
     const days = Math.floor(hours / 24);
     return `${days}d ago`;
   };
+
+  // Auto-refresh formatTimeAgo display every minute
+  useEffect(() => {
+    const timer = setInterval(() => setTick(t => t + 1), 60_000);
+    return () => clearInterval(timer);
+  }, []);
 
   // Fetch Binance token screening list
   useEffect(() => {

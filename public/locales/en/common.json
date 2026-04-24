@@ -56,7 +56,7 @@
         "tracker": "Tracker",
         "picker": "Picker",
         "piloter": "Piloter",
-        "brc20": "BRC20"
+        "brc20": "BEP20"
     },
     "header": {
         "wallet": "Connect",
@@ -598,11 +598,11 @@
         }
     },
     "brc20": {
-        "title": "BRC20",
-        "description": "Explore and manage BRC20 tokens",
+        "title": "BEP20",
+        "description": "Explore and manage BEP20 tokens",
         "comingSoon": "Coming Soon",
-        "comingSoonDesc": "BRC20 features are under development. Stay tuned!",
-        "scannerTitle": "BRC20 Prime",
+        "comingSoonDesc": "BEP20 features are under development. Stay tuned!",
+        "scannerTitle": "BEP20 Prime",
         "scannerDesc": "Live on-chain filtering for the most liquid assets on BNB Chain",
         "chainPulse": "BNB Chain Pulse",
         "healthyTokens": "Healthy Tokens",

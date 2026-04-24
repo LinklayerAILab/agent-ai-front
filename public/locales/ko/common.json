@@ -56,7 +56,7 @@
         "tracker": "거래",
         "picker": "선택",
         "piloter": "파일럿",
-        "brc20": "BRC20"
+        "brc20": "BEP20"
     },
     "header": {
         "wallet": "Connect",
@@ -595,11 +595,11 @@
         "noAlphaTokenInfo": "알파 토큰 정보가 없습니다"
     },
     "brc20": {
-        "title": "BRC20",
-        "description": "BRC20 토큰 탐색 및 관리",
+        "title": "BEP20",
+        "description": "BEP20 토큰 탐색 및 관리",
         "comingSoon": "출시 예정",
-        "comingSoonDesc": "BRC20 기능은 개발 중입니다. 기대해 주세요!",
-        "scannerTitle": "BRC20 프라임",
+        "comingSoonDesc": "BEP20 기능은 개발 중입니다. 기대해 주세요!",
+        "scannerTitle": "BEP20 프라임",
         "scannerDesc": "BNB 체인에서 가장 유동성이 높은 자산을 실시간 온체인 필터링",
         "chainPulse": "BNB 체인 펄스",
         "healthyTokens": "건전한 토큰",

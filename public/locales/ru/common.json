@@ -56,7 +56,7 @@
         "tracker": "Трекер",
         "picker": "Сборщик",
         "piloter": "Пилот",
-        "brc20": "BRC20"
+        "brc20": "BEP20"
     },
     "header": {
         "wallet": "Подключить",
@@ -579,10 +579,10 @@
         "noAlphaTokenInfo": "Нет информации об альфа-токенах"
     },
     "brc20": {
-        "title": "BRC20",
-        "description": "Исследуйте и управляйте токенами BRC20",
+        "title": "BEP20",
+        "description": "Исследуйте и управляйте токенами BEP20",
         "comingSoon": "Скоро",
-        "comingSoonDesc": "Функции BRC20 находятся в разработке. Оставайтесь с нами!",
+        "comingSoonDesc": "Функции BEP20 находятся в разработке. Оставайтесь с нами!",
         "scannerTitle": "Сканер состояния BSC",
         "scannerDesc": "Фильтрация наиболее ликвидных активов в BNB Chain в реальном времени",
         "chainPulse": "Пульс BSC",
