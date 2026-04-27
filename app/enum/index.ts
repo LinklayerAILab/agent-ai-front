@@ -5,7 +5,7 @@ export const isTest = process.env.NEXT_PUBLIC_NODE_ENV === "test" ? true : false
 
 export const mainInviteCode = "linklayer";
 
-export const DEFAULT_CHAIN_ID = Number(process.env.VITE_DEFAULT_CHAIN_ID);
+export const DEFAULT_CHAIN_ID = Number(process.env.NEXT_PUBLIC_CHAIN_ID);
 
 export const DEFAULT_CHAIN_NAME = process.env.NEXT_PUBLIC_DEFAULT_CHAIN_NAME;
 export const DEFAULT_CURRENCY = process.env.NEXT_PUBLIC_DEFAULT_CURRENCY;

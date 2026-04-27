@@ -448,6 +448,7 @@ export interface SiweVerifyParams {
   message: string;
   signature: string;
   invite_code?: string;
+  cacao?: unknown;
 }
 export const verifySiweMessage = (params: SiweVerifyParams):Promise<SiweVerifyResponse> => {
   return service.post(`${DEFAI_AGENT_API}/v1/login`, params);

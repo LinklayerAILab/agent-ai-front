@@ -195,7 +195,17 @@ const Connect = () => {
       // ReOwn SIWE handles the full flow: connect -> sign -> verify
       await open();
     } catch (err) {
-      console.error("Login error:", err);
+      const errorObj = err as {
+        message?: string;
+        cause?: unknown;
+        stack?: string;
+      };
+      console.error("[Auth] open() failed", {
+        message: errorObj?.message || String(err),
+        cause: errorObj?.cause,
+        stack: errorObj?.stack,
+        raw: err,
+      });
       messageApi.error(
         t("login.authFailed") || "Login failed. Please try again",
       );

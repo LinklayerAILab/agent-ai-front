@@ -17,6 +17,9 @@ export const appkit = createAppKit({
   metadata,
   projectId,
   adapters: [wagmiAdapter],
+  defaultAccountTypes: {
+    eip155: 'eoa',
+  },
   defaultNetwork: getChain(),
   siweConfig: createSIWEConfig(siweConfig),
   features: {
