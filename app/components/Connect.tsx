@@ -465,7 +465,7 @@ const Connect = () => {
             placement="bottomRight"
           >
             <div className="flex items-center justify-center gap-1 px-1 lg:px-2">
-              <span className="text-[12px] lg:text-[16px]">
+              <span className="text-[12px] lg:text-[14px]">
                 {t("menu.earn")}
               </span>
               <Image className="hidden lg:block" src={toLink} alt=""></Image>
@@ -485,7 +485,7 @@ const Connect = () => {
                 alt=""
               ></Image>
             </div>
-            <span className="text-[12px] lg:text-[16px]">{points}</span>
+            <span className="text-[12px] lg:text-[14px]">{points}</span>
           </div>
         </LLButton>
       ) : (
@@ -517,7 +517,7 @@ const Connect = () => {
                 >
                   <div
                     title={localAddress}
-                    className="flex items-center justify-center gap-1 lg:gap-2 text-[12px] lg:text-[16px]"
+                    className="flex items-center justify-center gap-1 lg:gap-2 text-[12px] lg:text-[14px]"
                   >
                     {otherInfo.image ? (
                       <Image

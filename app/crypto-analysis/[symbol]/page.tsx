@@ -15,6 +15,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "@/app/store";
 import { getSyncAssets } from "@/app/store/assetsSlice";
 import { syncPoints } from "@/app/store/userSlice";
+import { AGENT_POINTS_COST } from "@/app/enum";
 import {
   GetAssetWithLogoItem,
   analyse_coin_c_steaming,
@@ -205,11 +206,11 @@ export default function CryptoAnalysis() {
 
     try {
 
+      const spotCost = AGENT_POINTS_COST.INSIGHT_SPOT;
       const result = await dispatch(syncPoints()).unwrap();
 
-
-      if (result < 10) {
-        message.warning(t("home.insufficientPoints"));
+      if (result < spotCost) {
+        message.warning(t("home.insufficientPoints", { cost: spotCost }));
         return;
       }
 

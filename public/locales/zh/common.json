@@ -235,7 +235,7 @@
         "countdown": "倒计时",
         "rewards": "奖励",
         "times": "次",
-        "insufficientPoints": "积分不足，需要至少10积分",
+        "insufficientPoints": "积分不足，需要至少{{cost}}积分",
         "syncPointsError": "同步积分失败，请重试",
         "claimHistory": "领取历史",
         "personalPosition": "个人持仓",

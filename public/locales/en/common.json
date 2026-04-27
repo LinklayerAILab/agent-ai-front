@@ -240,7 +240,7 @@
         "countdown": "Countdown",
         "rewards": "Rewards",
         "times": "times",
-        "insufficientPoints": "Insufficient points, at least 10 points required",
+        "insufficientPoints": "Insufficient points, at least {{cost}} points required",
         "syncPointsError": "Failed to sync points, please try again",
         "claimHistory": "Claim History",
         "personalPosition": "Personal Position",

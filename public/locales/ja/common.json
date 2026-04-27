@@ -240,7 +240,7 @@
         "countdown": "カウントダウン",
         "rewards": "リワード",
         "times": "回",
-        "insufficientPoints": "ポイントが不足しています。最低10ポイント必要です",
+        "insufficientPoints": "ポイントが不足しています。最低{{cost}}ポイント必要です",
         "syncPointsError": "ポイントの同期に失敗しました。もう一度お試しください",
         "claimHistory": "受取履歴",
         "personalPosition": "個人ポジション",

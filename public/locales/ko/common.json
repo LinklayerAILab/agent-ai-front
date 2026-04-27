@@ -237,7 +237,7 @@
         "countdown": "카운트다운",
         "rewards": "리워드",
         "times": "회",
-        "insufficientPoints": "포인트가 부족합니다. 최소 10포인트가 필요합니다",
+        "insufficientPoints": "포인트가 부족합니다. 최소 {{cost}}포인트가 필요합니다",
         "syncPointsError": "포인트 동기화에 실패했습니다. 다시 시도해주세요",
         "claimHistory": "수령 내역",
         "personalPosition": "개인 포지션",

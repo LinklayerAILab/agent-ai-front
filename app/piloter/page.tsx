@@ -13,6 +13,7 @@ import { ChatMessage } from "../components/ChatMessage";
 // import { MessageItem } from "../components/ChatMessage";
 import { AppDispatch, RootState } from "../store";
 import { syncPoints } from "../store/userSlice";
+import { AGENT_POINTS_COST } from "../enum";
 // Import APIs
 import { analyse_coin_c_steaming, recommend_coin_c_steaming } from "../api/agent_c";
 import TrendBox from "./TrendBox";
@@ -147,8 +148,9 @@ const Page = () => {
     }
 
     await dispatch(syncPoints());
-    if (points <= 0) {
-      messageApi.warning("points not enough");
+    const trackerCost = AGENT_POINTS_COST.TRACKER;
+    if (points < trackerCost) {
+      messageApi.warning(t("home.insufficientPoints", { cost: trackerCost }));
       return;
     }
     if (status === 'loading' || status === 'generating') {
@@ -711,8 +713,9 @@ const Page = () => {
     }
     setType(coinType);
     await dispatch(syncPoints());
-    if (points <= 0) {
-      messageApi.warning("points not enough");
+    const pickerCost = AGENT_POINTS_COST.PICKER;
+    if (points < pickerCost) {
+      messageApi.warning(t("home.insufficientPoints", { cost: pickerCost }));
       return;
     }
     if (status === 'loading' || status === 'generating') {

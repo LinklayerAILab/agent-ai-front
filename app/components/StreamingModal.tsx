@@ -9,6 +9,7 @@ import { liquidity_check_dify } from "@/app/api/agent_c";
 import type { AlphaTokenItem } from "@/app/api/agent_c";
 import type { AppDispatch, RootState } from "@/app/store";
 import { syncPoints } from "@/app/store/userSlice";
+import { AGENT_POINTS_COST } from "@/app/enum";
 import { ChatMessage, MessageChunk } from "@/app/components/ChatMessage";
 import TypewriterNode from "@/app/components/TypewriterNode";
 import bot from "@/app/images/agent/banner.png";
@@ -88,9 +89,10 @@ const StreamingModal = memo(({ isOpen, onClose, query }: StreamingModalProps) =>
     setMessageChunks([]);
 
     try {
+      const spotCost = AGENT_POINTS_COST.INSIGHT_SPOT;
       const latestPoints = await dispatch(syncPoints()).unwrap();
-      if (latestPoints < 10) {
-        message.warning(t("home.insufficientPoints") || "Points not enough");
+      if (latestPoints < spotCost) {
+        message.warning(t("home.insufficientPoints", { cost: spotCost }));
         cleanup();
         return;
       }

@@ -25,4 +25,12 @@ export const CHAIN_NAME=process.env.NEXT_PUBLIC_CHAIN_NAME;
 export const CURRENCY=process.env.NEXT_PUBLIC_CURRENCY;
 export const CONTRACT=process.env.NEXT_PUBLIC_CONTRACT;
 
+export const AGENT_POINTS_COST = {
+  ALPHA: 5,
+  TRACKER: 5,
+  PERPS: 10,
+  INSIGHT_SPOT: 10,
+  PICKER: 10,
+} as const;
+
 export const ERC20_CONTRACT=process.env.NEXT_PUBLIC_ERC20_CONTRACT;

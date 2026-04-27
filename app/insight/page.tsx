@@ -62,6 +62,7 @@ import {
   setShortScore,
 } from "@/app/store/assetsSlice";
 import { syncPoints } from "@/app/store/userSlice";
+import { AGENT_POINTS_COST } from "@/app/enum";
 import { message } from "antd";
 import { CoinSlide } from "../components/Home/CoinSlide";
 import { isMobileDevice } from "@/app/utils/walletConnect";
@@ -261,8 +262,9 @@ export default function InsightPage() {
 
     setSelectCoin(data);
     await dispatch(syncPoints());
-    if (points <= 0) {
-      message.warning("points not enough");
+    const perpsCost = AGENT_POINTS_COST.PERPS;
+    if (points < perpsCost) {
+      message.warning(t("home.insufficientPoints", { cost: perpsCost }));
       return;
     }
     if (status === "loading" || status === "generating") {
@@ -467,10 +469,11 @@ export default function InsightPage() {
 
   const handleCryptoClick = async (crypto: GetAssetWithLogoItem) => {
     try {
+      const spotCost = AGENT_POINTS_COST.INSIGHT_SPOT;
       const result = await dispatch(syncPoints()).unwrap();
 
-      if (result < 10) {
-        message.warning(t("home.insufficientPoints"));
+      if (result < spotCost) {
+        message.warning(t("home.insufficientPoints", { cost: spotCost }));
         return;
       }
 

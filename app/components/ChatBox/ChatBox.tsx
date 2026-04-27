@@ -82,10 +82,6 @@ const ChatBox: React.FC<ChatBoxProps> = ({
           <div className="w-[100%] h-[100%] bg-white">
             {/* Title bar */}
             <div className="bg-[#cf0] h-[40px] lg:h-[5vh] flex items-center justify-center">
-              {/* <span className="hidden text-[12px] lg:text-[16px] lg:flex items-center justify-center font-bold gap-1 lg:gap-2">
-                <Image src={agentTitle} className="h-[20px] lg:h-[30px]" alt="" />
-                {title || t('agent.frameTitle')}
-              </span> */}
             </div>
             
             {/* Main content area */}

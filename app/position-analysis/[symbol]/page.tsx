@@ -4,6 +4,7 @@ import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "@/app/store";
 import { syncPoints } from "@/app/store/userSlice";
+import { AGENT_POINTS_COST } from "@/app/enum";
 import { message } from "antd";
 import Script from "next/script";
 import { useTranslation } from "react-i18next";
@@ -149,8 +150,9 @@ export default function PositionAnalysis() {
     }
 
     await dispatch(syncPoints());
-    if (points <= 0) {
-      message.warning(t("home.pointsNotEnough"));
+    const perpsCost = AGENT_POINTS_COST.PERPS;
+    if (points < perpsCost) {
+      message.warning(t("home.insufficientPoints", { cost: perpsCost }));
       return;
     }
     if (status === "loading" || status === "generating") {
@@ -158,11 +160,10 @@ export default function PositionAnalysis() {
       return;
     }
 
-  
+
     setMessageChunks([]);
     setStatus("loading");
     setCurrentCoin({ symbol, update_time: Date.now() });
-      debugger
     try {
       setLoading(true);
 
