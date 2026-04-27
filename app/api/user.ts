@@ -1,7 +1,7 @@
 // http://192.168.85.21:6888
 
 import { service } from "./service";
-const DEFAI_AGENT_API = "/defai_api";
+const DEFAI_AGENT_API = "/agent_c_api";
 
 export interface ApiResponse {
   code: number;

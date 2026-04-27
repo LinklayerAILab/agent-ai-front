@@ -5,6 +5,8 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { config, getChain, metadata, projectId, wagmiAdapter } from '../config/appkit'
 import { ReactNode, useState } from 'react'
 import { createAppKit } from '@reown/appkit/react'
+import { createSIWEConfig } from '@reown/appkit-siwe'
+import { siweConfig } from '../config/siwe'
 
 interface WagmiProviderProps {
   children: ReactNode
@@ -16,21 +18,17 @@ export const appkit = createAppKit({
   projectId,
   adapters: [wagmiAdapter],
   defaultNetwork: getChain(),
-  // SIWE configuration - disable auto SIWE, use manual signature
-  // siweConfig,
+  siweConfig: createSIWEConfig(siweConfig),
   features: {
     analytics: true,
     onramp: false,
     swaps: false,
     history: false,
-    email: false, // Enable email login
-    socials: [], // Enable social login
-    // email: true, // enable email login
-    // socials: ['google', 'x', 'discord', 'github', 'apple'], // enable social login
+    email: true,
   },
   allowUnsupportedChain: true,
   enableWalletConnect: true,
- 
+
 })
 
 export default function WagmiProvider({ children }: WagmiProviderProps) {

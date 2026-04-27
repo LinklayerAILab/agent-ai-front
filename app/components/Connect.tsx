@@ -4,24 +4,19 @@ import { useTranslation } from "react-i18next";
 import { addressDots } from "../utils";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "../store";
-// import logoutIcon from "@/app/images/header/logout.svg";
 import LLButton from "./LLButton";
 import {
-  getSiweNonce,
-  verifySiweMessage,
   user_rewardpoints,
 } from "../api/user";
 import {
   logout,
   setOtherInfo,
-  setUserInfo,
   syncPoints,
 } from "../store/userSlice";
 import { CaretDownOutlined } from "@ant-design/icons";
 import { useState, useEffect, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { Dropdown, Modal, message } from "antd";
-import { SiweMessage } from "siwe";
 import pointer from "@/app/images/components/pointers.svg";
 import email from "@/app/images/loginPanel/email.svg";
 import toLink from "@/app/images/agent/toLink.svg";
@@ -30,9 +25,6 @@ import Link from "next/link";
 import { get_user_info } from "../api/agent_c";
 import { useAccount } from "wagmi";
 import { useAppKit } from "@reown/appkit/react";
-// import success from "@/app/images/subscribe/success.svg";
-import { useSignMessage } from "wagmi";
-import { CHAIN_ID } from "../enum";
 import { disconnect } from "wagmi/actions";
 import { config } from "../config/appkit";
 import { useRouter } from "next/navigation";
@@ -50,6 +42,7 @@ import smallPeople from "@/app/images/loginPanel/smallPeople.svg";
 import smallMoney from "@/app/images/loginPanel/smallMoney.svg";
 
 const INVITE_CODE_KEY = "invite_code";
+
 // Internal component to handle URL parameter
 const URLParamsHandler = () => {
   const searchParams = useSearchParams();
@@ -87,7 +80,6 @@ const URLParamsHandler = () => {
 const Connect = () => {
   const { t } = useTranslation();
   const isLogin = useSelector((state: RootState) => state.user.isLogin);
-  const [hasManualLogout, setHasManualLogout] = useState(false); // Mark whether user manually logged out
 
   const points = useSelector((state: RootState) => state.user.points);
   const dispatch = useDispatch<AppDispatch>();
@@ -95,27 +87,24 @@ const Connect = () => {
   const [loading, setLoading] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [earnDropdownOpen, setEarnDropdownOpen] = useState(false);
-  // const [rewardPoints, setRewardPoints] = useState<number>(0);
   const { open } = useAppKit();
   const { address, isConnected } = useAccount();
   const [messageApi, contextHolder] = message.useMessage();
   const router = useRouter();
   const localAddress = useSelector((state: RootState) => state.user.address);
-  // listen wallet connection status�?after connection automatically trigger manual�?SIWE signature
-  useEffect(() => {
-    // if user actively logged out, do not automatically trigger log�?
-    if (isConnected && address && !isLogin && !hasManualLogout && !localStorage.getItem("access_token")) {
-      localStorage.setItem("address", address);
-      // wallet connection success and not logged in, call manual SIWE signature
-      handleManualSign();
-    }
-  }, [isConnected, address, isLogin, hasManualLogout]);
 
-  // listen to wallet account switch event
+  // Sync wallet address to localStorage when connected
+  useEffect(() => {
+    if (isConnected && address) {
+      localStorage.setItem("address", address);
+    }
+  }, [isConnected, address]);
+
+  // Listen to wallet account switch event
   useEffect(() => {
     const savedAddress = localStorage.getItem("address");
 
-    // when wallet is connected, logged in, and address has changed (account switch))
+    // When wallet is connected, logged in, and address has changed (account switch)
     if (
       isConnected &&
       address &&
@@ -124,10 +113,11 @@ const Connect = () => {
       isLogin
     ) {
       setNewAddress(address);
-      // popup confirmation dialog�?
+      // Show confirmation dialog
       setShowAccountChangeDialog(true);
     }
   }, [address, isConnected, isLogin]);
+
   const authFailEvent = () => {
     handleLogout();
     setShowAuthDialog(true);
@@ -139,7 +129,8 @@ const Connect = () => {
       window.removeEventListener("unauthorized", authFailEvent);
     };
   }, []);
-  // sync points after successful log�?
+
+  // Sync points after successful login
   useEffect(() => {
     if (isLogin) {
       dispatch(syncPoints());
@@ -162,101 +153,21 @@ const Connect = () => {
 
   const handleConfirmAccountChange = async () => {
     setShowAccountChangeDialog(false);
-    // directly call login method
-    await handleManualSign();
+    // Re-open the login modal to sign in with the new account
+    handleLogin();
   };
 
   const handleCancelAccountChange = () => {
     setShowAccountChangeDialog(false);
   };
 
-  const { signMessageAsync } = useSignMessage();
-
-  // Manual SIWE one-click login�?Ethereum
-  const handleManualSign = async () => {
-    if (!address || !isConnected) {
-      console.error("Please connect wallet first");
-      messageApi.error(
-        t("login.connectFirst") || "Please connect wallet first",
-      );
-      return;
-    }
-
-    try {
-      setLoading(true);
-
-      // 1. fetch nonce
-      const {
-        data: { nonce },
-      } = await getSiweNonce();
-
-      // 2. Create SIWE message
-      const siweMessage = new SiweMessage({
-        domain: window.location.host,
-        address: address,
-        statement: "Sign in with Ethereum to LinkLayer AI Agent",
-        uri: window.location.origin,
-        version: "1",
-        chainId: CHAIN_ID,
-        nonce: nonce,
-      });
-      // 3. Request signature - use walletProvider to support social login
-      const message = siweMessage.prepareMessage();
-
-      const signature = await signMessageAsync({ message });
-      const invite_code = localStorage.getItem(INVITE_CODE_KEY) || "";
-      // 4. Verify signature and get access_token
-      const result = await verifySiweMessage({
-        message,
-        signature,
-        invite_code,
-      });
-
-      // 5. save access_token
-      localStorage.setItem("access_token", result.data.access_token);
-
-      // 6. call backend login API
-
-      dispatch(setUserInfo(result.data));
-
-      // Reset logout flag after successful login
-      setHasManualLogout(false);
-
-      messageApi.success(t("login.success") || "Login successful!");
-
-      // 7. Immediately refresh points and user info
-      dispatch(syncPoints());
-      get_user_info().then((res: { data: unknown }) => {
-        if (res) {
-          dispatch(setOtherInfo(res.data));
-        }
-      });
-
-      // 8. Trigger custom event to notify other pages that address has changed
-      const addressChangedEvent = new CustomEvent("addressChanged", {
-        detail: { address: address },
-      });
-      window.dispatchEvent(addressChangedEvent);
-    } catch (error) {
-      console.error("SIWE login failed:", error);
-      messageApi.error(
-        t("login.authFailed") || "Login failed. Please try again",
-      );
-    } finally {
-      setLoading(false);
-    }
-  };
-
   // Sync points when dropdown opens
   const handleDropdownClick = async () => {
     if (!dropdownOpen && isLogin) {
       handleRefreshUserInfo();
-      // fetch reward points
+      // Fetch reward points
       try {
         await user_rewardpoints();
-        // if (res && res.data) {
-        //   setRewardPoints(res.data.reward_points);
-        // }
       } catch (error) {
         console.error("Failed to fetch reward points:", error);
       }
@@ -266,7 +177,6 @@ const Connect = () => {
 
   const handleLogout = async () => {
     try {
-      // Disconnect wallet connection
       await disconnect(config);
     } catch (error) {
       console.error("Disconnect wallet failed:", error);
@@ -276,19 +186,16 @@ const Connect = () => {
     setDropdownOpen(false);
     localStorage.removeItem("access_token");
     localStorage.removeItem("address");
-    // Set flag indicating user actively logged out
-    setHasManualLogout(true);
   };
 
   const handleLogin = async () => {
+    if (isLogin) return;
     try {
       setLoading(true);
-      // User manually clicked login, reset logout flag
-      setHasManualLogout(false);
-      // Use Reown AppKit to open connection modal for social login
+      // ReOwn SIWE handles the full flow: connect -> sign -> verify
       await open();
     } catch (err) {
-      console.error("Social auth error:", err);
+      console.error("Login error:", err);
       messageApi.error(
         t("login.authFailed") || "Login failed. Please try again",
       );
@@ -327,7 +234,6 @@ const Connect = () => {
   const handleShare = () => {
     if (typeof window === "undefined") return;
 
-    // handle share logic
     const link = createLink();
     const backUrl = window.location.origin;
     const baseUrl = `${window.location.origin}/toDapp?toUrl=`;
@@ -335,12 +241,10 @@ const Connect = () => {
       baseUrl + encodeURIComponent(link)
     }&backUrl=${encodeURIComponent(backUrl)}`;
     if (fullLink) {
-      // directly copy link and popup copy success message�?
       copyToClipboardLocal(fullLink);
     }
   };
 
-  // Copy to clipboard auxiliary function�?
   const copyToClipboardLocal = async (text: string) => {
     try {
       if (navigator.clipboard && navigator.clipboard.writeText) {
@@ -363,13 +267,12 @@ const Connect = () => {
     }
   };
 
-  // refresh user information
+  // Refresh user information
   const handleRefreshUserInfo = async () => {
     try {
       const res = await get_user_info();
       if (res && res.data) {
         dispatch(setOtherInfo(res.data));
-        // also refresh points
         dispatch(syncPoints());
       }
     } catch (error) {
@@ -386,12 +289,6 @@ const Connect = () => {
       <div className="flex justify-between items-center rounded-[8px] h-[60px]">
         <div className="px-2 py-2 flex items-center gap-2">
           {contextHolder}
-          {/* <div className="text-[12px] text-gray-800 flex flex-wrap items-center gap-1 font-bold ">
-            {t("header.myPoints")}
-            <span>
-              <span> {pointsLoading ? "..." : points || 0}</span>
-            </span>
-          </div> */}
           {otherInfo.image ? (
             <Image
               src={otherInfo.image}
@@ -414,7 +311,6 @@ const Connect = () => {
           style={{ padding: "0 12px" }}
         >
           <span className="text-gray-800 text-[12px]">{t("home.logout")}</span>
-          {/* <Image src={logoutIcon} alt="" className="w-[22px]"></Image> */}
         </div>
       </div>
       <div className="flex flex-col gap-[2px]">
@@ -502,9 +398,7 @@ const Connect = () => {
           alt="bgaite"
           className="absolute left-[-26px] top-[-22px]"
         ></Image>
-        {/* Users can customize content here */}
         <Image src={bg3} alt="bg3"></Image>
-        {/* {t("wallet.inviteTip")} */}
       </div>
       <div className="mt-4 flex flex-col gap-1">
         <div className="flex gap-2 items-center">
@@ -541,9 +435,11 @@ const Connect = () => {
       </div>
     </div>
   );
+
   const handleToPoint = () => {
     router.replace("my-points");
   };
+
   return (
     <>
       <Suspense fallback={null}>
@@ -629,7 +525,6 @@ const Connect = () => {
                     </span>
                   </div>
                   <CaretDownOutlined className="text-gray-500 ml-1" />
-                  {/* <UserPanel /> */}
                 </div>
               </Dropdown>
             ) : (

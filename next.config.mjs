@@ -15,12 +15,12 @@ const nextConfig = {
   crossOrigin: "anonymous",
   async rewrites() {
     return [
-      {
-        source: "/defai_api/:path*",
-        // destination: "http://192.168.85.12:8888/:path*",
-        destination: `${process.env.NEXT_API_DEFAI}/:path*`,
+      // {
+      //   source: "/defai_api/:path*",
+      //   // destination: "http://192.168.85.12:8888/:path*",
+      //   destination: `${process.env.NEXT_API_DEFAI}/:path*`,
      
-      },
+      // },
       {
         source: "/agent_c_api/:path*",
         // destination: "http://192.168.85.12:8888/:path*",

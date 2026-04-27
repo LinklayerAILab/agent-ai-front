@@ -1,5 +1,5 @@
 import { request } from "./request";
-
+const api = '/agent_c_api'
 interface BinanceResponse {
   code: number;
   message: string;
@@ -39,7 +39,7 @@ export interface GetBinanceTokenScreenResponse extends BinanceResponse {
  * Use proxy path /defai_api/binance_token_screen
  */
 export const getBinanceTokenScreen = () => {
-  return request<GetBinanceTokenScreenResponse>("/defai_api/v1/binance_token_screen", {
+  return request<GetBinanceTokenScreenResponse>(`${api}/v1/binance_token_screen`, {
     method: "GET",
     cache: "no-store",
   });
@@ -72,7 +72,7 @@ export interface GetBinanceTokenPriceResponse extends BinanceResponse {
  * @param tokenAddresses Contract address array
  */
 export const getBinanceTokenPrice = (tokenAddresses: string[]) => {
-  return request<GetBinanceTokenPriceResponse>("/defai_api/v1/binance_token_price", {
+  return request<GetBinanceTokenPriceResponse>(`${api}/v1/binance_token_price`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
