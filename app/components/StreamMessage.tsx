@@ -1,4 +1,4 @@
-import { ReactNode, useEffect, useRef, useState, useMemo, memo } from "react";
+import { ReactNode, useEffect, useRef, useState, useMemo, memo, forwardRef, HTMLAttributes } from "react";
 import Typewriter from './Typewriter';
 import { CoinItem } from "./CoinDetail";
 import { DotLottieReact } from '@lottiefiles/dotlottie-react';
@@ -12,7 +12,7 @@ export interface MessageChunk {
 }
 
 // Use memo to wrap stopbutton, prevent unnecessary re-render
-const StopButton = memo(({ onClick }: { onClick?: () => void }) => {
+const StopButton = memo(forwardRef<HTMLDivElement, HTMLAttributes<HTMLDivElement>>(({ onClick, ...rest }, ref) => {
   const lottieAnimation = useMemo(() => (
     <DotLottieReact
       src="https://lottie.host/79305bfb-5216-49e6-b30c-95f0871fbf64/yKlX4HP3Dl.lottie"
@@ -23,13 +23,15 @@ const StopButton = memo(({ onClick }: { onClick?: () => void }) => {
 
   return (
     <div
+      ref={ref}
+      {...rest}
       className="w-[40px] lg:w-[40px] lg:h-[40px] h-[40px] create-btn cursor-pointer rounded-full"
       onClick={onClick}
     >
       {lottieAnimation}
     </div>
   );
-});
+}));
 
 StopButton.displayName = 'StopButton';
 
@@ -43,6 +45,7 @@ export const StreamMessage = (props: {
   status: 'init' | 'loading' | 'generating' | 'end'
   stopCreation?: () => void
 }) => {
+  const SHOW_CREATE_COLLECTION_TIP_KEY = 'showCreateCollectionTip';
   const [t] = useTranslation();
   const messageRef = useRef<HTMLDivElement>(null);
   const [isAtBottom, setIsAtBottom] = useState(true); // Track whether at bottom
@@ -155,28 +158,75 @@ export const StreamMessage = (props: {
     }
   }, [props.loading]) // eslint-disable-line react-hooks/exhaustive-deps
 
-  const [open, setOpen] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const statusRef = useRef(props.status);
+  const isTypingCompleteRef = useRef(isTypingComplete);
+  const prevMessageCountRef = useRef(props.messages?.length || 0);
+  const completeCheckTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const [open, setOpen] = useState(() => {
+    if (typeof window === 'undefined') {
+      return false;
+    }
+    return localStorage.getItem(SHOW_CREATE_COLLECTION_TIP_KEY) !== 'true';
+  });
+
+  // Keep refs in sync
+  useEffect(() => {
+    statusRef.current = props.status;
+  }, [props.status]);
+
+  useEffect(() => {
+    isTypingCompleteRef.current = isTypingComplete;
+  }, [isTypingComplete]);
+
+  useEffect(() => {
+    return () => {
+      if (completeCheckTimerRef.current) {
+        clearTimeout(completeCheckTimerRef.current);
+        completeCheckTimerRef.current = null;
+      }
+    };
+  }, []);
 
   const handleConfirm = () => {
-    localStorage.setItem('showCreateCollectionTip', 'true');
+    localStorage.setItem(SHOW_CREATE_COLLECTION_TIP_KEY, 'true');
     setOpen(false)
   }
 
   useEffect(() => {
-    if ((props.status === 'loading' || props.status === 'generating') && !localStorage.getItem('showCreateCollectionTip')) {
+    if ((props.status === 'loading' || props.status === 'generating') && localStorage.getItem(SHOW_CREATE_COLLECTION_TIP_KEY) !== 'true') {
       setOpen(true)
     }
+  }, [props.status])
 
+  // Listen to textLoaded event - use refs to avoid stale closures
+  useEffect(() => {
     const handleTextLoaded = () => {
-      setOpen(false);
-      setIsTypingComplete(true); // Set flag when typewriter completes
+      const messageCountAtEvent = prevMessageCountRef.current;
+      if (completeCheckTimerRef.current) {
+        clearTimeout(completeCheckTimerRef.current);
+      }
+
+      completeCheckTimerRef.current = setTimeout(() => {
+        // Only mark complete when no new chunks arrive after textLoaded.
+        if (prevMessageCountRef.current === messageCountAtEvent && statusRef.current !== 'loading') {
+          setIsTypingComplete(true);
+          if (statusRef.current === 'end') {
+            setOpen(false);
+          }
+        }
+      }, 160);
     };
 
     window.addEventListener('textLoaded', handleTextLoaded);
     return () => {
       window.removeEventListener('textLoaded', handleTextLoaded);
-    }
-  }, [props.status])
+      if (completeCheckTimerRef.current) {
+        clearTimeout(completeCheckTimerRef.current);
+        completeCheckTimerRef.current = null;
+      }
+    };
+  }, [])
 
   // When status changes to loading or generating, reset typing complete state
   useEffect(() => {
@@ -185,11 +235,24 @@ export const StreamMessage = (props: {
     }
   }, [props.status])
 
-  // Check whether to display stop button: only in loading/generating state, or end state but typewriter not yet complete
-  const showStopButton = props.status === 'loading' || props.status === 'generating' || (props.status === 'end' && !isTypingComplete);
+  // Any new chunk means typewriter is still rendering; keep stop button visible.
+  useEffect(() => {
+    const currentCount = props.messages?.length || 0;
+    if (currentCount > prevMessageCountRef.current) {
+      if (completeCheckTimerRef.current) {
+        clearTimeout(completeCheckTimerRef.current);
+        completeCheckTimerRef.current = null;
+      }
+      setIsTypingComplete(false);
+    }
+    prevMessageCountRef.current = currentCount;
+  }, [props.messages]);
+
+  // Keep stop button rendered until typewriter is fully complete.
+  const showStopButton = props.status !== 'init' && !isTypingComplete;
 
   return (
-    <div className="relative h-[100%]">
+    <div className="relative h-[100%]" ref={containerRef}>
       <div
         ref={messageRef}
         className={`flex flex-col ${props.status === 'init' ? 'bg-[white]' :'bg-white'} gap-8 ${props.className || 'h-[54vh]'} w-full flex-1 ${props.messages?.length ? 'overflow-y-auto' : ''} lg:h-[56.2vh] overflow-x-hidden rounded-[4px]`}
@@ -220,7 +283,7 @@ export const StreamMessage = (props: {
           showCancel={false}
           title={<div className="w-[180px]">{t('common.stopGenerationTip')}</div>}
           onConfirm={handleConfirm}
-          open={open}
+          open={open && showStopButton}
           okText={t('common.gotIt')}
         >
           <StopButton onClick={props.stopCreation} />

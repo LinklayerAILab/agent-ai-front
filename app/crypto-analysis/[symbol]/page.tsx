@@ -70,9 +70,14 @@ export default function CryptoAnalysis() {
 
   const [turnstileWidgetId, setTurnstileWidgetId] = useState<string>("");
   const turnstileContainerRef = useRef<HTMLDivElement>(null);
+  const turnstileWidgetIdRef = useRef<string>("");
 
   const streamAbortController = useRef<AbortController | null>(null);
   const isStreamingRef = useRef<boolean>(false);
+
+  useEffect(() => {
+    turnstileWidgetIdRef.current = turnstileWidgetId;
+  }, [turnstileWidgetId]);
 
   useEffect(() => {
     dispatch(getSyncAssets("binance"));
@@ -122,14 +127,14 @@ export default function CryptoAnalysis() {
     return new Promise((resolve, reject) => {
       if (!window.turnstile) {
         const error = new Error("Turnstile script not loaded");
-        console.error("❌", error.message);
+        console.error(error.message);
         reject(error);
         return;
       }
 
       if (!turnstileContainerRef.current) {
         const error = new Error("Turnstile container element not found");
-        console.error("❌", error.message);
+        console.error(error.message);
         reject(error);
         return;
       }
@@ -147,7 +152,7 @@ export default function CryptoAnalysis() {
         const error = new Error(
           `Invalid Turnstile site key format: ${siteKey}`
         );
-        console.error("❌", error.message);
+        console.error(error.message);
         reject(error);
         return;
       }
@@ -175,11 +180,11 @@ export default function CryptoAnalysis() {
               }
             },
             "error-callback": () => {
-              console.error("❌ Turnstile widget error callback");
+              console.error("Turnstile widget error callback");
               reject(new Error("Turnstile widget error"));
             },
             "expired-callback": () => {
-              console.log("⏰ Turnstile token expired callback");
+              console.log("Turnstile token expired callback");
               reject(new Error("Turnstile token expired"));
             },
             size: "invisible",
@@ -225,22 +230,12 @@ export default function CryptoAnalysis() {
 
   useEffect(() => {
     const handleTextLoading = () => {
-      console.log(
-        "🎬 textLoading event received, setting status to generating"
-      );
       setStatus("generating");
     };
 
     const handleTextLoaded = () => {
       if (!isStreamingRef.current) {
-        console.log(
-          "🏁 textLoaded event received (stream ended), setting status to end"
-        );
         setStatus("end");
-      } else {
-        console.log(
-          "⏸️ textLoaded event received but stream is still active, ignoring"
-        );
       }
     };
 
@@ -250,21 +245,26 @@ export default function CryptoAnalysis() {
     return () => {
       window.removeEventListener("textLoading", handleTextLoading);
       window.removeEventListener("textLoaded", handleTextLoaded);
+    };
+  }, []);
 
+  useEffect(() => {
+    return () => {
       if (streamAbortController.current) {
         streamAbortController.current.abort();
         streamAbortController.current = null;
       }
 
-      if (turnstileWidgetId && window.turnstile) {
+      const widgetId = turnstileWidgetIdRef.current;
+      if (widgetId && window.turnstile) {
         try {
-          window.turnstile.remove(turnstileWidgetId);
+          window.turnstile.remove(widgetId);
         } catch (error) {
           console.warn("err:", error);
         }
       }
     };
-  }, [turnstileWidgetId]);
+  }, []);
 
   const proceedWithCoinAnalysis = async (coinSymbol: string) => {
     if (loading) {
@@ -334,7 +334,7 @@ export default function CryptoAnalysis() {
           }, 1000);
         }
       } catch (err) {
-        console.error("🔧 err:", err);
+        console.error("stream iterator err:", err);
       }
 
       for await (const chunk of streamGenerator) {
@@ -434,13 +434,13 @@ export default function CryptoAnalysis() {
 
 
   const stopCreation = () => {
-    console.log("🛑 Stopping content generation");
+    console.log("Stopping content generation");
 
 
     if (streamAbortController.current) {
       streamAbortController.current.abort();
       streamAbortController.current = null;
-      console.log("✅ Streaming request stopped");
+      console.log("Streaming request stopped");
     }
 
 
