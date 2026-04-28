@@ -57,11 +57,11 @@ function ChannelCards({ referralStats, walletSnapshot }: ChannelCardsProps) {
         <div className="channel-card-tiers">
           <div className="tier-item">
             <span className="tier-label">{t("llax.historicalEvents")}</span>
-            <span className="tier-value">1-5: 4,000 / 6-20: 12,800 / 51+: 64,000</span>
+            <span className="tier-value">1-5: 4,000 / 6-20: 12,800 / 21-50: 32,000 / 51+: 64,000</span>
           </div>
           <div className="tier-item">
             <span className="tier-label">{t("llax.monthlyEvents")}</span>
-            <span className="tier-value">1-3: 960 / 4-10: 3,000 / 21+: 10,800</span>
+            <span className="tier-value">1-3: 960 / 4-10: 3,000 / 11-20: 6,000 / 21+: 10,800</span>
           </div>
         </div>
       </div>
