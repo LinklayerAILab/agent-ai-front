@@ -57,6 +57,38 @@ export interface CoinItem {
 
 type CurrentItem = CoinItem;
 
+interface CoinsListInitialData {
+  ranking: GetGainRankingCResponse | null;
+  collects: GetCollectCResponse | null;
+}
+
+const coinsListInitialDataCache = new Map<string, CoinsListInitialData>();
+const coinsListInitialDataPromise = new Map<string, Promise<CoinsListInitialData>>();
+
+const getCoinsListInitialKey = (isLogin: boolean, token: string | null) =>
+  isLogin && token ? `login:${token}` : "guest";
+
+const fetchCoinsListInitialData = async (
+  isLogin: boolean
+): Promise<CoinsListInitialData> => {
+  if (isLogin) {
+    const [collectRes, rankingRes] = await Promise.allSettled([
+      get_collect_c(),
+      get_gain_ranking_c(),
+    ]);
+
+    return {
+      collects: collectRes.status === "fulfilled" ? collectRes.value : null,
+      ranking: rankingRes.status === "fulfilled" ? rankingRes.value : null,
+    };
+  }
+
+  return {
+    collects: null,
+    ranking: await get_gain_ranking_c(),
+  };
+};
+
 export interface CoinsListProps {
   /** Consult AI button click callback - spot */
   onConsultClick: (v:CoinItem) => void;
@@ -513,20 +545,73 @@ const CoinsList = forwardRef<HTMLDivElement, CoinsListProps>(({
       hasTimer: !!timer.current
     });
 
+    let cancelled = false;
+
     const token = localStorage.getItem("access_token");
-    if (token && isLogin) {
-      debugLog('User is logged in, getting collects first');
-      handleGetCollects().then((collects) => {
-        debugLog('Collects obtained, calling handleGetRanking');
-        // Use ref to call, avoid dependency on handleGetRanking
-        handleGetRankingRef.current(collects);
-      });
-    }
-    if (!token && !isLogin) {
-      debugLog('User is not logged in, skipping initialization');
-      // Use ref to call, avoid dependency on handleGetRanking
-      handleGetRankingRef.current(null);
-    }
+    const initKey = getCoinsListInitialKey(isLogin, token);
+
+    const loadInitialData = async () => {
+      try {
+        setLoading(true);
+
+        let initialData: CoinsListInitialData;
+
+        if (coinsListInitialDataCache.has(initKey)) {
+          initialData = coinsListInitialDataCache.get(initKey)!;
+        } else {
+          if (!coinsListInitialDataPromise.has(initKey)) {
+            coinsListInitialDataPromise.set(
+              initKey,
+              fetchCoinsListInitialData(isLogin)
+            );
+          }
+          initialData = await coinsListInitialDataPromise.get(initKey)!;
+          coinsListInitialDataCache.set(initKey, initialData);
+          coinsListInitialDataPromise.delete(initKey);
+        }
+
+        if (cancelled || !isMounted.current) {
+          return;
+        }
+
+        collectC.current = initialData.collects;
+        gains.current = initialData.ranking;
+        isFirstLoad.current = false;
+
+        const rankingList = initialData.ranking?.data?.res || [];
+        if (rankingList.length > 0) {
+          const list = rankingList
+            .map((item) => ({
+              ...item,
+              loading: false,
+              collect:
+                initialData.collects?.data?.symbols?.includes(
+                  item.symbol.toUpperCase()
+                ) || false,
+            }))
+            .sort((a, b) => Number(b.collect) - Number(a.collect))
+            .slice(0, params.current.size);
+
+          setCurrentList(list);
+        } else {
+          setCurrentList([]);
+        }
+
+        createTimer("initial-cache-load");
+      } catch (error) {
+        coinsListInitialDataPromise.delete(initKey);
+        console.error("Failed to load coin list initial data:", error);
+        if (!cancelled && isMounted.current) {
+          setCurrentList([]);
+        }
+      } finally {
+        if (!cancelled && isMounted.current) {
+          setLoading(false);
+        }
+      }
+    };
+
+    loadInitialData();
 
     const el = scrollRef.current;
     if (!el) return;
@@ -538,6 +623,7 @@ const CoinsList = forwardRef<HTMLDivElement, CoinsListProps>(({
     el.addEventListener("scroll", debouncedScrollHandler);
 
     return () => {
+      cancelled = true;
       isMounted.current = false;
 
       // Use unified clear function

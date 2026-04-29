@@ -29,6 +29,39 @@ export interface InviteItem {
   icon: string;
   cex_names: string[];
 }
+
+interface GraphInitialData {
+  inviteInfo?: inviterInfoResponse;
+  invites: InviteItem[];
+}
+
+let graphInitialDataCache: GraphInitialData | null = null;
+let graphInitialDataPromise: Promise<GraphInitialData> | null = null;
+
+const fetchGraphInitialData = async (): Promise<GraphInitialData> => {
+  const [inviterResponse, inviteesResponse] = await Promise.allSettled([
+    inviter_info(),
+    my_invitee_info(),
+  ]);
+
+  const data: GraphInitialData = {
+    inviteInfo:
+      inviterResponse.status === "fulfilled" ? inviterResponse.value : undefined,
+    invites: [],
+  };
+
+  if (inviteesResponse.status === "fulfilled") {
+    const invitees = inviteesResponse.value?.data?.invitees || [];
+    data.invites = invitees.map((item) => ({
+      icon: item.image,
+      address: item.user_id ? addressDots(item.user_id, 5, 8) : "---",
+      cex_names: item.cex_names || [],
+    }));
+  }
+
+  return data;
+};
+
 function Page() {
   const { t } = useTranslation();
   const scrollContainerRef = useRef<HTMLDivElement>(null);
@@ -38,23 +71,35 @@ function Page() {
   const [invites, setInvites] = useState<InviteItem[]>([]);
   const [inviteInfo, setInviteInfo] = useState<inviterInfoResponse>()
   useEffect(() => {
-    if(isLogin) {
-      inviter_info().then(res => {
-        setInviteInfo(res)
-      })
-      my_invitee_info().then(res => {
-        const invitees = res?.data?.invitees || [];
-        setInvites(invitees.map((item) => ({
-          icon: item.image,
-          address: item.user_id ? addressDots(item.user_id, 5, 8) : "---",
-          cex_names: item.cex_names || [],
-        })));
-      }).catch(() => {
+    const loadGraphData = async () => {
+      if (isLogin) {
+        try {
+          if (graphInitialDataCache) {
+            setInviteInfo(graphInitialDataCache.inviteInfo);
+            setInvites(graphInitialDataCache.invites);
+            return;
+          }
+
+          if (!graphInitialDataPromise) {
+            graphInitialDataPromise = fetchGraphInitialData();
+          }
+
+          const data = await graphInitialDataPromise;
+          graphInitialDataCache = data;
+          setInviteInfo(data.inviteInfo);
+          setInvites(data.invites);
+        } catch {
+          setInviteInfo(undefined);
+          setInvites([]);
+          graphInitialDataPromise = null;
+        }
+      } else {
+        setInviteInfo(undefined);
         setInvites([]);
-      })
-    } else {
-      setInvites([]);
-    }
+      }
+    };
+
+    loadGraphData();
   },[isLogin])
   return (
     <div className="page-graph flex flex-col-reverse lg:flex-row justify-center items-center lg:px-[2vh] lg:py-[0px] lg:px-0 lg:py-0 lg:h-[100%] w-[100%] gap-[20px]">

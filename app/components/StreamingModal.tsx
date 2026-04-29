@@ -7,6 +7,7 @@ import { message } from "antd";
 
 import { liquidity_check_dify } from "@/app/api/agent_c";
 import type { AlphaTokenItem } from "@/app/api/agent_c";
+import { binance_token_analysis_streaming, type BinanceTokenScreenItem } from "@/app/api/binance";
 import type { AppDispatch, RootState } from "@/app/store";
 import { syncPoints } from "@/app/store/userSlice";
 import { AGENT_POINTS_COST } from "@/app/enum";
@@ -17,10 +18,11 @@ import bot from "@/app/images/agent/banner.png";
 interface StreamingModalProps {
   isOpen: boolean;
   onClose: () => void;
-  query: string | AlphaTokenItem;
+  query: string | AlphaTokenItem | BinanceTokenScreenItem;
+  mode?: "liquidity_check" | "binance_token_analysis";
 }
 
-const StreamingModal = memo(({ isOpen, onClose, query }: StreamingModalProps) => {
+const StreamingModal = memo(({ isOpen, onClose, query, mode = "liquidity_check" }: StreamingModalProps) => {
   const { t } = useTranslation();
 
   const isLogin = useSelector((state: RootState) => state.user?.isLogin ?? false);
@@ -99,11 +101,18 @@ const StreamingModal = memo(({ isOpen, onClose, query }: StreamingModalProps) =>
 
       streamAbortController.current = new AbortController();
 
-      const streamGenerator = liquidity_check_dify(
-        queryInput,
-        undefined,
-        streamAbortController.current
-      );
+      const streamGenerator =
+        mode === "binance_token_analysis"
+          ? binance_token_analysis_streaming(
+              queryInput,
+              undefined,
+              streamAbortController.current
+            )
+          : liquidity_check_dify(
+              queryInput,
+              undefined,
+              streamAbortController.current
+            );
 
       for await (const chunk of streamGenerator) {
         if (streamAbortController.current?.signal.aborted) {
@@ -162,7 +171,7 @@ const StreamingModal = memo(({ isOpen, onClose, query }: StreamingModalProps) =>
       streamAbortController.current = null;
       setLoading(false);
     }
-  }, [cleanup, isLogin, labels.pleaseLogin, onClose, queryInput, t]);
+  }, [cleanup, isLogin, labels.pleaseLogin, mode, onClose, queryInput, t]);
 
   useEffect(() => {
     if (isOpen) {
@@ -215,7 +224,9 @@ const StreamingModal = memo(({ isOpen, onClose, query }: StreamingModalProps) =>
       >
         <div className="flex items-center justify-between border-b border-gray-200 px-6 py-4">
           <h2 className="text-lg font-bold text-gray-800">
-            {t("alpha.liquidityCheck") || "Liquidity Check"}
+            {mode === "binance_token_analysis"
+              ? "流动性分析"
+              : (t("alpha.liquidityCheck") || "Liquidity Check")}
           </h2>
           <button
             type="button"

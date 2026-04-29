@@ -1,4 +1,4 @@
-import { request } from "./request";
+import { request, streamingRequest } from "./request";
 const api = '/agent_c_api'
 interface BinanceResponse {
   code: number;
@@ -129,4 +129,52 @@ export const getBinanceTokenScreenWithPrices = async (): Promise<BinanceTokenScr
     console.error('Failed to fetch token screen:', error);
     throw error;
   }
+};
+
+export type BinanceTokenAnalysisStreamingResponse =
+  | {
+      event: "message" | "workflow_started" | "workflow_finished" | "message_end";
+      answer?: string;
+      data?: {
+        analyse_result?: {
+          output?: {
+            output: string;
+          };
+        };
+        recommend_result?: {
+          output?: {
+            output: string;
+          };
+        };
+        text?: string;
+        content?: string;
+      };
+      text?: string;
+      content?: string;
+    }
+  | string;
+
+export const binance_token_analysis_streaming = (
+  input: string,
+  endFun?: () => void,
+  abortController?: AbortController,
+) => {
+  return streamingRequest<BinanceTokenAnalysisStreamingResponse>(
+    `/api/v1/binance_token_analysis`,
+    {
+      method: "post",
+      cache: "no-store",
+      body: JSON.stringify({
+        input,
+      }),
+      headers: {
+        "Content-Type": "application/json; charset=UTF-8",
+      },
+    },
+    {
+      endFun,
+      abortController,
+      parseMode: "sse",
+    },
+  );
 };

@@ -14,6 +14,72 @@ import { get_binance_active_pools_count, get_binance_update_time } from "@/app/a
 import { Skeleton } from "antd";
 import { useTranslation } from "next-i18next";
 
+interface Brc20InitialData {
+  tokens: BinanceTokenScreenItem[];
+  total: number;
+  activePoolsCount: number | null;
+  updateTime: number | null;
+}
+
+let brc20InitialDataCache: Brc20InitialData | null = null;
+let brc20InitialDataPromise: Promise<Brc20InitialData> | null = null;
+
+const fetchBrc20InitialData = async (): Promise<Brc20InitialData> => {
+  const [response, poolsResponse, timeResponse] = await Promise.allSettled([
+    getBinanceTokenScreen(),
+    get_binance_active_pools_count(),
+    get_binance_update_time(),
+  ]);
+
+  let tokenList: BinanceTokenScreenItem[] = [];
+  let activePoolsCount: number | null = null;
+  let updateTime: number | null = null;
+
+  if (response.status === "fulfilled") {
+    tokenList = response.value.data.results || [];
+  }
+
+  if (poolsResponse.status === "fulfilled") {
+    activePoolsCount = poolsResponse.value.data.count;
+  }
+
+  if (timeResponse.status === "fulfilled") {
+    updateTime = timeResponse.value.data.last_updated;
+  }
+
+  if (tokenList.length > 0) {
+    try {
+      const contractAddresses = tokenList
+        .map((token) => token.contractAddress)
+        .filter(Boolean);
+
+      if (contractAddresses.length > 0) {
+        const priceResponse = await getBinanceTokenPrice(contractAddresses);
+        const prices = priceResponse.data.prices || [];
+
+        const priceMap = new Map<string, number>();
+        prices.forEach((item) => {
+          priceMap.set(item.token_address.toLowerCase(), item.price);
+        });
+
+        tokenList = tokenList.map((token) => ({
+          ...token,
+          price: priceMap.get(token.contractAddress.toLowerCase()),
+        }));
+      }
+    } catch (error) {
+      console.error("Failed to fetch prices:", error);
+    }
+  }
+
+  return {
+    tokens: tokenList,
+    total: tokenList.length,
+    activePoolsCount,
+    updateTime,
+  };
+};
+
 export function Brc20() {
   const { t } = useTranslation();
   const scrollContainerRef = useRef<HTMLDivElement>(null);
@@ -48,34 +114,28 @@ export function Brc20() {
     const fetchTokens = async () => {
       try {
         setLoading(true);
-        // Fetch screening list, active pools count, and update time in parallel
-        const [response, poolsResponse, timeResponse] = await Promise.allSettled([
-          getBinanceTokenScreen(),
-          get_binance_active_pools_count(),
-          get_binance_update_time(),
-        ]);
-
-        let tokenList: BinanceTokenScreenItem[] = [];
-        if (response.status === "fulfilled") {
-          tokenList = response.value.data.results || [];
-          setTokens(tokenList);
-          setTotal(tokenList.length);
+        if (brc20InitialDataCache) {
+          setTokens(brc20InitialDataCache.tokens);
+          setTotal(brc20InitialDataCache.total);
+          setActivePoolsCount(brc20InitialDataCache.activePoolsCount);
+          setUpdateTime(brc20InitialDataCache.updateTime);
+          return;
         }
 
-        if (poolsResponse.status === "fulfilled") {
-          setActivePoolsCount(poolsResponse.value.data.count);
+        if (!brc20InitialDataPromise) {
+          brc20InitialDataPromise = fetchBrc20InitialData();
         }
 
-        if (timeResponse.status === "fulfilled") {
-          setUpdateTime(timeResponse.value.data.last_updated);
-        }
+        const data = await brc20InitialDataPromise;
+        brc20InitialDataCache = data;
 
-        // Asynchronously fetch price data
-        if (tokenList.length > 0) {
-          fetchPrices(tokenList);
-        }
+        setTokens(data.tokens);
+        setTotal(data.total);
+        setActivePoolsCount(data.activePoolsCount);
+        setUpdateTime(data.updateTime);
       } catch (error) {
         console.error('Failed to fetch binance token screen:', error);
+        brc20InitialDataPromise = null;
       } finally {
         setLoading(false);
       }
@@ -83,36 +143,6 @@ export function Brc20() {
 
     fetchTokens();
   }, []);
-
-  // Fetch price data
-  const fetchPrices = async (tokenList: BinanceTokenScreenItem[]) => {
-    try {
-      const contractAddresses = tokenList.map(token => token.contractAddress).filter(Boolean);
-
-      if (contractAddresses.length === 0) {
-        return;
-      }
-
-      const priceResponse = await getBinanceTokenPrice(contractAddresses);
-      const prices = priceResponse.data.prices || [];
-
-      // Create price map table
-      const priceMap = new Map<string, number>();
-      prices.forEach(item => {
-        priceMap.set(item.token_address.toLowerCase(), item.price);
-      });
-
-      // Update tokens, add price information
-      setTokens(prevTokens =>
-        prevTokens.map(token => ({
-          ...token,
-          price: priceMap.get(token.contractAddress.toLowerCase()),
-        }))
-      );
-    } catch (error) {
-      console.error('Failed to fetch prices:', error);
-    }
-  };
 
 
   return (

@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 import { useEffect, useState, useRef } from "react";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { useDispatch, useSelector } from "react-redux";
@@ -6,7 +6,6 @@ import { AppDispatch, RootState } from "@/app/store";
 import { syncPoints } from "@/app/store/userSlice";
 import { AGENT_POINTS_COST } from "@/app/enum";
 import { message } from "antd";
-import Script from "next/script";
 import { useTranslation } from "react-i18next";
 import { LeftOutlined } from "@ant-design/icons";
 import star from "@/app/images/home/star.svg";
@@ -41,10 +40,6 @@ export default function PositionAnalysis() {
   const streamAbortController = useRef<AbortController | null>(null);
 
 
-  const [turnstileWidgetId, setTurnstileWidgetId] = useState<string>("");
-  const turnstileContainerRef = useRef<HTMLDivElement>(null);
-
-
   const [currentCoin, setCurrentCoin] = useState<{
     symbol: string;
     update_time: number;
@@ -54,90 +49,6 @@ export default function PositionAnalysis() {
   });
 
  
-  const initTurnstileOnDemand = async (): Promise<string> => {
-    return new Promise((resolve, reject) => {
-
-      if (!window.turnstile) {
-        const error = new Error("Turnstile script not loaded");
-        console.error("❌", error.message);
-        reject(error);
-        return;
-      }
-
-      if (!turnstileContainerRef.current) {
-        const error = new Error("Turnstile container element not found");
-        console.error("❌", error.message);
-        reject(error);
-        return;
-      }
-
-      const siteKey =
-        process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY ||
-        "1x00000000000000000000AA";
-
-
-      if (
-        !siteKey ||
-        (!siteKey.startsWith("0x") &&
-          !siteKey.startsWith("1x") &&
-          !siteKey.startsWith("2x") &&
-          !siteKey.startsWith("3x"))
-      ) {
-        const error = new Error(
-          `Invalid Turnstile site key format: ${siteKey}`
-        );
-        console.error("❌", error.message);
-        reject(error);
-        return;
-      }
-
-
-      if (turnstileWidgetId) {
-        try {
-          window.turnstile.remove(turnstileWidgetId);
-          setTurnstileWidgetId("");
-        } catch (error) {
-          console.warn("Failed to remove existing widget:", error);
-        }
-      }
-
-      try {
-   
-        const widgetId = window.turnstile.render(
-          turnstileContainerRef.current,
-          {
-            sitekey: siteKey,
-            callback: (token: string) => {
-              if (token) {
-                resolve(token);
-              } else {
-                reject(new Error("Turnstile callback returned empty token"));
-              }
-            },
-            "error-callback": () => {
-              console.error("❌ Turnstile widget error callback");
-              reject(new Error("Turnstile widget error"));
-            },
-            "expired-callback": () => {
-              console.log("⏰ Turnstile token expired callback");
-              reject(new Error("Turnstile token expired"));
-            },
-            size: "invisible",
-            theme: "light",
-            action: "positionRiskAnalysis",
-          }
-        );
-
-        setTurnstileWidgetId(widgetId);
-        console.log("Turnstile widget created with ID:", widgetId);
-      } catch (error) {
-        console.error("Failed to create Turnstile widget:", error);
-        reject(error);
-      }
-    });
-  };
-
-
   const handleAnalysis = async () => {
     if (!symbol) {
       message.warning(t("common.symbolRequired"));
@@ -167,47 +78,6 @@ export default function PositionAnalysis() {
     try {
       setLoading(true);
 
-      let token = "";
-      try {
-
-    
-        if (!window.turnstile) {
-
-
-          await new Promise<void>((resolve, reject) => {
-            const timeout = setTimeout(() => {
-              reject(
-                new Error("Turnstile script load timeout after 10 seconds")
-              );
-            }, 10000);
-
-            const checkTurnstile = setInterval(() => {
-              if (window.turnstile) {
-                console.log("✅ Turnstile script loaded");
-                clearInterval(checkTurnstile);
-                clearTimeout(timeout);
-                resolve();
-              }
-            }, 100);
-          });
-        }
-
-        // Create widget on demand and get token
-        token = await initTurnstileOnDemand();
-      } catch {
-        message.error(t("common.humanVerificationFailed"));
-        setLoading(false);
-        setStatus("init");
-        return;
-      }
-
-      if (!token) {
-        message.error(t("common.verificationTokenEmpty"));
-        setLoading(false);
-        setStatus("init");
-        return;
-      }
-
       await delayFunction();
 
 
@@ -216,7 +86,6 @@ export default function PositionAnalysis() {
     
       const streamGenerator = position_risk_management(
         `${t("agent.analyze")}|symbol:${symbol.toUpperCase()}|${cexName}`,
-        token,
         undefined,
         streamAbortController.current
       );
@@ -224,7 +93,7 @@ export default function PositionAnalysis() {
       for await (const chunk of streamGenerator) {
 
         if (streamAbortController.current?.signal.aborted) {
-          console.log("🚫 Streaming request aborted, stopping data chunk processing");
+          console.log("馃毇 Streaming request aborted, stopping data chunk processing");
           break;
         }
 
@@ -258,12 +127,12 @@ export default function PositionAnalysis() {
               return [...prev, newChunk];
             });
           } else if ("event" in chunk && chunk.event === "workflow_started") {
-            console.log("🚀 Workflow started...");
+            console.log("馃殌 Workflow started...");
           } else if ("event" in chunk && chunk.event === "workflow_finished") {
-            console.log("🏁 Workflow completed");
+            console.log("馃弫 Workflow completed");
             streamAbortController.current = null;
           } else if ("event" in chunk && chunk.event === "message_end") {
-            console.log("📝 Message ended...");
+            console.log("馃摑 Message ended...");
             streamAbortController.current = null;
           } else {
    
@@ -303,7 +172,7 @@ export default function PositionAnalysis() {
       }
 
 
-      console.log("🎉 Streaming request completed normally");
+      console.log("馃帀 Streaming request completed normally");
       setStatus("end");
     } catch (error) {
       if (error instanceof DOMException && error.name === "AbortError") {
@@ -351,7 +220,7 @@ export default function PositionAnalysis() {
       window.dispatchEvent(new Event("textLoaded"));
     }
 
-    console.log("✅ All states have been reset");
+    console.log("鉁?All states have been reset");
   };
 
   useEffect(() => {
@@ -376,17 +245,8 @@ export default function PositionAnalysis() {
         streamAbortController.current.abort();
         streamAbortController.current = null;
       }
-
-
-      if (turnstileWidgetId && window.turnstile) {
-        try {
-          window.turnstile.remove(turnstileWidgetId);
-        } catch (error) {
-          console.warn("Failed to cleanup Turnstile widget:", error);
-        }
-      }
     };
-  }, [turnstileWidgetId]);
+  }, []);
 
 
   useEffect(() => {
@@ -422,28 +282,6 @@ export default function PositionAnalysis() {
 
   return (
     <div>
-
-      <div
-        id="turnstile-container-position-analysis"
-        ref={turnstileContainerRef}
-        style={{
-          position: "fixed",
-          left: "-9999px",
-          top: "-9999px",
-          width: "1px",
-          height: "1px",
-          opacity: 0,
-          pointerEvents: "none",
-        }}
-      />
-
-   
-      <Script
-        src="https://challenges.cloudflare.com/turnstile/v0/api.js"
-        async
-      />
-
-
       <div className="max-w-6xl mx-auto mt-4">
         <div
           className="px-[8px] lg:px-0 flex items-center gap-2 cursor-pointer mb-[14px] lg:mb-0 hover:opacity-70 transition-opacity w-full bg-[#cf0] h-[40px] lg:h-[4vh] lg:px-4"

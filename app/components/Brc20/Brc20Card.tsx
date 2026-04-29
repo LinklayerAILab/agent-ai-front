@@ -6,6 +6,8 @@ import priceIcon from "@/app/images/brc20/price.svg";
 import topIcon from "@/app/images/brc20/top.svg";
 import { BinanceTokenScreenItem } from "@/app/api/binance";
 import { useTranslation } from "next-i18next";
+import { useState } from "react";
+import StreamingModal from "@/app/components/StreamingModal";
 
 interface Brc20CardProps {
   token?: BinanceTokenScreenItem;
@@ -49,10 +51,19 @@ const formatPrice = (price: number): string => {
 
 export function Brc20Card({ token }: Brc20CardProps) {
   const { t } = useTranslation();
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
   const handleTrade = () => {
     window.open(`https://pancakeswap.finance/swap?inputCurrency=0x55d398326f99059fF775485246999027B3197955&outputCurrency=${token?.contractAddress}`,'__blank')
   }
+
+  const handleAnalyze = () => {
+    if (!token) return;
+    setIsModalOpen(true);
+  };
+
   return (
+    <>
     <div className="w-full sm:w-1/2 sm:w-[48.4%] lg:w-[48.8%] xl:w-[32.45%] flex flex-row lg:gap-[1vh] bg-[#F3F3F3] rounded-[8px] p-[14px] lg:p-[1.8vh] lg:h-[16.5vh]">
       {/* Card content goes here */}
       <div className="flex w-full h-full">
@@ -107,10 +118,26 @@ export function Brc20Card({ token }: Brc20CardProps) {
         <Brc20Button size="large" className="w-full" style={{width:'100%'}} onClick={handleTrade}>
           {t('brc20.trade')}
         </Brc20Button>
-        <Brc20Button size="large" type="primary" className="w-full" style={{width:'100%'}}>
+        <Brc20Button
+          size="large"
+          type="primary"
+          className="w-full"
+          style={{width:'100%'}}
+          onClick={handleAnalyze}
+          disabled={!token}
+        >
           {t('brc20.agent')}
         </Brc20Button>
       </div>
     </div>
+    {token ? (
+      <StreamingModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        query={token}
+        mode="binance_token_analysis"
+      />
+    ) : null}
+    </>
   );
 }

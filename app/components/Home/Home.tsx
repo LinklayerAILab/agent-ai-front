@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 import "./Home.scss";
 import netbox from "@/app/images/home/netbg.svg";
 // import eye from "@/app/images/home/eye.svg";
@@ -6,7 +6,6 @@ import { useTranslation } from "react-i18next";
 import Image from "next/image";
 import { useEffect, useMemo, useState, useRef } from "react";
 import { useRouter, usePathname } from "next/navigation";
-import Script from "next/script";
 import PlatformList from "./PlatformList";
 import light from "@/app/images/home/light.svg";
 import clock2 from "@/app/images/home/clock2.svg";
@@ -108,10 +107,6 @@ export default function Home() {
   const [loading, setLoading] = useState(false);
   const streamAbortController = useRef<AbortController | null>(null);
 
-  // Turnstile related state
-  const [turnstileWidgetId, setTurnstileWidgetId] = useState<string>("");
-  const turnstileContainerRef = useRef<HTMLDivElement>(null);
-
   const initData = {
     code: 0,
     message: "",
@@ -179,112 +174,6 @@ export default function Home() {
     }
   };
 
-  // Dynamically initialize Turnstile widget - only create when needed, using callback method
-  const initTurnstileOnDemand = async (): Promise<string> => {
-    return new Promise((resolve, reject) => {
-      // Detailed check of each condition
-      console.log("🔧 Turnstile initialization check:");
-      console.log("- window.turnstile exists:", !!window.turnstile);
-      console.log(
-        "- turnstileContainerRef.current exists:",
-        !!turnstileContainerRef.current
-      );
-      console.log("- Container element details:", turnstileContainerRef.current);
-
-      if (!window.turnstile) {
-        const error = new Error("Turnstile script not loaded");
-        console.error("❌", error.message);
-        reject(error);
-        return;
-      }
-
-      if (!turnstileContainerRef.current) {
-        const error = new Error("Turnstile container element not found");
-        console.error("❌", error.message);
-        reject(error);
-        return;
-      }
-
-      const siteKey =
-        process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY ||
-        "1x00000000000000000000AA";
-      console.log("🔑 Turnstile configuration info:");
-      console.log(
-        "- Environment variable NEXT_PUBLIC_TURNSTILE_SITE_KEY:",
-        process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY
-      );
-      console.log("- Actually used siteKey:", siteKey);
-      console.log("- Current domain:", window.location.hostname);
-      console.log("- Current complete URL:", window.location.href);
-
-      // Verify Site Key format
-      if (
-        !siteKey ||
-        (!siteKey.startsWith("0x") &&
-          !siteKey.startsWith("1x") &&
-          !siteKey.startsWith("2x") &&
-          !siteKey.startsWith("3x"))
-      ) {
-        const error = new Error(
-          `Invalid Turnstile site key format: ${siteKey}`
-        );
-        console.error("❌", error.message);
-        reject(error);
-        return;
-      }
-
-      // If widget already exists, remove it first
-      if (turnstileWidgetId) {
-        try {
-          window.turnstile.remove(turnstileWidgetId);
-          setTurnstileWidgetId("");
-        } catch (error) {
-          console.warn("Failed to remove existing widget:", error);
-        }
-      }
-
-      try {
-        // Create new widget, rely on callback to get token
-        const widgetId = window.turnstile.render(
-          turnstileContainerRef.current,
-          {
-            sitekey: siteKey,
-            callback: (token: string) => {
-              console.log(
-                "✅ Turnstile callback received token:",
-                token ? "Token obtained successfully" : "Token is empty"
-              );
-              if (token) {
-                resolve(token);
-              } else {
-                reject(new Error("Turnstile callback returned empty token"));
-              }
-            },
-            "error-callback": () => {
-              console.error("❌ Turnstile widget error callback");
-              reject(new Error("Turnstile widget error"));
-            },
-            "expired-callback": () => {
-              console.log("⏰ Turnstile token expired callback");
-              reject(new Error("Turnstile token expired"));
-            },
-            size: "invisible",
-            theme: "light",
-            action: "positionRiskManagement",
-          }
-        );
-
-        setTurnstileWidgetId(widgetId);
-        console.log("Turnstile widget created with ID:", widgetId);
-
-        // Turnstile invisible widget will automatically trigger verification, no need to manually call execute
-        // Just wait for callback to be invoked
-      } catch (error) {
-        console.error("Failed to create Turnstile widget:", error);
-        reject(error);
-      }
-    });
-  };
   const [selectCoin, setSelectCoin] = useState<{
     update_time: number;
     symbol: string;
@@ -328,68 +217,17 @@ export default function Home() {
     try {
       setLoading(true);
 
-      // Initialize Turnstile on demand and get token
-      let token = "";
-      try {
-        console.log("🔐 Initializing Turnstile on demand and getting token...");
-
-        // Wait for Turnstile script to finish loading
-        if (!window.turnstile) {
-          console.log("⏳ Waiting for Turnstile script to load...");
-
-          await new Promise<void>((resolve, reject) => {
-            const timeout = setTimeout(() => {
-              console.error("❌ Turnstile script loading timeout");
-              reject(
-                new Error("Turnstile script load timeout after 10 seconds")
-              );
-            }, 10000);
-
-            const checkTurnstile = setInterval(() => {
-              if (window.turnstile) {
-                console.log("✅ Turnstile script loading completed");
-                clearInterval(checkTurnstile);
-                clearTimeout(timeout);
-                resolve();
-              }
-            }, 100);
-          });
-        }
-
-        // Create widget on demand and get token
-        token = await initTurnstileOnDemand();
-        console.log(
-          "✅ Successfully obtained Turnstile token:",
-          token ? "Token obtained successfully" : "Token is empty"
-        );
-      } catch (tokenError) {
-        console.error("❌ Failed to obtain Turnstile token:", tokenError);
-        message.error("Human verification failed, please try again");
-        setLoading(false);
-        setStatus("init");
-        return;
-      }
-
-      if (!token) {
-        console.error("❌ Turnstile token is empty");
-        message.error("Verification token is empty, please try again");
-        setLoading(false);
-        setStatus("init");
-        return;
-      }
-
       console.log(
-        "🚀 Starting to call position_risk_management streaming interface:",
+        "馃殌 Starting to call position_risk_management streaming interface:",
         data.symbol
       );
 
       // Create new AbortController to control streaming request
       streamAbortController.current = new AbortController();
 
-      // Call streaming interface, passing token and AbortController
+      // Call streaming interface
       const streamGenerator = position_risk_management(
         `${t("agent.analyze")}|symbol:${data.symbol}|${selectCex}`,
-        token,
         undefined,
         streamAbortController.current
       );
@@ -397,16 +235,16 @@ export default function Home() {
       for await (const chunk of streamGenerator) {
         // Check if aborted
         if (streamAbortController.current?.signal.aborted) {
-          console.log("🚫 Streaming request has been aborted, stop processing data chunks");
+          console.log("馃毇 Streaming request has been aborted, stop processing data chunks");
           break;
         }
 
-        console.log("📦 Received streaming data chunk:", chunk);
+        console.log("馃摝 Received streaming data chunk:", chunk);
 
         let newContent = "";
 
         if (chunk && typeof chunk === "object") {
-          console.log("🔍 Processing data chunk:", chunk);
+          console.log("馃攳 Processing data chunk:", chunk);
 
           // Handle SSE event format
           if (
@@ -416,7 +254,7 @@ export default function Home() {
             chunk.answer !== undefined
           ) {
             newContent = chunk.answer;
-            console.log("✅ Extracted answer content:", newContent);
+            console.log("鉁?Extracted answer content:", newContent);
 
             const newChunk: MessageChunk = {
               id: `chunk_${Date.now()}_${Math.random()
@@ -434,12 +272,12 @@ export default function Home() {
               return [...prev, newChunk];
             });
           } else if ("event" in chunk && chunk.event === "workflow_started") {
-            console.log("🚀 Workflow started");
+            console.log("馃殌 Workflow started");
           } else if ("event" in chunk && chunk.event === "workflow_finished") {
-            console.log("🏁 Workflow finished");
+            console.log("馃弫 Workflow finished");
             streamAbortController.current = null;
           } else if ("event" in chunk && chunk.event === "message_end") {
-            console.log("📝 Message ended");
+            console.log("馃摑 Message ended");
             streamAbortController.current = null;
           } else {
             // Handle other possible data formats
@@ -479,12 +317,12 @@ export default function Home() {
       }
 
       // Streaming request completed normally
-      console.log("🎉 Streaming request completed normally");
+      console.log("馃帀 Streaming request completed normally");
       setStatus("end");
     } catch (error) {
       // Check if this is a user-initiated abort
       if (error instanceof DOMException && error.name === "AbortError") {
-        console.log("✅ Streaming request has been aborted by user");
+        console.log("鉁?Streaming request has been aborted by user");
         return;
       }
 
@@ -516,13 +354,13 @@ export default function Home() {
 
   // Stop analysis
   const stopCreation = () => {
-    console.log("🛑 Stopping content generation");
+    console.log("馃洃 Stopping content generation");
 
     // 1. Stop streaming request
     if (streamAbortController.current) {
       streamAbortController.current.abort();
       streamAbortController.current = null;
-      console.log("✅ Streaming request has been stopped");
+      console.log("鉁?Streaming request has been stopped");
     }
 
     // 2. Reset all related states
@@ -535,7 +373,7 @@ export default function Home() {
       window.dispatchEvent(new Event("textLoaded"));
     }
 
-    console.log("✅ All states have been reset");
+    console.log("鉁?All states have been reset");
   };
 
   // Event listener setup - listen to textLoading and textLoaded events
@@ -560,17 +398,8 @@ export default function Home() {
         streamAbortController.current.abort();
         streamAbortController.current = null;
       }
-
-      // Clean up Turnstile Widget
-      if (turnstileWidgetId && window.turnstile) {
-        try {
-          window.turnstile.remove(turnstileWidgetId);
-        } catch (error) {
-          console.warn("Failed to clean up Turnstile widget:", error);
-        }
-      }
     };
-  }, [turnstileWidgetId]);
+  }, []);
 
   // Handle coin click
   const handleCryptoClick = async (crypto: GetAssetWithLogoItem) => {
@@ -1254,27 +1083,6 @@ export default function Home() {
           </div>
         </div>
       </div>
-
-      {/* Hidden Turnstile container element */}
-      <div
-        id="turnstile-container-home"
-        ref={turnstileContainerRef}
-        style={{
-          position: "fixed",
-          left: "-9999px",
-          top: "-9999px",
-          width: "1px",
-          height: "1px",
-          opacity: 0,
-          pointerEvents: "none",
-        }}
-      />
-
-      {/* Only load Turnstile script, do not automatically initialize widget */}
-      <Script
-        src="https://challenges.cloudflare.com/turnstile/v0/api.js"
-        async
-      />
     </div>
   );
 }

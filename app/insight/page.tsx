@@ -5,7 +5,6 @@ import { useTranslation } from "react-i18next";
 import Image from "next/image";
 import { useEffect, useMemo, useState, useRef } from "react";
 import { useRouter, usePathname } from "next/navigation";
-import Script from "next/script";
 import PlatformList from "../components/Home/PlatformList";
 import light from "@/app/images/home/light.svg";
 import clock2 from "@/app/images/home/clock2.svg";
@@ -80,6 +79,37 @@ const cryptoData = [
   { asset: "ZEC", free: "", logo: zecIcon },
 ];
 
+interface InsightDashboardData {
+  claimInfo: ClaimInfoItem[] | null;
+  undue?: LiquidationCalculatedResponse;
+  calculated?: LiquidationCalculatedResponse;
+  positionSymbols?: PositionSymbolsResponse;
+}
+
+const insightDashboardCache = new Map<string, InsightDashboardData>();
+const insightDashboardPromise = new Map<string, Promise<InsightDashboardData>>();
+
+const fetchInsightDashboardData = async (
+  cexName: string
+): Promise<InsightDashboardData> => {
+  const [claimRes, undueRes, calculatedRes, symbolsRes] = await Promise.allSettled([
+    get_claim_info({ cex_name: cexName }),
+    liquidation_undue({ cex_name: cexName }),
+    liquidation_calculated({ cex_name: cexName }),
+    position_symbols({ cex_name: cexName }),
+  ]);
+
+  return {
+    claimInfo:
+      claimRes.status === "fulfilled" ? claimRes.value.data.claim_info : null,
+    undue: undueRes.status === "fulfilled" ? undueRes.value : undefined,
+    calculated:
+      calculatedRes.status === "fulfilled" ? calculatedRes.value : undefined,
+    positionSymbols:
+      symbolsRes.status === "fulfilled" ? symbolsRes.value : undefined,
+  };
+};
+
 export default function InsightPage() {
   const router = useRouter();
   const pathname = usePathname();
@@ -105,10 +135,6 @@ export default function InsightPage() {
   >("init");
   const [loading, setLoading] = useState(false);
   const streamAbortController = useRef<AbortController | null>(null);
-
-  // Turnstile related state
-  const [turnstileWidgetId, setTurnstileWidgetId] = useState<string>("");
-  const turnstileContainerRef = useRef<HTMLDivElement>(null);
 
   const initData = {
     code: 0,
@@ -177,66 +203,6 @@ export default function InsightPage() {
     }
   };
 
-  // Dynamically initialize Turnstile widget - create on demand using callback method
-  const initTurnstileOnDemand = async (): Promise<string> => {
-    return new Promise((resolve, reject) => {
-      if (!window.turnstile) {
-        const error = new Error("Turnstile script not loaded");
-        reject(error);
-        return;
-      }
-
-      if (!turnstileContainerRef.current) {
-        const error = new Error("Turnstile container element not found");
-        reject(error);
-        return;
-      }
-
-      const siteKey =
-        process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY ||
-        "1x00000000000000000000AA";
-
-      // If widget exists, remove it first
-      if (turnstileWidgetId) {
-        try {
-          window.turnstile.remove(turnstileWidgetId);
-          setTurnstileWidgetId("");
-        } catch (error) {
-          console.warn("Failed to remove existing widget:", error);
-        }
-      }
-
-      try {
-        const widgetId = window.turnstile.render(
-          turnstileContainerRef.current,
-          {
-            sitekey: siteKey,
-            callback: (token: string) => {
-              if (token) {
-                resolve(token);
-              } else {
-                reject(new Error("Turnstile callback returned empty token"));
-              }
-            },
-            "error-callback": () => {
-              reject(new Error("Turnstile widget error"));
-            },
-            "expired-callback": () => {
-              reject(new Error("Turnstile token expired"));
-            },
-            size: "invisible",
-            theme: "light",
-            action: "positionRiskManagement",
-          }
-        );
-
-        setTurnstileWidgetId(widgetId);
-      } catch (error) {
-        reject(error);
-      }
-    });
-  };
-
   const [selectCoin, setSelectCoin] = useState<{
     update_time: number;
     symbol: string;
@@ -281,44 +247,10 @@ export default function InsightPage() {
     try {
       setLoading(true);
 
-      let token = "";
-      try {
-        if (!window.turnstile) {
-          await new Promise<void>((resolve, reject) => {
-            const timeout = setTimeout(() => {
-              reject(new Error("Turnstile script load timeout"));
-            }, 10000);
-
-            const checkTurnstile = setInterval(() => {
-              if (window.turnstile) {
-                clearInterval(checkTurnstile);
-                clearTimeout(timeout);
-                resolve();
-              }
-            }, 100);
-          });
-        }
-
-        token = await initTurnstileOnDemand();
-      } catch  {
-        message.error("Human verification failed, please try again");
-        setLoading(false);
-        setStatus("init");
-        return;
-      }
-
-      if (!token) {
-        message.error("Verification token is empty, please try again");
-        setLoading(false);
-        setStatus("init");
-        return;
-      }
-
       streamAbortController.current = new AbortController();
 
       const streamGenerator = position_risk_management(
         `${t("agent.analyze")}|symbol:${data.symbol}|${selectCex}`,
-        token,
         undefined,
         streamAbortController.current
       );
@@ -456,16 +388,8 @@ export default function InsightPage() {
         streamAbortController.current.abort();
         streamAbortController.current = null;
       }
-
-      if (turnstileWidgetId && window.turnstile) {
-        try {
-          window.turnstile.remove(turnstileWidgetId);
-        } catch (error) {
-          console.warn("Failed to remove Turnstile widget:", error);
-        }
-      }
     };
-  }, [turnstileWidgetId]);
+  }, []);
 
   const handleCryptoClick = async (crypto: GetAssetWithLogoItem) => {
     try {
@@ -510,13 +434,6 @@ export default function InsightPage() {
 
   const [undue, setUndue] = useState<LiquidationCalculatedResponse>();
   const [calculated, setCalculated] = useState<LiquidationCalculatedResponse>();
-
-  const fetchLiquidationData = async () => {
-    const res2 = await liquidation_undue({ cex_name: selectCex });
-    setUndue(res2);
-    const res1 = await liquidation_calculated({ cex_name: selectCex });
-    setCalculated(res1);
-  };
 
   const initClaimList: ClaimInfoItem[] = [
     {
@@ -579,32 +496,71 @@ export default function InsightPage() {
   const [claimInfo, setClaimInfo] = useState<ClaimInfoItem[]>([...initClaimList]);
 
   useEffect(() => {
-    if (isLogin) {
-      get_claim_info({ cex_name: selectCex }).then((res) => {
-        if(res.data.claim_info.length===0){
-          setClaimInfo([...initClaimList]);
-        }else {
-          setClaimInfo(res.data.claim_info);
-        }
-      })
-      fetchLiquidationData();
-      try {
-        position_symbols({ cex_name: selectCex }).then((res) => {
-          setPositionSymbols(res);
-        });
-      } catch {
-        setPositionSymbols(initData);
+    let cancelled = false;
+
+    const loadDashboardData = async () => {
+      if (insightDashboardCache.has(selectCex)) {
+        const cached = insightDashboardCache.get(selectCex)!;
+        if (cancelled) return;
+        setClaimInfo(
+          cached.claimInfo && cached.claimInfo.length > 0
+            ? cached.claimInfo
+            : [...initClaimList]
+        );
+        setUndue(cached.undue);
+        setCalculated(cached.calculated);
+        setPositionSymbols(cached.positionSymbols || initData);
+        return;
       }
+
+      if (!insightDashboardPromise.has(selectCex)) {
+        insightDashboardPromise.set(selectCex, fetchInsightDashboardData(selectCex));
+      }
+
+      try {
+        const data = await insightDashboardPromise.get(selectCex)!;
+        insightDashboardCache.set(selectCex, data);
+        if (cancelled) return;
+        setClaimInfo(
+          data.claimInfo && data.claimInfo.length > 0
+            ? data.claimInfo
+            : [...initClaimList]
+        );
+        setUndue(data.undue);
+        setCalculated(data.calculated);
+        setPositionSymbols(data.positionSymbols || initData);
+      } catch {
+        if (cancelled) return;
+        setClaimInfo([...initClaimList]);
+        setUndue(undefined);
+        setCalculated(undefined);
+        setPositionSymbols(initData);
+      } finally {
+        insightDashboardPromise.delete(selectCex);
+      }
+    };
+
+    if (isLogin) {
+      loadDashboardData();
       const calculatedInterval = setInterval(() => {
         liquidation_calculated({ cex_name: selectCex }).then((res) => {
           setCalculated(res);
+          if (insightDashboardCache.has(selectCex)) {
+            const cached = insightDashboardCache.get(selectCex)!;
+            insightDashboardCache.set(selectCex, {
+              ...cached,
+              calculated: res,
+            });
+          }
         });
       }, 10000);
 
       return () => {
+        cancelled = true;
         clearInterval(calculatedInterval);
       };
     } else {
+      cancelled = true;
       setClaimInfo([...initClaimList]);
       setUndue(undefined);
       setCalculated(undefined);
@@ -1109,24 +1065,6 @@ export default function InsightPage() {
         </div>
       </div>
 
-      <div
-        id="turnstile-container-home"
-        ref={turnstileContainerRef}
-        style={{
-          position: "fixed",
-          left: "-9999px",
-          top: "-9999px",
-          width: "1px",
-          height: "1px",
-          opacity: 0,
-          pointerEvents: "none",
-        }}
-      />
-
-      <Script
-        src="https://challenges.cloudflare.com/turnstile/v0/api.js"
-        async
-      />
     </div>
   );
 }

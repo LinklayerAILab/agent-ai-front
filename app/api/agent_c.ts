@@ -241,18 +241,12 @@ export type StreamingResponse =
 
 export const analyse_coin_c_steaming = (
   str: string,
-  token?: string,
   endFun?: () => void,
   abortController?: AbortController,
 ) => {
-  const requestBody: { input: string; token?: string } = {
+  const requestBody: { input: string } = {
     input: str,
   };
-
-  // If turnstile token is provided, add to request body
-  if (token) {
-    requestBody.token = token;
-  }
 
   return streamingRequest<StreamingResponse>(
     `/api/v1/analyse_coin`,
@@ -262,8 +256,6 @@ export const analyse_coin_c_steaming = (
       body: JSON.stringify(requestBody),
       headers: {
         "Content-Type": "application/json; charset=UTF-8",
-        // Can also pass token in headers
-        ...(token && { "X-Turnstile-Token": token }),
       },
     },
     {
@@ -275,18 +267,12 @@ export const analyse_coin_c_steaming = (
 
 export const recommend_coin_c_steaming = (
   str: string,
-  token?: string,
   endFun?: () => void,
   abortController?: AbortController,
 ) => {
-  const requestBody: { input: string; token?: string } = {
+  const requestBody: { input: string } = {
     input: str,
   };
-
-  // If turnstile token is provided, add to request body
-  if (token) {
-    requestBody.token = token;
-  }
 
   return streamingRequest<StreamingResponse>(
     `/api/v1/recommend_coin`,
@@ -296,8 +282,6 @@ export const recommend_coin_c_steaming = (
       body: JSON.stringify(requestBody),
       headers: {
         "Content-Type": "application/json; charset=UTF-8",
-        // Can also pass token in headers
-        ...(token && { "X-Turnstile-Token": token }),
       },
     },
     {
@@ -309,18 +293,12 @@ export const recommend_coin_c_steaming = (
 
 export const position_risk_management = (
   str: string,
-  token?: string,
   endFun?: () => void,
   abortController?: AbortController,
 ) => {
-  const requestBody: { input: string; token?: string } = {
+  const requestBody: { input: string } = {
     input: str,
   };
-
-  // If turnstile token is provided, add to request body
-  if (token) {
-    requestBody.token = token;
-  }
 
   return streamingRequest<StreamingResponse>(
     `/api/v1/position_risk_management`,
@@ -330,8 +308,6 @@ export const position_risk_management = (
       body: JSON.stringify(requestBody),
       headers: {
         "Content-Type": "application/json; charset=UTF-8",
-        // Can also pass token in headers
-        ...(token && { "X-Turnstile-Token": token }),
       },
     },
     {

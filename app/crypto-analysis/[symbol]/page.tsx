@@ -23,7 +23,6 @@ import {
 } from "@/app/api/agent_c";
 import { MessageChunk } from "@/app/piloter/types";
 import { message } from "antd";
-import Script from "next/script";
 import { StreamMessage } from "@/app/components/StreamMessage";
 import FlipNumbers from "react-flip-numbers";
 
@@ -68,16 +67,8 @@ export default function CryptoAnalysis() {
   >("init");
   const [tip] = useState("Analyzing...");
 
-  const [turnstileWidgetId, setTurnstileWidgetId] = useState<string>("");
-  const turnstileContainerRef = useRef<HTMLDivElement>(null);
-  const turnstileWidgetIdRef = useRef<string>("");
-
   const streamAbortController = useRef<AbortController | null>(null);
   const isStreamingRef = useRef<boolean>(false);
-
-  useEffect(() => {
-    turnstileWidgetIdRef.current = turnstileWidgetId;
-  }, [turnstileWidgetId]);
 
   useEffect(() => {
     dispatch(getSyncAssets("binance"));
@@ -122,85 +113,6 @@ export default function CryptoAnalysis() {
     () => assets.find((crypto) => crypto.asset === symbol?.toUpperCase()),
     [assets, symbol]
   );
-
-  const initTurnstileOnDemand = async (): Promise<string> => {
-    return new Promise((resolve, reject) => {
-      if (!window.turnstile) {
-        const error = new Error("Turnstile script not loaded");
-        console.error(error.message);
-        reject(error);
-        return;
-      }
-
-      if (!turnstileContainerRef.current) {
-        const error = new Error("Turnstile container element not found");
-        console.error(error.message);
-        reject(error);
-        return;
-      }
-
-      const siteKey =
-        process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY ||
-        "1x00000000000000000000AA";
-      if (
-        !siteKey ||
-        (!siteKey.startsWith("0x") &&
-          !siteKey.startsWith("1x") &&
-          !siteKey.startsWith("2x") &&
-          !siteKey.startsWith("3x"))
-      ) {
-        const error = new Error(
-          `Invalid Turnstile site key format: ${siteKey}`
-        );
-        console.error(error.message);
-        reject(error);
-        return;
-      }
-
-      if (turnstileWidgetId) {
-        try {
-          window.turnstile.remove(turnstileWidgetId);
-          setTurnstileWidgetId("");
-        } catch (error) {
-          console.warn("Failed to remove existing widget:", error);
-        }
-      }
-
-      try {
-  
-        const widgetId = window.turnstile.render(
-          turnstileContainerRef.current,
-          {
-            sitekey: siteKey,
-            callback: (token: string) => {
-              if (token) {
-                resolve(token);
-              } else {
-                reject(new Error("Turnstile callback returned empty token"));
-              }
-            },
-            "error-callback": () => {
-              console.error("Turnstile widget error callback");
-              reject(new Error("Turnstile widget error"));
-            },
-            "expired-callback": () => {
-              console.log("Turnstile token expired callback");
-              reject(new Error("Turnstile token expired"));
-            },
-            size: "invisible",
-            theme: "light",
-            action: "analyseCoin",
-          }
-        );
-
-        setTurnstileWidgetId(widgetId);
-        console.log("Turnstile widget created with ID:", widgetId);
-      } catch (error) {
-        console.error("Failed to create Turnstile widget:", error);
-        reject(error);
-      }
-    });
-  };
 
   const handleCryptoClick = async (crypto: GetAssetWithLogoItem) => {
 
@@ -254,15 +166,6 @@ export default function CryptoAnalysis() {
         streamAbortController.current.abort();
         streamAbortController.current = null;
       }
-
-      const widgetId = turnstileWidgetIdRef.current;
-      if (widgetId && window.turnstile) {
-        try {
-          window.turnstile.remove(widgetId);
-        } catch (error) {
-          console.warn("err:", error);
-        }
-      }
     };
   }, []);
 
@@ -279,48 +182,12 @@ export default function CryptoAnalysis() {
     try {
       setLoading(true);
 
-      let token = "";
-      try {
-        if (!window.turnstile) {
-          await new Promise<void>((resolve, reject) => {
-            const timeout = setTimeout(() => {
-              reject(
-                new Error("Turnstile script load timeout after 10 seconds")
-              );
-            }, 10000);
-
-            const checkTurnstile = setInterval(() => {
-              if (window.turnstile) {
-                clearInterval(checkTurnstile);
-                clearTimeout(timeout);
-                resolve();
-              }
-            }, 100);
-          });
-        }
-
-        token = await initTurnstileOnDemand();
-      } catch  {
-        messageApi.error("Human verification failed, please try again");
-        setLoading(false);
-        setStatus("init");
-        return;
-      }
-
-      if (!token) {
-        messageApi.error("Verification token is empty, please try again");
-        setLoading(false);
-        setStatus("init");
-        return;
-      }
-
       // Create new AbortController to control streaming request
       streamAbortController.current = new AbortController();
 
-      // Pass token and AbortController to analysis API
+      // Pass AbortController to analysis API
       const streamGenerator = analyse_coin_c_steaming(
         `${t("agent.analyze")} ${coinSymbol}`,
-        token,
         undefined,
         streamAbortController.current
       );
@@ -447,16 +314,6 @@ export default function CryptoAnalysis() {
     setLoading(false);
     setMessageChunks([]);
     setStatus("init");
-
-
-    if (turnstileWidgetId && window.turnstile) {
-      try {
-        window.turnstile.remove(turnstileWidgetId);
-        setTurnstileWidgetId("");
-      } catch (error) {
-        console.warn("err:", error);
-      }
-    }
 
     if (typeof window !== "undefined") {
       window.dispatchEvent(new Event("textLoaded"));
@@ -644,26 +501,6 @@ export default function CryptoAnalysis() {
           )}
         </div>
       </div>
-
-
-      <div
-        id="turnstile-container-crypto-analysis"
-        ref={turnstileContainerRef}
-        style={{
-          position: "fixed",
-          left: "-9999px",
-          top: "-9999px",
-          width: "1px",
-          height: "1px",
-          opacity: 0,
-          pointerEvents: "none",
-        }}
-      />
-
-      <Script
-        src="https://challenges.cloudflare.com/turnstile/v0/api.js"
-        async
-      />
     </div>
   );
 }

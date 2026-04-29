@@ -173,11 +173,7 @@ export default function Menus(props: MenusProps) {
     (state: RootState) => state.pageDirection.direction
   );
   // const isLogin = useSelector((state: RootState) => state.user.isLogin);
-  const [mounted, setMounted] = useState(false);
   const nodeRef = useMemo(() => React.createRef<HTMLDivElement>(), []);
-  useEffect(() => {
-    setMounted(true);
-  }, []);
   const menuRef = React.useRef<HTMLDivElement>(null);
   const menuButtonRef = React.useRef<HTMLDivElement>(null);
 
@@ -597,28 +593,22 @@ export default function Menus(props: MenusProps) {
             pathname === "/" ? "home" : pathname?.substring(1, pathname.length)
           } ${showMenu ? 'open-menu' : ''}`}
         >
-          {mounted ? (
-            <div className="home-layout overflow-y-scroll xl:overflow-hidden">
-              <TransitionGroup className="router-wrapper">
-                <SwitchTransition mode="out-in">
-                  <CSSTransition
-                    key={pathname}
-                    appear={true}
-                    timeout={400}
-                    classNames={direction}
-                    unmountOnExit={true}
-                    nodeRef={nodeRef}
-                  >
-                    <div ref={nodeRef}>{props.children ?? <></>}</div>
-                  </CSSTransition>
-                </SwitchTransition>
-              </TransitionGroup>
-            </div>
-          ) : (
-            <div className="home-layout">
-              <div>{props.children ?? <></>}</div>
-            </div>
-          )}
+          <div className="home-layout overflow-y-scroll xl:overflow-hidden">
+            <TransitionGroup className="router-wrapper">
+              <SwitchTransition mode="out-in">
+                <CSSTransition
+                  key={pathname}
+                  appear={true}
+                  timeout={400}
+                  classNames={direction}
+                  unmountOnExit={true}
+                  nodeRef={nodeRef}
+                >
+                  <div ref={nodeRef}>{props.children ?? <></>}</div>
+                </CSSTransition>
+              </SwitchTransition>
+            </TransitionGroup>
+          </div>
         </div>
       </div>
     </div>
