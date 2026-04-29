@@ -668,20 +668,26 @@ export const position_symbols = (data: PositionSymbolsParams) => {
 };
 
 export interface ClaimInfoItem {
-  claim_amount: number;
-  claim_flag: boolean;
-  claim_time: number;
-  period_end: number;
-  period_start: number;
+  id: number;
+  user_id: string;
+  channel_id: number;
+  channel_type: string;
+  reference_id: string;
+  amount: number;
+  before_balance: number;
+  after_balance: number;
+  pool_before: number;
+  pool_after: number;
+  created_at: string;
 }
 // /claim_info
 export interface ClaimInfoResponse extends AgentCResponse {
   data: {
-    claim_info: ClaimInfoItem[];
-    total_count: number;
+    records: ClaimInfoItem[];
+    total: number;
   };
 }
-export const get_claim_info = (params: { cex_name: string }) => {
+export const get_claim_info = (params: { cex_name: string ,channel_ids: number[]}) => {
   return request<ClaimInfoResponse>(`${AGENT_C_API}/v1/claim_info`, {
     method: "post",
     cache: "no-store",

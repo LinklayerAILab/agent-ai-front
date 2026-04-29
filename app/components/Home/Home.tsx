@@ -455,72 +455,27 @@ export default function Home() {
     const res1 = await liquidation_calculated({ cex_name: selectCex });
     setCalculated(res1);
   };
-  const initClaimList: ClaimInfoItem[] = [
-    {
-      claim_flag: false,
-      period_start: 0,
-      period_end: 0,
-      claim_time:  0,
-      claim_amount: 0
-    },
-        {
-      claim_flag: false,
-      period_start: 0,
-      period_end: 0,
-      claim_time:  0,
-      claim_amount: 0
-    },
-        {
-      claim_flag: false,
-      period_start: 0,
-      period_end: 0,
-      claim_time:  0,
-      claim_amount: 0
-    },
-        {
-      claim_flag: false,
-      period_start: 0,
-      period_end: 0,
-      claim_time:  0,
-      claim_amount: 0
-    },
-        {
-      claim_flag: false,
-      period_start: 0,
-      period_end: 0,
-      claim_time:  0,
-      claim_amount: 0
-    },
-        {
-      claim_flag: false,
-      period_start: 0,
-      period_end: 0,
-      claim_time:  0,
-      claim_amount: 0
-    },
-            {
-      claim_flag: false,
-      period_start: 0,
-      period_end: 0,
-      claim_time:  0,
-      claim_amount: 0
-    },
-            {
-      claim_flag: false,
-      period_start: 0,
-      period_end: 0,
-      claim_time:  0,
-      claim_amount: 0
-    }
-  ];
+  const initClaimList: ClaimInfoItem[] = Array.from({ length: 8 }, () => ({
+    id: 0,
+    user_id: "",
+    channel_id: 0,
+    channel_type: "",
+    reference_id: "",
+    amount: 0,
+    before_balance: 0,
+    after_balance: 0,
+    pool_before: 0,
+    pool_after: 0,
+    created_at: "",
+  }));
   const [claimInfo, setClaimInfo] = useState<ClaimInfoItem[]>([...initClaimList]);
   useEffect(() => {
     if (isLogin) {
-      get_claim_info({ cex_name: selectCex }).then((res) => {
-        if(res.data.claim_info.length===0){
+      get_claim_info({ cex_name: selectCex, channel_ids: [2, 3] }).then((res) => {
+        if(res.data.records.length===0){
           setClaimInfo([...initClaimList]);
         }else {
-          setClaimInfo(res.data.claim_info);
+          setClaimInfo(res.data.records);
         }
       })
       fetchLiquidationData();

@@ -501,6 +501,7 @@ export default function CryptoAnalysis() {
           )}
         </div>
       </div>
+
     </div>
   );
 }

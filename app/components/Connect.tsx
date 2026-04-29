@@ -6,12 +6,8 @@ import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "../store";
 import LLButton from "./LLButton";
 import {
-  user_rewardpoints,
-} from "../api/user";
-import {
   logout,
   setOtherInfo,
-  syncPoints,
 } from "../store/userSlice";
 import { CaretDownOutlined } from "@ant-design/icons";
 import { useState, useEffect, Suspense } from "react";
@@ -22,7 +18,7 @@ import email from "@/app/images/loginPanel/email.svg";
 import toLink from "@/app/images/agent/toLink.svg";
 import music from "@/app/images/loginPanel/music.svg";
 import Link from "next/link";
-import { get_user_info } from "../api/agent_c";
+import { get_llax_balance, get_user_info } from "../api/agent_c";
 import { useAccount } from "wagmi";
 import { useAppKit } from "@reown/appkit/react";
 import { disconnect } from "wagmi/actions";
@@ -80,7 +76,6 @@ const URLParamsHandler = () => {
 const Connect = () => {
   const { t } = useTranslation();
   const isLogin = useSelector((state: RootState) => state.user.isLogin);
-
   const points = useSelector((state: RootState) => state.user.points);
   const dispatch = useDispatch<AppDispatch>();
   const otherInfo = useSelector((state: RootState) => state.user.otherInfo);
@@ -92,6 +87,7 @@ const Connect = () => {
   const [messageApi, contextHolder] = message.useMessage();
   const router = useRouter();
   const localAddress = useSelector((state: RootState) => state.user.address);
+  const [llaxBalance, setLlaxBalance] = useState<number | null>(null);
 
   // Sync wallet address to localStorage when connected
   useEffect(() => {
@@ -130,15 +126,27 @@ const Connect = () => {
     };
   }, []);
 
-  // Sync points after successful login
+  const fetchLlaxBalance = async () => {
+    try {
+      const res = await get_llax_balance();
+      setLlaxBalance(res?.data?.balance?.balance ?? null);
+    } catch (error) {
+      console.error("failed to fetch llax balance:", error);
+      setLlaxBalance(null);
+    }
+  };
+
+  // Sync user profile and llax balance after successful login
   useEffect(() => {
     if (isLogin) {
-      dispatch(syncPoints());
       get_user_info().then((res: { data: unknown }) => {
         if (res) {
           dispatch(setOtherInfo(res.data));
         }
       });
+      fetchLlaxBalance();
+    } else {
+      setLlaxBalance(null);
     }
   }, [isLogin, dispatch]);
 
@@ -161,16 +169,11 @@ const Connect = () => {
     setShowAccountChangeDialog(false);
   };
 
-  // Sync points when dropdown opens
+  // Refresh llax balance when dropdown opens
   const handleDropdownClick = async () => {
     if (!dropdownOpen && isLogin) {
       handleRefreshUserInfo();
-      // Fetch reward points
-      try {
-        await user_rewardpoints();
-      } catch (error) {
-        console.error("Failed to fetch reward points:", error);
-      }
+      fetchLlaxBalance();
     }
     setDropdownOpen(!dropdownOpen);
   };
@@ -283,7 +286,7 @@ const Connect = () => {
       const res = await get_user_info();
       if (res && res.data) {
         dispatch(setOtherInfo(res.data));
-        dispatch(syncPoints());
+        fetchLlaxBalance();
       }
     } catch (error) {
       console.error("failed to refresh user info:", error);
@@ -351,7 +354,7 @@ const Connect = () => {
                 {t("wallet.emailAddress")}
               </div>
               <div className="font-bold text-[12px] text-black">
-                {otherInfo.email || "---"}
+                {otherInfo.email || "--"}
               </div>
             </div>
           </div>
@@ -366,32 +369,36 @@ const Connect = () => {
           </div>
         </div>
         <div className="flex gap-[4px] mt-[8px]">
-          <div className="bg-[#E9FF93] rounded-[8px] w-[55%] rounded-[8px] h-[50px] lg:h-[60px]  px-2 py-3">
+              <div className="bg-[#cf0] rounded-[8px] rounded-[8px] h-[50px] w-[20%] lg:h-[60px] px-2 py-3">
+            <div className="h-full flex justify-between items-center">
+              <div className="flex items-center gap-2">
+                <Image src={smallPeople} alt="" />
+              </div>
+              <div className="font-bold text-black">
+                {otherInfo.invite_count || "--"}
+              </div>
+            </div>
+          </div>
+          <div className="bg-[#E9FF93] rounded-[8px] w-[55%] rounded-[8px] h-[50px] lg:h-[60px]  px-2 py-3 flex-1">
             <div className="h-full flex justify-between items-center">
               <div className="flex items-center gap-2">
                 <Image src={smallMoney} alt="" />
                 <div className="text-[#666666] text-[12px]">
-                  {t("wallet.myPoints")}
+                  LLAx
                 </div>
               </div>
               <div className="font-bold text-black">
-                {points || '---'}
+                {llaxBalance ?? "--"}
               </div>
+              <LLButton
+                className="bg-[#eee]"
+                onClick={() => messageApi.info("Coming soon")}
+              >
+                <span className="text-[12px]">Claim</span>
+              </LLButton>
             </div>
           </div>
-          <div className="bg-[#F9FFE2] rounded-[8px] w-[43%] rounded-[8px] h-[50px] lg:h-[60px] px-2 py-3">
-            <div className="h-full flex justify-between items-center">
-              <div className="flex items-center gap-2">
-                <Image src={smallPeople} alt="" />
-                <div className="text-[#666666] text-[12px]">
-                  {t("wallet.myInvite")}
-                </div>
-              </div>
-              <div className="font-bold text-black">
-                {otherInfo.invite_count || "---"}
-              </div>
-            </div>
-          </div>
+      
         </div>
       </div>
       <div className="flex items-center mt-4">
@@ -485,7 +492,7 @@ const Connect = () => {
                 alt=""
               ></Image>
             </div>
-            <span className="text-[12px] lg:text-[14px]">{points}</span>
+            <span className="text-[12px] lg:text-[14px]">{points ?? "--"}</span>
           </div>
         </LLButton>
       ) : (

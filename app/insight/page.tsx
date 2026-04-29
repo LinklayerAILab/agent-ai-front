@@ -34,7 +34,6 @@ const { Countdown } = Statistic;
 import star from "@/app/images/home/star.svg";
 import { ReceivedCard } from "../components/Home/ReceivedCard";
 import { LabelAndVal } from "../components/Home/LabelAndVal";
-import { ReceiveBtn } from "../components/Home/ReceiveBtn";
 import { ReceiveSlide } from "../components/Home/ReceiveSlide";
 import PopoverContent from "../components/PopoverContent";
 import {
@@ -93,7 +92,7 @@ const fetchInsightDashboardData = async (
   cexName: string
 ): Promise<InsightDashboardData> => {
   const [claimRes, undueRes, calculatedRes, symbolsRes] = await Promise.allSettled([
-    get_claim_info({ cex_name: cexName }),
+    get_claim_info({ cex_name: cexName, channel_ids: [2,3] }),
     liquidation_undue({ cex_name: cexName }),
     liquidation_calculated({ cex_name: cexName }),
     position_symbols({ cex_name: cexName }),
@@ -101,7 +100,7 @@ const fetchInsightDashboardData = async (
 
   return {
     claimInfo:
-      claimRes.status === "fulfilled" ? claimRes.value.data.claim_info : null,
+      claimRes.status === "fulfilled" ? claimRes.value.data.records : null,
     undue: undueRes.status === "fulfilled" ? undueRes.value : undefined,
     calculated:
       calculatedRes.status === "fulfilled" ? calculatedRes.value : undefined,
@@ -435,64 +434,19 @@ export default function InsightPage() {
   const [undue, setUndue] = useState<LiquidationCalculatedResponse>();
   const [calculated, setCalculated] = useState<LiquidationCalculatedResponse>();
 
-  const initClaimList: ClaimInfoItem[] = [
-    {
-      claim_flag: false,
-      period_start: 0,
-      period_end: 0,
-      claim_time:  0,
-      claim_amount: 0
-    },
-    {
-      claim_flag: false,
-      period_start: 0,
-      period_end: 0,
-      claim_time:  0,
-      claim_amount: 0
-    },
-    {
-      claim_flag: false,
-      period_start: 0,
-      period_end: 0,
-      claim_time:  0,
-      claim_amount: 0
-    },
-    {
-      claim_flag: false,
-      period_start: 0,
-      period_end: 0,
-      claim_time:  0,
-      claim_amount: 0
-    },
-    {
-      claim_flag: false,
-      period_start: 0,
-      period_end: 0,
-      claim_time:  0,
-      claim_amount: 0
-    },
-    {
-      claim_flag: false,
-      period_start: 0,
-      period_end: 0,
-      claim_time:  0,
-      claim_amount: 0
-    },
-    {
-      claim_flag: false,
-      period_start: 0,
-      period_end: 0,
-      claim_time:  0,
-      claim_amount: 0
-    },
-    {
-      claim_flag: false,
-      period_start: 0,
-      period_end: 0,
-      claim_time:  0,
-      claim_amount: 0
-    }
-  ];
+  const initClaimList: ClaimInfoItem[] = Array.from({ length: 8 }, () => ({
+    id: 0,
+    user_id: "",
+    channel_id: 0,
+    channel_type: "",
+    reference_id: "",
+    amount: 0,
+    before_balance: 0,
+    after_balance: 0,
+    pool_before: 0,
+    pool_after: 0,
+    created_at: "",
+  }));
   const [claimInfo, setClaimInfo] = useState<ClaimInfoItem[]>([...initClaimList]);
 
   useEffect(() => {
@@ -810,7 +764,7 @@ export default function InsightPage() {
                     title={t("home.retroactiveBonus")}
                     desc={t("home.retroactiveBonusDesc")}
                   >
-                    <div className="flex flex-col p-[14px] lg:p-[0] gap-[6px] lg:gap-[1vh]">
+                    <div className="flex flex-col p-[14px] lg:p-[0] gap-[6px] lg:gap-[1.6vh]">
                       <LabelAndVal
                         label={t("home.ready")}
                         value={t("home.claimAllBonuses")}
@@ -838,19 +792,18 @@ export default function InsightPage() {
                         )}`}
                       ></LabelAndVal>
                       <LabelAndVal
-                        className="mb-[2vh]"
                         label={t("home.bonus")}
                         value={<span className="text-shadow-white">-LLAx</span>}
                       ></LabelAndVal>
 
-                      <div className="hidden lg:block w-[80%] m-auto">
+                      {/* <div className="hidden lg:block w-[80%] m-auto">
                         <ReceiveBtn disabled className="hidden lg:block">
                           {t("home.received")}
                         </ReceiveBtn>
                       </div>
                       <div className="absolute top-[14px] right-[14px] lg:hidden">
                         <ReceiveBtn disabled>{t("home.received")}</ReceiveBtn>
-                      </div>
+                      </div> */}
                     </div>
                   </ReceivedCard>
                   <ReceivedCard
@@ -858,7 +811,7 @@ export default function InsightPage() {
                     title={t("home.recurringRewards")}
                     desc={t("home.recurringRewardsDesc")}
                   >
-                    <div className="flex flex-col p-[14px] lg:p-[0] gap-[6px] lg:gap-[1vh]">
+                    <div className="flex flex-col p-[14px] lg:p-[0] gap-[6px] lg:gap-[1.6vh]">
                       <LabelAndVal
                         label={t("home.countdown")}
                         value={
@@ -897,18 +850,17 @@ export default function InsightPage() {
                         value={`${undue?.data.loss_count || '-'} ${t("home.times")}`}
                       ></LabelAndVal>
                       <LabelAndVal
-                        className="mb-[2vh]"
                         label={t("home.rewards")}
                         value={
                           <span className="text-shadow-white">- LLAx</span>
                         }
                       ></LabelAndVal>
-                      <div className="hidden lg:block w-[80%] m-auto">
+                      {/* <div className="hidden lg:block w-[80%] m-auto">
                         <ReceiveBtn>{t("home.claim")}</ReceiveBtn>
                       </div>
                       <div className="absolute top-[14px] right-[14px] lg:hidden">
                         <ReceiveBtn>{t("home.claim")}</ReceiveBtn>
-                      </div>
+                      </div> */}
                     </div>
                   </ReceivedCard>
                 </div>
