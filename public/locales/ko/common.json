@@ -588,6 +588,7 @@
             "explorer": "탐색",
             "agent": "AI"
         },
+        "liquidityAnalysis": "유동성 분석",
         "liquidityCheck": "유동성 확인",
         "worstToken": "최악의 토큰",
         "noDataDescription": "초대 정보가 없습니다",

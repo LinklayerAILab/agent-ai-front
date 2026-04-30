@@ -585,6 +585,7 @@
         "subscribeSuccess": "Subscribe successful!"
     },
     "alpha": {
+        "liquidityAnalysis": "Liquidity Analysis",
         "liquidityCheck": "Liquidity Check",
         "worstToken": "Worst Token",
         "noDataDescription": "No Invite information",

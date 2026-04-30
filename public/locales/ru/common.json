@@ -572,6 +572,7 @@
             "explorer": "Обзор",
             "agent": "AI"
         },
+        "liquidityAnalysis": "Анализ ликвидности",
         "liquidityCheck": "Проверка ликвидности",
         "worstToken": "Худший токен",
         "noDataDescription": "Нет информации о приглашении",

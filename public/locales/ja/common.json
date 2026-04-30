@@ -591,6 +591,7 @@
             "explorer": "探索",
             "agent": "AI"
         },
+        "liquidityAnalysis": "流動性分析",
         "liquidityCheck": "流動性チェック",
         "worstToken": "最悪のトークン",
         "noDataDescription": "招待情報がありません",

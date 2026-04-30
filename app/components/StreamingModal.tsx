@@ -225,7 +225,7 @@ const StreamingModal = memo(({ isOpen, onClose, query, mode = "liquidity_check" 
         <div className="flex items-center justify-between border-b border-gray-200 px-6 py-4">
           <h2 className="text-lg font-bold text-gray-800">
             {mode === "binance_token_analysis"
-              ? "流动性分析"
+              ? t("alpha.liquidityAnalysis")
               : (t("alpha.liquidityCheck") || "Liquidity Check")}
           </h2>
           <button

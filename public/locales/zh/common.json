@@ -582,6 +582,7 @@
         "subscribeSuccess": "订阅成功！"
     },
     "alpha": {
+        "liquidityAnalysis": "流动性分析",
         "liquidityCheck": "流动性检查",
         "worstToken": "最差代币",
         "noDataDescription": "暂无 Alpha 代币信息",
