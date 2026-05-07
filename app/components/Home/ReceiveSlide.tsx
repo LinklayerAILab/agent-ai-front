@@ -4,9 +4,19 @@ import successIcon from "@/app/images/home/successIcon.svg";
 import clock from "@/app/images/home/clock.svg";
 import { ClaimInfoItem } from "@/app/api/agent_c";
 import dayjs from "dayjs";
+import { useTranslation } from "react-i18next";
 
 export const ReceiveSlide = (props: { data: ClaimInfoItem }) => {
+  const { t } = useTranslation();
   const isPlaceholder = !props.data.id;
+
+  const channelIdMap: Record<number, string> = {
+    1: t("llax.channelId1"),
+    2: t("llax.channelId2"),
+    3: t("llax.channelId3"),
+    4: t("llax.channelId4"),
+    5: t("llax.channelId5"),
+  };
 
   return (
     <div className="bg-white lg:bg-[#ebebeb] rounded-[8px] h-[140px] lg:h-[16vh]">
@@ -27,9 +37,9 @@ export const ReceiveSlide = (props: { data: ClaimInfoItem }) => {
           ></Image>
         </div>
         <div className="font-bold flex items-center justify-center">
-          <div className="text-center">
+          <div className="text-center w-full">
              {
-              props.data.channel_type &&  <div className="text-[12px]">{isPlaceholder ? "--" : props.data.channel_type}</div>
+              props.data.channel_type &&  <div className="text-[12px]">{isPlaceholder ? "--" : (channelIdMap[props.data.channel_id] || props.data.channel_type)}</div>
              }
             <div>
               <span className="text-[12px]">{isPlaceholder ? "--" : props.data.amount}</span> <span>LLAx</span>
