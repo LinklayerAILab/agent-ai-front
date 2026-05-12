@@ -180,16 +180,11 @@ export type BinanceTokenAnalysisStreamingResponse =
 
 export const binance_token_analysis_streaming = (
   input: string,
-  symbol?: string,
   lang?: string,
   endFun?: () => void,
   abortController?: AbortController,
 ) => {
   const body: Record<string, unknown> = { input };
-  if (symbol) {
-    body.include_funding = true;
-    body.symbol = symbol;
-  }
 
   const headers: Record<string, string> = {
     "Content-Type": "application/json; charset=UTF-8",

@@ -86,6 +86,7 @@ export default function PositionAnalysis() {
     
       const streamGenerator = position_risk_management(
         `${t("agent.analyze")}|symbol:${symbol.toUpperCase()}|${cexName}`,
+        symbol.toUpperCase(),
         undefined,
         streamAbortController.current
       );

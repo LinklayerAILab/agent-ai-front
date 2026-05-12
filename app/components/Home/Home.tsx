@@ -228,6 +228,7 @@ export default function Home() {
       // Call streaming interface
       const streamGenerator = position_risk_management(
         `${t("agent.analyze")}|symbol:${data.symbol}|${selectCex}`,
+        data.symbol,
         undefined,
         streamAbortController.current
       );

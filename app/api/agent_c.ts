@@ -293,12 +293,15 @@ export const recommend_coin_c_steaming = (
 
 export const position_risk_management = (
   str: string,
+  symbol?: string,
   endFun?: () => void,
   abortController?: AbortController,
 ) => {
-  const requestBody: { input: string } = {
-    input: str,
-  };
+  const requestBody: Record<string, unknown> = { input: str };
+  if (symbol) {
+    requestBody.include_funding = true;
+    requestBody.symbol = symbol;
+  }
 
   return streamingRequest<StreamingResponse>(
     `/api/v1/position_risk_management`,

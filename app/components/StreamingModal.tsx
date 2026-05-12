@@ -101,16 +101,10 @@ const StreamingModal = memo(({ isOpen, onClose, query, mode = "liquidity_check" 
 
       streamAbortController.current = new AbortController();
 
-      // Extract symbol for funding analysis from BinanceTokenScreenItem
-      const fundingSymbol = mode === "binance_token_analysis" && typeof query === "object" && "tokenSymbol" in query
-        ? (query as BinanceTokenScreenItem).tokenSymbol.toUpperCase() + "USDT"
-        : undefined;
-
       const streamGenerator =
         mode === "binance_token_analysis"
           ? binance_token_analysis_streaming(
               queryInput,
-              fundingSymbol,
               i18n.language,
               undefined,
               streamAbortController.current
