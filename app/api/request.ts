@@ -171,9 +171,12 @@ export async function* streamingRequest<TResponse>(
           if (event.trim()) {
             const lines = event.split('\n');
             let eventData = '';
+            let sseEventType = '';
             
             for (const line of lines) {
-              if (line.startsWith('data:')) {
+              if (line.startsWith('event:')) {
+                sseEventType = line.startsWith('event: ') ? line.slice(7).trim() : line.slice(6).trim();
+              } else if (line.startsWith('data:')) {
                 const dataContent = line.startsWith('data: ') ? line.slice(6) : line.slice(5);
                 eventData += dataContent;
               }
@@ -185,13 +188,20 @@ export async function* streamingRequest<TResponse>(
                 eventData = eventData.trim();
                 const parsedData = JSON.parse(eventData);
                 
+                // Inject SSE event type if data doesn't have its own event field
+                if (!parsedData.event && sseEventType) {
+                  parsedData.event = sseEventType;
+                }
+
                 if (parsedData.event === 'message' && parsedData.answer !== undefined) {
                   yield parsedData as TResponse;
-                } else if (parsedData.event === 'workflow_started' || 
-                          parsedData.event === 'workflow_finished' || 
+                } else if (parsedData.event === 'workflow_started' ||
+                          parsedData.event === 'workflow_finished' ||
                           parsedData.event === 'message_end') {
                   yield parsedData as TResponse;
                   options.endFun?.()
+                } else if (parsedData.event === 'funding_data') {
+                  yield parsedData as TResponse;
                 }
               } catch {
                 yield eventData as TResponse;

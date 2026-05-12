@@ -131,9 +131,26 @@ export const getBinanceTokenScreenWithPrices = async (): Promise<BinanceTokenScr
   }
 };
 
+// ==================== Funding Analysis types ====================
+
+export interface FundingDepthBalance {
+  buy_depth: number;
+  sell_depth: number;
+  asymmetry_pct: number;
+}
+
+export interface FundingAnalysisData {
+  cvd: number;
+  cvd_trend: string;
+  funding_rate: number;
+  funding_status: string;
+  depth_balance: FundingDepthBalance;
+  risk_signals: string[];
+}
+
 export type BinanceTokenAnalysisStreamingResponse =
   | {
-      event: "message" | "workflow_started" | "workflow_finished" | "message_end";
+      event: "message" | "workflow_started" | "workflow_finished" | "message_end" | "funding_data";
       answer?: string;
       data?: {
         analyse_result?: {
@@ -151,25 +168,43 @@ export type BinanceTokenAnalysisStreamingResponse =
       };
       text?: string;
       content?: string;
+      // funding_data fields (present when event === "funding_data")
+      cvd?: number;
+      cvd_trend?: string;
+      funding_rate?: number;
+      funding_status?: string;
+      depth_balance?: FundingDepthBalance;
+      risk_signals?: string[];
     }
   | string;
 
 export const binance_token_analysis_streaming = (
   input: string,
+  symbol?: string,
+  lang?: string,
   endFun?: () => void,
   abortController?: AbortController,
 ) => {
+  const body: Record<string, unknown> = { input };
+  if (symbol) {
+    body.include_funding = true;
+    body.symbol = symbol;
+  }
+
+  const headers: Record<string, string> = {
+    "Content-Type": "application/json; charset=UTF-8",
+  };
+  if (lang) {
+    headers["Accept-Language"] = lang;
+  }
+
   return streamingRequest<BinanceTokenAnalysisStreamingResponse>(
     `/api/v1/binance_token_analysis`,
     {
       method: "post",
       cache: "no-store",
-      body: JSON.stringify({
-        input,
-      }),
-      headers: {
-        "Content-Type": "application/json; charset=UTF-8",
-      },
+      body: JSON.stringify(body),
+      headers,
     },
     {
       endFun,

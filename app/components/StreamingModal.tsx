@@ -23,7 +23,7 @@ interface StreamingModalProps {
 }
 
 const StreamingModal = memo(({ isOpen, onClose, query, mode = "liquidity_check" }: StreamingModalProps) => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
 
   const isLogin = useSelector((state: RootState) => state.user?.isLogin ?? false);
   const dispatch = useDispatch<AppDispatch>();
@@ -101,10 +101,17 @@ const StreamingModal = memo(({ isOpen, onClose, query, mode = "liquidity_check" 
 
       streamAbortController.current = new AbortController();
 
+      // Extract symbol for funding analysis from BinanceTokenScreenItem
+      const fundingSymbol = mode === "binance_token_analysis" && typeof query === "object" && "tokenSymbol" in query
+        ? (query as BinanceTokenScreenItem).tokenSymbol.toUpperCase() + "USDT"
+        : undefined;
+
       const streamGenerator =
         mode === "binance_token_analysis"
           ? binance_token_analysis_streaming(
               queryInput,
+              fundingSymbol,
+              i18n.language,
               undefined,
               streamAbortController.current
             )
@@ -122,7 +129,7 @@ const StreamingModal = memo(({ isOpen, onClose, query, mode = "liquidity_check" 
         let newContent = "";
 
         if (chunk && typeof chunk === "object") {
-          if ("event" in chunk && chunk.event === "message" && "answer" in chunk) {
+         if ("event" in chunk && chunk.event === "message" && "answer" in chunk) {
             newContent = chunk.answer || "";
           } else if ("event" in chunk && (chunk.event === "workflow_finished" || chunk.event === "message_end")) {
             streamAbortController.current = null;
@@ -171,7 +178,7 @@ const StreamingModal = memo(({ isOpen, onClose, query, mode = "liquidity_check" 
       streamAbortController.current = null;
       setLoading(false);
     }
-  }, [cleanup, isLogin, labels.pleaseLogin, mode, onClose, queryInput, t]);
+  }, [cleanup, i18n, isLogin, labels.pleaseLogin, mode, onClose, queryInput, t]);
 
   useEffect(() => {
     if (isOpen) {
@@ -241,7 +248,7 @@ const StreamingModal = memo(({ isOpen, onClose, query, mode = "liquidity_check" 
           </button>
         </div>
 
-        <div className="flex-1 overflow-hidden">
+        <div className="flex-1 overflow-y-auto">
           <ChatMessage
             status={status}
             stopCreation={stopCreation}

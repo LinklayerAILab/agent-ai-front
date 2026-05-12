@@ -42,7 +42,7 @@ const Typewriter: React.FC<TypewriterProps> = ({ text, messages, speed = 10, cur
     const [isDialogOpen, setDialogOpen] = useState(false);
     const [progressPercent, setProgressPercent] = useState(0);
     const [t] = useTranslation();
-
+    const [messageApi,messageHolder] = message.useMessage();
     const processedMessagesRef = useRef<Set<string>>(new Set());
     const fullTextRef = useRef<string>('');
     const currentIndexRef = useRef<number>(0);
@@ -360,7 +360,7 @@ const Typewriter: React.FC<TypewriterProps> = ({ text, messages, speed = 10, cur
         try {
             if (navigator.clipboard && window.isSecureContext) {
                 await navigator.clipboard.writeText(displayedText);
-                message.success('Copied to clipboard');
+                messageApi.success('Copied to clipboard');
             } else {
                 // 鍏煎鎬ф柟妗?
                 const textArea = document.createElement('textarea');
@@ -370,14 +370,14 @@ const Typewriter: React.FC<TypewriterProps> = ({ text, messages, speed = 10, cur
                 textArea.select();
                 try {
                     document.execCommand('copy');
-                    message.success('Copied to clipboard');
+                    messageApi.success('Copied to clipboard');
                 } catch {
-                    message.error('Copy failed');
+                    messageApi.error('Copy failed');
                 }
                 document.body.removeChild(textArea);
             }
         } catch {
-            message.error('Copy failed');
+            messageApi.error('Copy failed');
         }
     };
 
@@ -385,7 +385,7 @@ const Typewriter: React.FC<TypewriterProps> = ({ text, messages, speed = 10, cur
     const handleDownload = async () => {
         const element = document.getElementById('download-ele');
         if (!element) {
-            message.error(t('agent.downloadError'));
+            messageApi.error(t('agent.downloadError'));
             return;
         }
 
@@ -473,7 +473,7 @@ const Typewriter: React.FC<TypewriterProps> = ({ text, messages, speed = 10, cur
             // 妫€鏌ataUrl鏄惁鏈夋晥
             if (!dataUrl || dataUrl === 'data:,' || dataUrl.length < 50) {
                 console.error('Invalid dataUrl generated:', dataUrl);
-                message.error(t('agent.downloadError'));
+                messageApi.error(t('agent.downloadError'));
                 return;
             }
    
@@ -486,14 +486,14 @@ const Typewriter: React.FC<TypewriterProps> = ({ text, messages, speed = 10, cur
                     document.body.appendChild(link);
                     link.click();
                     document.body.removeChild(link);
-                    message.success(t('agent.downloadSuccess'));
+                    messageApi.success(t('agent.downloadSuccess'));
                 } catch (downloadError) {
                     console.error('Download failed:', downloadError);
-                    message.error(t('agent.downloadError'));
+                    messageApi.error(t('agent.downloadError'));
                 }
         } catch (error) {
             console.error('Download failed:', error);
-            message.error(t('agent.downloadError'));
+            messageApi.error(t('agent.downloadError'));
         }
     };
 
@@ -517,6 +517,7 @@ const Typewriter: React.FC<TypewriterProps> = ({ text, messages, speed = 10, cur
 
     return (
         <div style={{ boxSizing: "border-box" }}>
+            {messageHolder}
             {status === 'init' ? (
                 <div className={` flex items-center justify-center type-context ${initClassName ? initClassName : 'h-[60vh] lg:h-[73.4vh]'}`}>
                     {
