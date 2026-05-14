@@ -27,26 +27,30 @@ const Copy = ({
   const copyWithTextarea = (value: string) => {
     const textArea = document.createElement("textarea");
     textArea.value = value;
-    textArea.setAttribute("readonly", "");
+    textArea.readOnly = true;
     textArea.style.position = "fixed";
     textArea.style.top = "0";
     textArea.style.left = "0";
+    textArea.style.width = "1px";
+    textArea.style.height = "1px";
+    textArea.style.padding = "0";
+    textArea.style.border = "0";
+    textArea.style.outline = "0";
+    textArea.style.boxShadow = "none";
+    textArea.style.background = "transparent";
     textArea.style.opacity = "0";
     document.body.appendChild(textArea);
     textArea.focus();
     textArea.select();
+    textArea.setSelectionRange(0, value.length);
 
-    const successful = document.execCommand("copy");
+    document.execCommand("copy");
     document.body.removeChild(textArea);
-
-    if (!successful) {
-      throw new Error("Copy command failed");
-    }
   };
 
   const handleCopy = async () => {
     if (!text) {
-      message.error(t("common.copyError", { defaultValue: "Copy failed" }));
+      message.error(t("common.copyEmpty", { defaultValue: "Nothing to copy" }));
       return;
     }
 
