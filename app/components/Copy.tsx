@@ -24,31 +24,51 @@ const Copy = ({
   const { t } = useTranslation();
   const [copied, setCopied] = useState(false);
 
+  const copyWithTextarea = (value: string) => {
+    const textArea = document.createElement("textarea");
+    textArea.value = value;
+    textArea.setAttribute("readonly", "");
+    textArea.style.position = "fixed";
+    textArea.style.top = "0";
+    textArea.style.left = "0";
+    textArea.style.opacity = "0";
+    document.body.appendChild(textArea);
+    textArea.focus();
+    textArea.select();
+
+    const successful = document.execCommand("copy");
+    document.body.removeChild(textArea);
+
+    if (!successful) {
+      throw new Error("Copy command failed");
+    }
+  };
+
   const handleCopy = async () => {
-    if (!text) return;
+    if (!text) {
+      message.error(t("common.copyError", { defaultValue: "Copy failed" }));
+      return;
+    }
 
     try {
-      if (navigator.clipboard && navigator.clipboard.writeText) {
+      if (window.isSecureContext && navigator.clipboard?.writeText) {
         await navigator.clipboard.writeText(text);
       } else {
-        const textArea = document.createElement("textarea");
-        textArea.value = text;
-        textArea.style.position = "fixed";
-        textArea.style.opacity = "0";
-        document.body.appendChild(textArea);
-        textArea.focus();
-        textArea.select();
-        document.execCommand("copy");
-        document.body.removeChild(textArea);
+        copyWithTextarea(text);
       }
-
-      setCopied(true);
-      message.success(t("common.copySuccess") || "Copied to clipboard");
-      onCopySuccess?.();
-    } catch (error) {
-      console.error("Copy failed:", error);
-      message.error(t("common.copyError") || "Copy failed");
+    } catch {
+      try {
+        copyWithTextarea(text);
+      } catch (fallbackError) {
+        console.error("Copy failed:", fallbackError);
+        message.error(t("common.copyError", { defaultValue: "Copy failed" }));
+        return;
+      }
     }
+
+    setCopied(true);
+    message.success(t("common.copySuccess", { defaultValue: "Copied to clipboard" }));
+    onCopySuccess?.();
   };
 
   useEffect(() => {
