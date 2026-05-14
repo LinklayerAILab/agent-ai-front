@@ -1018,3 +1018,86 @@ export const get_binance_update_time = () => {
     },
   );
 };
+
+// ==================== LLAx Claim Module ====================
+
+// GET /v1/llax/claim/nonce — 获取 nonce 和可领取金额
+export interface LLAxClaimNonceData {
+  nonce: string;
+  amount: number;
+}
+export interface LLAxClaimNonceResponse extends AgentCResponse {
+  data: LLAxClaimNonceData;
+}
+export const get_llax_claim_nonce = () => {
+  return request<LLAxClaimNonceResponse>(`${AGENT_C_API}/v1/llax/claim/nonce`, {
+    method: "get",
+  });
+};
+
+// POST /v1/llax/claim — 提交 claim
+export interface LLAxClaimRequest {
+  to_address: string;
+  signature: string;
+  signed_message: string;
+}
+export interface LLAxClaimData {
+  claim_id: number;
+  status: string;
+  amount: number;
+  to_address: string;
+}
+export interface LLAxClaimResponse extends AgentCResponse {
+  data: LLAxClaimData;
+}
+export const claim_llax = (params: LLAxClaimRequest) => {
+  return request<LLAxClaimResponse>(`${AGENT_C_API}/v1/llax/claim`, {
+    method: "post",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(params),
+  });
+};
+
+// GET /v1/llax/claim/status/:id — 查询 claim 状态
+export interface LLAxClaimStatusData {
+  claim_id: number;
+  status: string;
+  amount: number;
+  to_address: string;
+  tx_hash: string;
+  created_at: string;
+  updated_at: string;
+}
+export interface LLAxClaimStatusResponse extends AgentCResponse {
+  data: LLAxClaimStatusData;
+}
+export const get_llax_claim_status = (claimId: number) => {
+  return request<LLAxClaimStatusResponse>(
+    `${AGENT_C_API}/v1/llax/claim/status/${claimId}`,
+    { method: "get" }
+  );
+};
+
+// GET /v1/llax/claim/records — 获取 claim 记录
+export interface LLAxClaimRecord {
+  id: number;
+  amount: number;
+  to_address: string;
+  status: string;
+  tx_hash: string;
+  created_at: string;
+  updated_at: string;
+}
+export interface LLAxClaimRecordsData {
+  records: LLAxClaimRecord[];
+  total: number;
+}
+export interface LLAxClaimRecordsResponse extends AgentCResponse {
+  data: LLAxClaimRecordsData;
+}
+export const get_llax_claim_records = (page: number = 1, pageSize: number = 10) => {
+  return request<LLAxClaimRecordsResponse>(
+    `${AGENT_C_API}/v1/llax/claim/records?page=${page}&page_size=${pageSize}`,
+    { method: "get" }
+  );
+};

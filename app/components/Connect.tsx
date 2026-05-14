@@ -2,6 +2,7 @@
 import Image from "next/image";
 import { useTranslation } from "react-i18next";
 import { addressDots } from "../utils";
+import { LLAX_TOKEN_CONTRACT } from "../enum";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "../store";
 import LLButton from "./LLButton";
@@ -18,8 +19,8 @@ import email from "@/app/images/loginPanel/email.svg";
 import toLink from "@/app/images/agent/toLink.svg";
 import music from "@/app/images/loginPanel/music.svg";
 import Link from "next/link";
-import { get_llax_balance, get_user_info } from "../api/agent_c";
-import { useAccount } from "wagmi";
+import { get_llax_balance, get_user_info, get_llax_claim_nonce, claim_llax, get_llax_claim_status } from "../api/agent_c";
+import { useAccount, useSignMessage } from "wagmi";
 import { useAppKit } from "@reown/appkit/react";
 import { disconnect } from "wagmi/actions";
 import { config } from "../config/appkit";
@@ -88,6 +89,8 @@ const Connect = () => {
   const router = useRouter();
   const localAddress = useSelector((state: RootState) => state.user.address);
   const [llaxBalance, setLlaxBalance] = useState<number | null>(null);
+  const { signMessage } = useSignMessage();
+  const [claimLoading, setClaimLoading] = useState(false);
 
   // Sync wallet address to localStorage when connected
   useEffect(() => {
@@ -133,6 +136,88 @@ const Connect = () => {
     } catch (error) {
       console.error("failed to fetch llax balance:", error);
       setLlaxBalance(null);
+    }
+  };
+
+  const handleClaim = async () => {
+    if (!isConnected || !address) {
+      messageApi.warning("Please connect your wallet first");
+      return;
+    }
+    if (claimLoading) return;
+
+    setClaimLoading(true);
+    try {
+      const nonceRes = await get_llax_claim_nonce();
+      const { nonce, amount } = nonceRes.data;
+
+      if (!amount || amount <= 0) {
+        messageApi.warning("No LLAx available to claim");
+        return;
+      }
+
+      const timestamp = Math.floor(Date.now() / 1000);
+      const signedMessage = [
+        "Claim LLAx",
+        `Amount: ${amount}`,
+        `To: ${address}`,
+        `Nonce: ${nonce}`,
+        `Timestamp: ${timestamp}`,
+      ].join("\n");
+
+      const signature = await new Promise<string>((resolve, reject) => {
+        signMessage(
+          { message: signedMessage },
+          {
+            onSuccess: (sig) => resolve(sig),
+            onError: (err) => reject(err),
+          }
+        );
+      });
+
+      const claimRes = await claim_llax({
+        to_address: address,
+        signature,
+        signed_message: signedMessage,
+      });
+
+      messageApi.info("Claim submitted, waiting for on-chain confirmation...");
+
+      // 轮询链上状态，每 3 秒查一次，最多 120 秒
+      const claimId = claimRes.data.claim_id;
+      const maxAttempts = 40;
+      for (let i = 0; i < maxAttempts; i++) {
+        await new Promise((r) => setTimeout(r, 3000));
+        try {
+          const statusRes = await get_llax_claim_status(claimId);
+          const { status, tx_hash } = statusRes.data;
+
+          if (status === "success") {
+            messageApi.success(`Claim succeeded! TX: ${tx_hash?.slice(0, 10)}...`);
+            fetchLlaxBalance();
+            return;
+          }
+          if (status === "failed") {
+            messageApi.error("Claim failed on-chain, balance will be restored");
+            fetchLlaxBalance();
+            return;
+          }
+        } catch {
+          // 轮询期间网络错误忽略，继续重试
+        }
+      }
+      messageApi.warning("Claim confirmation timeout, please check records later");
+      fetchLlaxBalance();
+    } catch (error: unknown) {
+      const err = error as { message?: string; code?: number; msg?: string };
+      if (err?.message?.includes("User rejected") || err?.code === 4001) {
+        messageApi.info("Signature cancelled");
+      } else {
+        const errMsg = err?.msg || err?.message || "Claim failed";
+        messageApi.error(errMsg);
+      }
+    } finally {
+      setClaimLoading(false);
     }
   };
 
@@ -386,15 +471,24 @@ const Connect = () => {
                 <div className="text-[#666666] text-[12px]">
                   LLAx
                 </div>
+                <Copy
+                  text={LLAX_TOKEN_CONTRACT}
+                  width={10}
+                  height={10}
+                  className="!bg-transparent !p-0"
+                />
               </div>
               <div className="font-bold text-black">
                 {llaxBalance ?? "--"}
               </div>
               <LLButton
                 className="bg-[#eee]"
-                onClick={() => messageApi.info("Coming soon")}
+                onClick={handleClaim}
+                disabled={claimLoading || !llaxBalance || llaxBalance <= 0}
               >
-                <span className="text-[12px]">Claim</span>
+                <span className="text-[12px]">
+                  {claimLoading ? "Claiming..." : "Claim"}
+                </span>
               </LLButton>
             </div>
           </div>

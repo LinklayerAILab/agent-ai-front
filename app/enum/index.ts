@@ -34,3 +34,5 @@ export const AGENT_POINTS_COST = {
 } as const;
 
 export const ERC20_CONTRACT=process.env.NEXT_PUBLIC_ERC20_CONTRACT;
+
+export const LLAX_TOKEN_CONTRACT = process.env.NEXT_PUBLIC_LLAX_TOKEN_CONTRACT || "";
