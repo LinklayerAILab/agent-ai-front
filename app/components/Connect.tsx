@@ -473,9 +473,9 @@ const Connect = () => {
                 </div>
                 <Copy
                   text={LLAX_TOKEN_CONTRACT}
-                  width={10}
-                  height={10}
-                  className="!bg-transparent !p-0"
+                  width={12}
+                  height={12}
+                  className="!bg-transparent !p-[2px]"
                 />
               </div>
               <div className="font-bold text-black">
