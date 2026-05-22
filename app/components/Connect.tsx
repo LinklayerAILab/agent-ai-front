@@ -92,6 +92,7 @@ const Connect = () => {
   const router = useRouter();
   const localAddress = useSelector((state: RootState) => state.user.address);
   const [llaxBalance, setLlaxBalance] = useState<number | null>(null);
+  const [llaxFrozen, setLlaxFrozen] = useState<number>(0);
   const { signMessage } = useSignMessage();
   const { writeContractAsync } = useWriteContract();
   const chainId = useChainId();
@@ -139,9 +140,11 @@ const Connect = () => {
     try {
       const res = await get_llax_balance();
       setLlaxBalance(res?.data?.balance?.balance ?? null);
+      setLlaxFrozen(res?.data?.balance?.frozen_amount ?? 0);
     } catch (error) {
       console.error("failed to fetch llax balance:", error);
       setLlaxBalance(null);
+      setLlaxFrozen(0);
     }
   };
 
@@ -156,6 +159,23 @@ const Connect = () => {
     if (localAddress && address.toLowerCase() !== localAddress.toLowerCase()) {
       messageApi.error("Wallet address changed. Please re-login with the current wallet.");
       return;
+    }
+
+    // claim 前查询最新余额状态，检查冻结
+    try {
+      const balanceRes = await get_llax_balance();
+      const frozen = balanceRes?.data?.balance?.frozen_amount ?? 0;
+      const available = (balanceRes?.data?.balance?.balance ?? 0) - frozen;
+      if (frozen > 0) {
+        messageApi.warning(t("llax.claimFrozen"));
+        return;
+      }
+      if (available <= 0) {
+        messageApi.warning("No LLAx available to claim");
+        return;
+      }
+    } catch {
+      // 查询失败继续走原有流程
     }
 
     setClaimLoading(true);
@@ -228,6 +248,8 @@ const Connect = () => {
         
         try {
           await confirm_llax_claim({ claim_id: claimRes.data.claim_id, tx_hash: txHash });
+          // 后端确认后再延迟刷新一次，确保冻结状态已更新
+          setTimeout(() => fetchLlaxBalance(), 2000);
         } catch {}
       } else {
         messageApi.error(`Transaction reverted on chain. TX: ${txHash.slice(0, 10)}...`);
@@ -273,6 +295,7 @@ const Connect = () => {
       })();
     } else {
       setLlaxBalance(null);
+      setLlaxFrozen(0);
     }
   }, [isLogin, dispatch]);
 
@@ -517,9 +540,15 @@ const Connect = () => {
       
                 />
               </div>
-              <div className="font-bold text-black">
+              <div className="font-bold text-black flex items-center gap-1">
                 {llaxBalance ?? "--"}
+                         {llaxFrozen > 0 && (
+                <span className="text-[10px] font-normal whitespace-nowrap">
+                  ({t("llax.frozenAmount")}: {llaxFrozen})
+                </span>
+              )}
               </div>
+     
               <LLButton
                 className="bg-[#eee]"
                 onClick={handleClaim}

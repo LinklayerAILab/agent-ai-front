@@ -808,6 +808,7 @@ export const update_time = () => {
 export interface LLAxBalanceData {
   balance: {
     balance: number;
+    frozen_amount: number;
     total_earned: number;
     total_consumed: number;
   };

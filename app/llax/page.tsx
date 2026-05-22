@@ -36,7 +36,7 @@ function Page() {
   const [poolsLoading, setPoolsLoading] = useState(true);
 
   // Auth data
-  const [balance, setBalance] = useState({ balance: 0, total_earned: 0, total_consumed: 0 });
+  const [balance, setBalance] = useState({ balance: 0, frozen_amount: 0, total_earned: 0, total_consumed: 0 });
   const [referralStats, setReferralStats] = useState({ total_invitees: 0, total_reward_earned: 0, successful_referrals: 0, max_referees: 0 });
   const [walletSnapshot, setWalletSnapshot] = useState<LLAxWalletSnapshotData | null>(null);
   const [authLoading, setAuthLoading] = useState(true);
@@ -117,6 +117,7 @@ function Page() {
           ) : (
             <BalanceOverview
               balance={balance.balance}
+              frozenAmount={balance.frozen_amount}
               totalEarned={balance.total_earned}
               totalConsumed={balance.total_consumed}
             />

@@ -6,6 +6,7 @@ import "./BalanceOverview.scss";
 
 interface BalanceOverviewProps {
   balance: number;
+  frozenAmount: number;
   totalEarned: number;
   totalConsumed: number;
 }
@@ -19,11 +20,12 @@ const formatNumber = (num: number | string) => {
   return n.toFixed(2);
 };
 
-function BalanceOverview({ balance, totalEarned, totalConsumed }: BalanceOverviewProps) {
+function BalanceOverview({ balance, frozenAmount, totalEarned, totalConsumed }: BalanceOverviewProps) {
   const { t } = useTranslation();
 
   const cards = [
     { label: t("llax.balance"), value: balance, color: "#7A9900" },
+    ...(frozenAmount > 0 ? [{ label: t("llax.frozenAmount"), value: frozenAmount, color: "#FF8C00" }] : []),
     { label: t("llax.totalEarned"), value: totalEarned, color: "#8DB301" },
     { label: t("llax.totalConsumed"), value: totalConsumed, color: "#A0A0A0" },
   ];

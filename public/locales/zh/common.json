@@ -620,6 +620,8 @@
         "balance": "余额",
         "totalEarned": "总获取",
         "totalConsumed": "总消耗",
+        "frozenAmount": "已冻结",
+        "claimFrozen": "您有一笔正在处理的 claim，请等待完成后再试",
         "channelPools": "渠道池",
         "poolProgress": "池进度",
         "totalCap": "总量",

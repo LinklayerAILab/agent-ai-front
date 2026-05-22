@@ -620,6 +620,8 @@
         "balance": "잔액",
         "totalEarned": "총 획득",
         "totalConsumed": "총 소비",
+        "frozenAmount": "동결됨",
+        "claimFrozen": "처리 중인 청구가 있습니다. 완료될 때까지 기다려 주세요.",
         "channelPools": "채널 풀",
         "poolProgress": "풀 진행률",
         "totalCap": "총량",

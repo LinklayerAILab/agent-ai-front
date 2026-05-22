@@ -623,6 +623,8 @@
         "balance": "Balance",
         "totalEarned": "Total Earned",
         "totalConsumed": "Total Consumed",
+        "frozenAmount": "Frozen",
+        "claimFrozen": "You have a pending claim. Please wait for it to complete.",
         "channelPools": "Channel Pools",
         "poolProgress": "Pool Progress",
         "totalCap": "Total Cap",

@@ -623,6 +623,8 @@
         "balance": "残高",
         "totalEarned": "獲得合計",
         "totalConsumed": "消費合計",
+        "frozenAmount": "凍結中",
+        "claimFrozen": "処理中のクレームがあります。完了するまでお待ちください。",
         "channelPools": "チャネルプール",
         "poolProgress": "プール進捗",
         "totalCap": "総量",
