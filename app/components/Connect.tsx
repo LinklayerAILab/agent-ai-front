@@ -225,6 +225,7 @@ const Connect = () => {
         messageApi.success(`Claim succeeded! TX: ${txHash.slice(0, 10)}...`);
         fetchLlaxBalance();
         // 通知后端确认，失败不影响用户（定时扫描兜底）
+        
         try {
           await confirm_llax_claim({ claim_id: claimRes.data.claim_id, tx_hash: txHash });
         } catch {}
@@ -264,7 +265,7 @@ const Connect = () => {
           const pending = res?.data?.records?.filter((r: { status: string }) => r.status === "pending") || [];
           for (const record of pending) {
             try {
-              await confirm_llax_claim({ claim_id: record.id, tx_hash: "" });
+              await confirm_llax_claim({ claim_id: record.id, tx_hash: record.tx_hash });
             } catch {}
           }
           if (pending.length > 0) fetchLlaxBalance();
