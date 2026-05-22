@@ -14,77 +14,15 @@ import { get_binance_active_pools_count, get_binance_update_time } from "@/app/a
 import { Skeleton } from "antd";
 import { useTranslation } from "next-i18next";
 
-interface Brc20InitialData {
-  tokens: BinanceTokenScreenItem[];
-  total: number;
-  activePoolsCount: number | null;
-  updateTime: number | null;
-}
-
-let brc20InitialDataCache: Brc20InitialData | null = null;
-let brc20InitialDataPromise: Promise<Brc20InitialData> | null = null;
-
-const fetchBrc20InitialData = async (): Promise<Brc20InitialData> => {
-  const [response, poolsResponse, timeResponse] = await Promise.allSettled([
-    getBinanceTokenScreen(),
-    get_binance_active_pools_count(),
-    get_binance_update_time(),
-  ]);
-
-  let tokenList: BinanceTokenScreenItem[] = [];
-  let activePoolsCount: number | null = null;
-  let updateTime: number | null = null;
-
-  if (response.status === "fulfilled") {
-    tokenList = response.value.data.results || [];
-  }
-
-  if (poolsResponse.status === "fulfilled") {
-    activePoolsCount = poolsResponse.value.data.count;
-  }
-
-  if (timeResponse.status === "fulfilled") {
-    updateTime = timeResponse.value.data.last_updated;
-  }
-
-  if (tokenList.length > 0) {
-    try {
-      const contractAddresses = tokenList
-        .map((token) => token.contractAddress)
-        .filter(Boolean);
-
-      if (contractAddresses.length > 0) {
-        const priceResponse = await getBinanceTokenPrice(contractAddresses);
-        const prices = priceResponse.data.prices || [];
-
-        const priceMap = new Map<string, number>();
-        prices.forEach((item) => {
-          priceMap.set(item.token_address.toLowerCase(), item.price);
-        });
-
-        tokenList = tokenList.map((token) => ({
-          ...token,
-          price: priceMap.get(token.contractAddress.toLowerCase()),
-        }));
-      }
-    } catch (error) {
-      console.error("Failed to fetch prices:", error);
-    }
-  }
-
-  return {
-    tokens: tokenList,
-    total: tokenList.length,
-    activePoolsCount,
-    updateTime,
-  };
-};
+let activePoolsCountCache: number | null = null;
+let updateTimeCache: number | null = null;
+let tokenListCache: BinanceTokenScreenItem[] | null = null;
 
 export function Brc20() {
   const { t } = useTranslation();
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const [tokens, setTokens] = useState<BinanceTokenScreenItem[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [tokensLoading, setTokensLoading] = useState(true);
   const [total, setTotal] = useState(0);
   const [activePoolsCount, setActivePoolsCount] = useState<number | null>(null);
   const [updateTime, setUpdateTime] = useState<number | null>(null);
@@ -109,35 +47,81 @@ export function Brc20() {
     return () => clearInterval(timer);
   }, []);
 
-  // Fetch Binance token screening list
+  // Fetch active pools count independently
+  useEffect(() => {
+    if (activePoolsCountCache !== null) {
+      setActivePoolsCount(activePoolsCountCache);
+      return;
+    }
+    get_binance_active_pools_count()
+      .then((res) => {
+        const count = res.data.count;
+        activePoolsCountCache = count;
+        setActivePoolsCount(count);
+      })
+      .catch(console.error);
+  }, []);
+
+  // Fetch update time independently
+  useEffect(() => {
+    if (updateTimeCache !== null) {
+      setUpdateTime(updateTimeCache);
+      return;
+    }
+    get_binance_update_time()
+      .then((res) => {
+        const time = res.data.last_updated;
+        updateTimeCache = time;
+        setUpdateTime(time);
+      })
+      .catch(console.error);
+  }, []);
+
+  // Fetch token screen list + prices independently
   useEffect(() => {
     const fetchTokens = async () => {
       try {
-        setLoading(true);
-        if (brc20InitialDataCache) {
-          setTokens(brc20InitialDataCache.tokens);
-          setTotal(brc20InitialDataCache.total);
-          setActivePoolsCount(brc20InitialDataCache.activePoolsCount);
-          setUpdateTime(brc20InitialDataCache.updateTime);
+        setTokensLoading(true);
+        if (tokenListCache !== null) {
+          setTokens(tokenListCache);
+          setTotal(tokenListCache.length);
           return;
         }
+        const response = await getBinanceTokenScreen();
+        let tokenList: BinanceTokenScreenItem[] = response.data.results || [];
 
-        if (!brc20InitialDataPromise) {
-          brc20InitialDataPromise = fetchBrc20InitialData();
+        if (tokenList.length > 0) {
+          try {
+            const contractAddresses = tokenList
+              .map((token) => token.contractAddress)
+              .filter(Boolean);
+
+            if (contractAddresses.length > 0) {
+              const priceResponse = await getBinanceTokenPrice(contractAddresses);
+              const prices = priceResponse.data.prices || [];
+
+              const priceMap = new Map<string, number>();
+              prices.forEach((item) => {
+                priceMap.set(item.token_address.toLowerCase(), item.price);
+              });
+
+              tokenList = tokenList.map((token) => ({
+                ...token,
+                price: priceMap.get(token.contractAddress.toLowerCase()),
+              }));
+            }
+          } catch (error) {
+            console.error("Failed to fetch prices:", error);
+          }
         }
 
-        const data = await brc20InitialDataPromise;
-        brc20InitialDataCache = data;
-
-        setTokens(data.tokens);
-        setTotal(data.total);
-        setActivePoolsCount(data.activePoolsCount);
-        setUpdateTime(data.updateTime);
+        tokenListCache = tokenList;
+        setTokens(tokenList);
+        setTotal(tokenList.length);
       } catch (error) {
-        console.error('Failed to fetch binance token screen:', error);
-        brc20InitialDataPromise = null;
+        console.error("Failed to fetch binance token screen:", error);
       } finally {
-        setLoading(false);
+        setTokensLoading(false);
       }
     };
 
@@ -241,7 +225,7 @@ export function Brc20() {
           ref={scrollContainerRef}
           className="brc20-list flex flex-wrap w-full sm:gap-[2vw] lg:gap-[0.96vw] gap-[14px]"
         >
-          {loading ? (
+          {tokensLoading ? (
             // Loading state - use Ant Design skeleton screen
             Array.from({ length: 9 }).map((_, index) => (
               <div

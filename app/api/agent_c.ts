@@ -1045,7 +1045,12 @@ export interface LLAxClaimData {
   claim_id: number;
   status: string;
   amount: number;
+  chain_amount: string;
   to_address: string;
+  contract_address: string;
+  nonce: string;
+  deadline: number;
+  signature: string;
 }
 export interface LLAxClaimResponse extends AgentCResponse {
   data: LLAxClaimData;
@@ -1100,4 +1105,17 @@ export const get_llax_claim_records = (page: number = 1, pageSize: number = 10) 
     `${AGENT_C_API}/v1/llax/claim/records?page=${page}&page_size=${pageSize}`,
     { method: "get" }
   );
+};
+
+// POST /v1/llax/claim/confirm — 前端交易上链成功后回调确认
+export interface ConfirmClaimRequest {
+  claim_id: number;
+  tx_hash: string;
+}
+export const confirm_llax_claim = (params: ConfirmClaimRequest) => {
+  return request<LLAxClaimStatusResponse>(`${AGENT_C_API}/v1/llax/claim/confirm`, {
+    method: "post",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(params),
+  });
 };

@@ -19,8 +19,11 @@ import email from "@/app/images/loginPanel/email.svg";
 import toLink from "@/app/images/agent/toLink.svg";
 import music from "@/app/images/loginPanel/music.svg";
 import Link from "next/link";
-import { get_llax_balance, get_user_info, get_llax_claim_nonce, claim_llax, get_llax_claim_status } from "../api/agent_c";
-import { useAccount, useSignMessage } from "wagmi";
+import { get_llax_balance, get_user_info, get_llax_claim_nonce, claim_llax, confirm_llax_claim, get_llax_claim_records } from "../api/agent_c";
+import { useAccount, useSignMessage, useWriteContract, useChainId, useSwitchChain } from "wagmi";
+import { waitForTransactionReceipt } from "wagmi/actions";
+import { keccak256, toBytes } from "viem";
+import llaxClaimJson from "@/app/abi/llaxClaim.json";
 import { useAppKit } from "@reown/appkit/react";
 import { disconnect } from "wagmi/actions";
 import { config } from "../config/appkit";
@@ -90,6 +93,9 @@ const Connect = () => {
   const localAddress = useSelector((state: RootState) => state.user.address);
   const [llaxBalance, setLlaxBalance] = useState<number | null>(null);
   const { signMessage } = useSignMessage();
+  const { writeContractAsync } = useWriteContract();
+  const chainId = useChainId();
+  const { switchChain } = useSwitchChain();
   const [claimLoading, setClaimLoading] = useState(false);
 
   // Sync wallet address to localStorage when connected
@@ -146,8 +152,15 @@ const Connect = () => {
     }
     if (claimLoading) return;
 
+    // 校验当前钱包地址与登录身份一致，否则合约 msg.sender 与后端签名地址不匹配
+    if (localAddress && address.toLowerCase() !== localAddress.toLowerCase()) {
+      messageApi.error("Wallet address changed. Please re-login with the current wallet.");
+      return;
+    }
+
     setClaimLoading(true);
     try {
+      // 1. 获取 nonce 和可领取金额
       const nonceRes = await get_llax_claim_nonce();
       const { nonce, amount } = nonceRes.data;
 
@@ -156,6 +169,7 @@ const Connect = () => {
         return;
       }
 
+      // 2. 用户 MetaMask 签名
       const timestamp = Math.floor(Date.now() / 1000);
       const signedMessage = [
         "Claim LLAx",
@@ -175,53 +189,66 @@ const Connect = () => {
         );
       });
 
+      // 3. 提交到后端，获取合约调用参数
       const claimRes = await claim_llax({
         to_address: address,
         signature,
         signed_message: signedMessage,
       });
 
-      messageApi.info("Claim submitted, waiting for on-chain confirmation...");
+      const { chain_amount, contract_address, nonce: claimNonce, deadline, signature: opsSignature } = claimRes.data;
 
-      // 轮询链上状态，每 3 秒查一次，最多 120 秒
-      const claimId = claimRes.data.claim_id;
-      const maxAttempts = 40;
-      for (let i = 0; i < maxAttempts; i++) {
-        await new Promise((r) => setTimeout(r, 3000));
-        try {
-          const statusRes = await get_llax_claim_status(claimId);
-          const { status, tx_hash } = statusRes.data;
-
-          if (status === "success") {
-            messageApi.success(`Claim succeeded! TX: ${tx_hash?.slice(0, 10)}...`);
-            fetchLlaxBalance();
-            return;
-          }
-          if (status === "failed") {
-            messageApi.error("Claim failed on-chain, balance will be restored");
-            fetchLlaxBalance();
-            return;
-          }
-        } catch {
-          // 轮询期间网络错误忽略，继续重试
-        }
+      // 4. 切换到正确的链（BSC testnet=97 / mainnet=56）
+      const targetChainId = Number(process.env.NEXT_PUBLIC_CHAIN_ID) || 97;
+      if (chainId !== targetChainId) {
+        await switchChain({ chainId: targetChainId });
       }
-      messageApi.warning("Claim confirmation timeout, please check records later");
-      fetchLlaxBalance();
-    } catch (error: unknown) {
-      const err = error as { message?: string; code?: number; msg?: string };
-      if (err?.message?.includes("User rejected") || err?.code === 4001) {
-        messageApi.info("Signature cancelled");
+
+      // 5. 调用合约 claim(uint256 amount, bytes32 nonce, uint256 deadline, bytes signature)
+      const nonceBytes32 = keccak256(toBytes(claimNonce));
+
+      messageApi.info("Submitting on-chain transaction...");
+
+      const txHash = await writeContractAsync({
+        address: contract_address as `0x${string}`,
+        abi: llaxClaimJson.abi,
+        functionName: "claim",
+        args: [BigInt(chain_amount), nonceBytes32, BigInt(deadline), opsSignature as `0x${string}`],
+        gas: BigInt(300000),
+      });
+
+      messageApi.info(`TX submitted: ${txHash.slice(0, 10)}..., waiting for confirmation...`);
+
+      const receipt = await waitForTransactionReceipt(config, { hash: txHash });
+
+      if (receipt.status === "success") {
+        messageApi.success(`Claim succeeded! TX: ${txHash.slice(0, 10)}...`);
+        fetchLlaxBalance();
+        // 通知后端确认，失败不影响用户（定时扫描兜底）
+        try {
+          await confirm_llax_claim({ claim_id: claimRes.data.claim_id, tx_hash: txHash });
+        } catch {}
       } else {
-        const errMsg = err?.msg || err?.message || "Claim failed";
+        messageApi.error(`Transaction reverted on chain. TX: ${txHash.slice(0, 10)}...`);
+      }
+    } catch (error: unknown) {
+      const err = error as { message?: string; code?: number; msg?: string; shortMessage?: string };
+      if (err?.message?.includes("User rejected") || err?.code === 4001) {
+        messageApi.info("Transaction cancelled");
+      } else if (err?.shortMessage?.includes("reverted") || err?.message?.includes("reverted")) {
+        messageApi.error("Contract transaction reverted");
+      } else {
+        const errMsg = err?.msg || err?.shortMessage || err?.message || "Claim failed";
         messageApi.error(errMsg);
       }
+      fetchLlaxBalance();
     } finally {
       setClaimLoading(false);
     }
   };
 
   // Sync user profile and llax balance after successful login
+  // Also scan pending claims and auto-confirm if needed
   useEffect(() => {
     if (isLogin) {
       get_user_info().then((res: { data: unknown }) => {
@@ -230,6 +257,19 @@ const Connect = () => {
         }
       });
       fetchLlaxBalance();
+      // Auto-confirm any pending claims (fire and forget)
+      (async () => {
+        try {
+          const res = await get_llax_claim_records(1, 10);
+          const pending = res?.data?.records?.filter((r: { status: string }) => r.status === "pending") || [];
+          for (const record of pending) {
+            try {
+              await confirm_llax_claim({ claim_id: record.id, tx_hash: "" });
+            } catch {}
+          }
+          if (pending.length > 0) fetchLlaxBalance();
+        } catch {}
+      })();
     } else {
       setLlaxBalance(null);
     }
