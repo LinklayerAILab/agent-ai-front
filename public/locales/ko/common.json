@@ -621,6 +621,7 @@
         "totalEarned": "총 획득",
         "totalConsumed": "총 소비",
         "frozenAmount": "동결됨",
+        "frozenTip": "동결 금액은 일반적으로 지갑 거래를 취소할 때 발생합니다. 10분 후 자동으로 해동됩니다. 동결 중에는 새로운 Claim 거래를 시작할 수 없으며, 해동 후 다시 Claim할 수 있습니다.",
         "claimFrozen": "처리 중인 청구가 있습니다. 완료될 때까지 기다려 주세요.",
         "channelPools": "채널 풀",
         "poolProgress": "풀 진행률",

@@ -624,6 +624,7 @@
         "totalEarned": "Total Earned",
         "totalConsumed": "Total Consumed",
         "frozenAmount": "Frozen",
+        "frozenTip": "Frozen balance is usually caused by cancelling a wallet transaction. It will be automatically unfrozen after 10 minutes. You cannot initiate a new Claim during the frozen period. Once unfrozen, you can Claim again.",
         "claimFrozen": "You have a pending claim. Please wait for it to complete.",
         "channelPools": "Channel Pools",
         "poolProgress": "Pool Progress",

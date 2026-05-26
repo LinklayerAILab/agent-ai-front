@@ -624,6 +624,7 @@
         "totalEarned": "獲得合計",
         "totalConsumed": "消費合計",
         "frozenAmount": "凍結中",
+        "frozenTip": "凍結金額は通常、ウォレット取引のキャンセルによって発生します。10分後に自動的に解除されます。凍結中は新しいClaim取引を開始できません。解除後、再度Claim可能になります。",
         "claimFrozen": "処理中のクレームがあります。完了するまでお待ちください。",
         "channelPools": "チャネルプール",
         "poolProgress": "プール進捗",

@@ -10,7 +10,7 @@ import {
   logout,
   setOtherInfo,
 } from "../store/userSlice";
-import { CaretDownOutlined } from "@ant-design/icons";
+import { CaretDownOutlined, QuestionCircleOutlined } from "@ant-design/icons";
 import { useState, useEffect, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { Dropdown, Modal, message } from "antd";
@@ -541,12 +541,13 @@ const Connect = () => {
                 />
               </div>
               <div className="font-bold text-black flex items-center gap-1">
-                {llaxBalance ?? "--"}
-                         {llaxFrozen > 0 && (
-                <span className="text-[10px] font-normal whitespace-nowrap">
+           
+                         {llaxFrozen > 0 ? 
+                <span className="text-[12px] font-normal whitespace-nowrap flex items-center gap-1 text-[#666]">
                   ({t("llax.frozenAmount")}: {llaxFrozen})
+                    <QuestionCircleOutlined title={t("llax.frozenTip")} style={{ fontSize: 12 }} />
                 </span>
-              )}
+              :(llaxBalance || 0)}
               </div>
      
               <LLButton
