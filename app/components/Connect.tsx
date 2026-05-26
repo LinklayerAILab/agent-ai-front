@@ -2,7 +2,7 @@
 import Image from "next/image";
 import { useTranslation } from "react-i18next";
 import { addressDots } from "../utils";
-import { LLAX_TOKEN_CONTRACT } from "../enum";
+import { LLAX_TOKEN_CONTRACT, isProd } from "../enum";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "../store";
 import LLButton from "./LLButton";
@@ -24,6 +24,7 @@ import { useAccount, useSignMessage, useWriteContract, useChainId, useSwitchChai
 import { waitForTransactionReceipt } from "wagmi/actions";
 import { keccak256, toBytes } from "viem";
 import llaxClaimJson from "@/app/abi/llaxClaim.json";
+import llaxClaimProdJson from "@/app/abi/llaxClaimProd.json";
 import { useAppKit } from "@reown/appkit/react";
 import { disconnect } from "wagmi/actions";
 import { config } from "../config/appkit";
@@ -231,7 +232,7 @@ const Connect = () => {
 
       const txHash = await writeContractAsync({
         address: contract_address as `0x${string}`,
-        abi: llaxClaimJson.abi,
+        abi: (isProd ? llaxClaimProdJson : llaxClaimJson).abi,
         functionName: "claim",
         args: [BigInt(chain_amount), nonceBytes32, BigInt(deadline), opsSignature as `0x${string}`],
         gas: BigInt(300000),

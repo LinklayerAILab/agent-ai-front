@@ -1,6 +1,7 @@
 {
   "name": "LLAxClaim",
   "address": "0x2018ab2Db4Dff02F1831B9d880a7BA21CD10B37F",
+  "proxyAddress": "0x2018ab2Db4Dff02F1831B9d880a7BA21CD10B37F",
   "timestamp": 1779348840615,
   "abi": [
     {
