@@ -290,7 +290,7 @@ export default function Alpha() {
     };
   }, []);
   const formatDepth = (depth?: number) => {
-    if (depth === null || !depth) return '--';
+    if (depth === null || !depth) return '0';
     if(depth === 0) return '0'
     const str = (depth*100).toString()
     return str.length > 5 ? str.slice(0,5) : str

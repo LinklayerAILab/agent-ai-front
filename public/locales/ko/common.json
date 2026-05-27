@@ -586,7 +586,8 @@
     "alpha": {
         "card": {
             "explorer": "탐색",
-            "agent": "AI"
+            "agent": "AI",
+            "timeRange": "5분"
         },
         "liquidityAnalysis": "유동성 분석",
         "liquidityCheck": "유동성 확인",

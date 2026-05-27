@@ -570,7 +570,8 @@
     "alpha": {
         "card": {
             "explorer": "Обзор",
-            "agent": "AI"
+            "agent": "AI",
+            "timeRange": "5 мин"
         },
         "liquidityAnalysis": "Анализ ликвидности",
         "liquidityCheck": "Проверка ликвидности",

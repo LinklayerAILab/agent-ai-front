@@ -2,7 +2,7 @@
 import "./AlphaCard.scss";
 import LLButton from "../LLButton";
 import { Skeleton } from "antd";
-// import zichan from "@/app/images/alpha/zichan.svg";
+import binIcon from "@/app/images/platforms/binance.svg";
 import rise from "@/app/images/alpha/rise.svg";
 import downRed from "@/app/images/alpha/down-red.svg";
 import downYellow from "@/app/images/alpha/down-yellow.svg";
@@ -115,7 +115,10 @@ export const AlphaCard = ({
       <div className="alpha-card-content flex-1 flex flex-col gap-2">
         <div className="flex justify-between items-center">
             <div className=" font-bold text-[16px]">{title}</div>
-            <div>--</div>
+            <div className="flex items-center gap-1">
+                <Image src={binIcon} alt="Binance" width={18} height={18} />
+                <span className="font-bold text-[12px]">Alpha</span>
+            </div>
         </div>
         {/* <div className="flex justify-between items-center">
             <div className=" font-bold">{t('alpha.card.price')}</div>
@@ -123,7 +126,7 @@ export const AlphaCard = ({
         </div> */}
                 <div className="flex justify-between items-center">
             <div className=" font-bold">{t('alpha.card.lpDepth')}</div>
-            <div className={`20px lg:h-[2vh] border-[1px] border-solid ${handleClass()} rounded-full flex items-center justify-center px-2 text-[12px] font-bold`}> <Image src={handleIcon()} alt="" /> <span>{depth}(15m)</span></div>
+            <div className={`20px lg:h-[2vh] border-[1px] border-solid ${handleClass()} rounded-full flex items-center justify-center px-2 text-[12px] font-bold`}> <Image src={handleIcon()} alt="" /> <span>{depth}({t('alpha.card.timeRange')})</span></div>
         </div>
         <div className="h-[2px] bg-black my-[0.5vh]"></div>
         <div className="flex justify-between items-center gap-2">

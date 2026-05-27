@@ -2,7 +2,7 @@
 import Image from "next/image";
 import { useTranslation } from "react-i18next";
 import { addressDots } from "../utils";
-import { LLAX_TOKEN_CONTRACT, isProd } from "../enum";
+import { isProd } from "../enum";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "../store";
 import LLButton from "./LLButton";
@@ -536,10 +536,6 @@ const Connect = () => {
                 <div className="text-[#666666] text-[12px]">
                   LLAx
                 </div>
-                <Copy
-                  text={LLAX_TOKEN_CONTRACT}
-      
-                />
               </div>
               <div className="font-bold text-black flex items-center gap-1">
            

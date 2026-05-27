@@ -592,7 +592,8 @@
             "price": "价格",
             "lpDepth": "LP深度",
             "explorer": "浏览器",
-            "agent": "代理"
+            "agent": "代理",
+            "timeRange": "5分钟"
         }
     },
     "brc20": {

@@ -595,7 +595,8 @@
             "price": "Price",
             "lpDepth": "LP depth",
             "explorer": "Explorer",
-            "agent": "Agent"
+            "agent": "Agent",
+            "timeRange": "5min"
         }
     },
     "brc20": {

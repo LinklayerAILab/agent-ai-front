@@ -589,7 +589,8 @@
     "alpha": {
         "card": {
             "explorer": "探索",
-            "agent": "AI"
+            "agent": "AI",
+            "timeRange": "5分"
         },
         "liquidityAnalysis": "流動性分析",
         "liquidityCheck": "流動性チェック",
