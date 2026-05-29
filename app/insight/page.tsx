@@ -516,6 +516,8 @@ export default function InsightPage() {
       };
     } else {
       cancelled = true;
+      insightDashboardCache.clear();
+      insightDashboardPromise.clear();
       setClaimInfo([...initClaimList]);
       setUndue(undefined);
       setCalculated(undefined);
