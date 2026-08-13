@@ -41,6 +41,8 @@ export function Brc20() {
   const [updateTime, setUpdateTime] = useState<number | null>(null);
   const [, setLiquidPercentage] = useState<number | null>(null);
   const [liquidityLevel, setLiquidityLevel] = useState<LiquidityLevel>("Critical");
+  const [displayLiquidityLevel, setDisplayLiquidityLevel] = useState<LiquidityLevel>("Critical");
+  const [isLiquidityLevelVisible, setIsLiquidityLevelVisible] = useState(true);
   const [, setTick] = useState(0);
 
   const formatTimeAgo = (timestamp: number | null): string => {
@@ -117,10 +119,24 @@ export function Brc20() {
         const currentIndex = LIQUIDITY_LEVELS.indexOf(currentLevel);
         return LIQUIDITY_LEVELS[(currentIndex + 1) % LIQUIDITY_LEVELS.length];
       });
-    }, 6_000);
+    }, 10_000);
 
     return () => clearInterval(timer);
   }, []);
+
+  useEffect(() => {
+    if (liquidityLevel === displayLiquidityLevel) {
+      return;
+    }
+
+    setIsLiquidityLevelVisible(false);
+    const timer = setTimeout(() => {
+      setDisplayLiquidityLevel(liquidityLevel);
+      setIsLiquidityLevelVisible(true);
+    }, 220);
+
+    return () => clearTimeout(timer);
+  }, [displayLiquidityLevel, liquidityLevel]);
 
   // Fetch token screen list + prices independently
   useEffect(() => {
@@ -211,7 +227,13 @@ export function Brc20() {
             <div className="w-full">
               <div className="rounded-[8px] bg-[#F8FFDC] px-[14px] py-[10px] lg:px-[1vh] lg:py-[1vh] flex flex-col items-center justify-center h-[7.5vh] w-full">
               <div className="text-[13px] whitespace-nowrap">{t('brc20.totalLiquidity')}</div>
-              <div className="font-bold text-center text-[14px]">{t(getLiquidityLevelKey(liquidityLevel))}</div>
+              <div
+                className={`font-bold text-center text-[14px] transition-opacity duration-300 ${
+                  isLiquidityLevelVisible ? "opacity-100" : "opacity-0"
+                }`}
+              >
+                {t(getLiquidityLevelKey(displayLiquidityLevel))}
+              </div>
             </div>
             </div>
             
@@ -247,7 +269,13 @@ export function Brc20() {
 
                  <div className="h-[3.8rem] flex flex-col items-center justify-center  bg-[#F8FFDC] border-[1px] border-[#C4F402] rounded-[8px] w-full">
                     <div className="text-center text-[11px]">{t('brc20.totalLiquidity')}</div>
-                    <div className="text-center text-[16px] font-bold">{t(getLiquidityLevelKey(liquidityLevel))}</div>
+                    <div
+                      className={`text-center text-[16px] font-bold transition-opacity duration-300 ${
+                        isLiquidityLevelVisible ? "opacity-100" : "opacity-0"
+                      }`}
+                    >
+                      {t(getLiquidityLevelKey(displayLiquidityLevel))}
+                    </div>
                   </div>
                 </div>
                </div>

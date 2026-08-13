@@ -26,8 +26,18 @@ const MAX_ARROW_Y = 43.8;
 const SEAM_OVERLAP = 0.8;
 const LIQUID_SCALE = 1.18;
 const LIQUID_TRANSFORM = `translate(21.5 78.7285) scale(${LIQUID_SCALE}) translate(-21.5 -78.7285)`;
+const PULSE_DURATION = "3.2s";
+const PULSE_KEY_TIMES = "0;0.18;0.34;0.72;1";
 
 type LiquidLevel = NonNullable<LiquidTubeProps["level"]>;
+
+function getTubeHeight(arrowY: number) {
+  return Math.max(0, TUBE_BOTTOM - ARROW_BASE_Y - arrowY + SEAM_OVERLAP * 2);
+}
+
+function getTubeY(arrowY: number) {
+  return ARROW_BASE_Y - SEAM_OVERLAP + arrowY;
+}
 
 function getLiquidState(level: LiquidLevel | null) {
   if (level === null) {
@@ -45,7 +55,7 @@ function getLiquidState(level: LiquidLevel | null) {
       color: "#A5FFBF",
       glowColor: "rgba(165, 255, 191, 0.9)",
       arrowY,
-      tubeHeight: Math.max(0, TUBE_BOTTOM - ARROW_BASE_Y - arrowY + SEAM_OVERLAP * 2),
+      tubeHeight: getTubeHeight(arrowY),
     };
   }
 
@@ -55,7 +65,7 @@ function getLiquidState(level: LiquidLevel | null) {
       color: "#E5FF7F",
       glowColor: "rgba(229, 255, 127, 0.9)",
       arrowY,
-      tubeHeight: Math.max(0, TUBE_BOTTOM - ARROW_BASE_Y - arrowY + SEAM_OVERLAP * 2),
+      tubeHeight: getTubeHeight(arrowY),
     };
   }
 
@@ -64,7 +74,7 @@ function getLiquidState(level: LiquidLevel | null) {
     color: "#FF888D",
     glowColor: "rgba(255, 136, 141, 0.9)",
     arrowY,
-    tubeHeight: Math.max(0, TUBE_BOTTOM - ARROW_BASE_Y - arrowY + SEAM_OVERLAP * 2),
+    tubeHeight: getTubeHeight(arrowY),
   };
 }
 
@@ -81,6 +91,10 @@ export const LiquidTube: React.FC<LiquidTubeProps> = ({
   }, []);
 
   const liquidState = useMemo(() => getLiquidState(level), [level]);
+  const shortArrowY = MAX_ARROW_Y * 0.82;
+  const arrowValues = [liquidState.arrowY, MIN_ARROW_Y, shortArrowY, MIN_ARROW_Y, liquidState.arrowY];
+  const tubeYValues = `${getTubeY(liquidState.arrowY)};${getTubeY(MIN_ARROW_Y)};${getTubeY(shortArrowY)};${getTubeY(MIN_ARROW_Y)};${getTubeY(liquidState.arrowY)}`;
+  const tubeHeightValues = `${liquidState.tubeHeight};${getTubeHeight(MIN_ARROW_Y)};${getTubeHeight(shortArrowY)};${getTubeHeight(MIN_ARROW_Y)};${liquidState.tubeHeight}`;
 
   return (
     <div
@@ -112,21 +126,33 @@ export const LiquidTube: React.FC<LiquidTubeProps> = ({
             style={{
               animation: "liquidTubePulse 3.2s ease-in-out infinite",
               "--liquid-glow": liquidState.glowColor,
-              "--liquid-arrow-y": `${liquidState.arrowY}px`,
-              "--liquid-height": `${liquidState.tubeHeight}px`,
             } as React.CSSProperties}
           >
             <path d={BULB_PATH} fill={liquidState.color} style={{ transition: "fill 420ms ease" }} />
-            <g className="tube-fill">
-              <rect
-                className="tube-column"
-                x={TUBE_LEFT}
-                y={ARROW_BASE_Y - SEAM_OVERLAP}
-                width={TUBE_RIGHT - TUBE_LEFT}
-                height={liquidState.tubeHeight}
-                fill={liquidState.color}
-                style={{ transition: "height 420ms ease, fill 420ms ease" }}
+            <rect
+              x={TUBE_LEFT}
+              y={getTubeY(liquidState.arrowY)}
+              width={TUBE_RIGHT - TUBE_LEFT}
+              height={liquidState.tubeHeight}
+              fill={liquidState.color}
+              style={{ transition: "fill 420ms ease" }}
+            >
+              <animate
+                attributeName="y"
+                dur={PULSE_DURATION}
+                keyTimes={PULSE_KEY_TIMES}
+                repeatCount="indefinite"
+                values={tubeYValues}
               />
+              <animate
+                attributeName="height"
+                dur={PULSE_DURATION}
+                keyTimes={PULSE_KEY_TIMES}
+                repeatCount="indefinite"
+                values={tubeHeightValues}
+              />
+            </rect>
+            <g transform={`translate(0 ${liquidState.arrowY})`}>
               <path
                 d={ARROW_PATH}
                 fill={liquidState.color}
@@ -134,6 +160,14 @@ export const LiquidTube: React.FC<LiquidTubeProps> = ({
                   transition: "fill 420ms ease, opacity 240ms ease",
                   opacity: 1,
                 }}
+              />
+              <animateTransform
+                attributeName="transform"
+                type="translate"
+                dur={PULSE_DURATION}
+                keyTimes={PULSE_KEY_TIMES}
+                repeatCount="indefinite"
+                values={arrowValues.map((arrowY) => `0 ${arrowY}`).join(";")}
               />
             </g>
           </g>
@@ -157,45 +191,6 @@ export const LiquidTube: React.FC<LiquidTubeProps> = ({
             }
           }
 
-          .tube-fill {
-            animation: liquidTubeArrowPulse 3.2s ease-in-out infinite;
-          }
-
-          .tube-column {
-            animation: liquidTubeColumnPulse 3.2s ease-in-out infinite;
-          }
-
-          @keyframes liquidTubeArrowPulse {
-            0% {
-              transform: translateY(var(--liquid-arrow-y));
-            }
-            18%,
-            72% {
-              transform: translateY(${MIN_ARROW_Y}px);
-            }
-            34% {
-              transform: translateY(${MAX_ARROW_Y * 0.82}px);
-            }
-            100% {
-              transform: translateY(var(--liquid-arrow-y));
-            }
-          }
-
-          @keyframes liquidTubeColumnPulse {
-            0% {
-              height: var(--liquid-height);
-            }
-            18%,
-            72% {
-              height: ${Math.max(0, TUBE_BOTTOM - ARROW_BASE_Y - MIN_ARROW_Y + SEAM_OVERLAP * 2)}px;
-            }
-            34% {
-              height: ${Math.max(0, TUBE_BOTTOM - ARROW_BASE_Y - MAX_ARROW_Y * 0.82 + SEAM_OVERLAP * 2)}px;
-            }
-            100% {
-              height: var(--liquid-height);
-            }
-          }
         `}</style>
       </svg>
     </div>
