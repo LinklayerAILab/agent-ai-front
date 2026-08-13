@@ -3,7 +3,7 @@
 import React, { useEffect, useMemo, useState } from "react";
 
 export interface LiquidTubeProps {
-  healthScore: number | null;
+  level: "Healthy" | "Caution" | "Critical" | null;
   className?: string;
   h5?: boolean;
 }
@@ -27,12 +27,45 @@ const SEAM_OVERLAP = 0.8;
 const LIQUID_SCALE = 1.18;
 const LIQUID_TRANSFORM = `translate(21.5 78.7285) scale(${LIQUID_SCALE}) translate(-21.5 -78.7285)`;
 
-function clamp(value: number, min: number, max: number) {
-  return Math.min(max, Math.max(min, value));
+type LiquidLevel = NonNullable<LiquidTubeProps["level"]>;
+
+function getLiquidState(level: LiquidLevel | null) {
+  if (level === null) {
+    return {
+      color: "transparent",
+      arrowY: MAX_ARROW_Y,
+      tubeHeight: 0,
+    };
+  }
+
+  if (level === "Healthy") {
+    const arrowY = MIN_ARROW_Y;
+    return {
+      color: "#A5FFBF",
+      arrowY,
+      tubeHeight: Math.max(0, TUBE_BOTTOM - ARROW_BASE_Y - arrowY + SEAM_OVERLAP * 2),
+    };
+  }
+
+  if (level === "Caution") {
+    const arrowY = (MIN_ARROW_Y + MAX_ARROW_Y) / 2;
+    return {
+      color: "#E5FF7F",
+      arrowY,
+      tubeHeight: Math.max(0, TUBE_BOTTOM - ARROW_BASE_Y - arrowY + SEAM_OVERLAP * 2),
+    };
+  }
+
+  const arrowY = MAX_ARROW_Y;
+  return {
+    color: "#FF888D",
+    arrowY,
+    tubeHeight: Math.max(0, TUBE_BOTTOM - ARROW_BASE_Y - arrowY + SEAM_OVERLAP * 2),
+  };
 }
 
 export const LiquidTube: React.FC<LiquidTubeProps> = ({
-  healthScore,
+  level,
   className,
   h5 = false,
 }) => {
@@ -43,30 +76,7 @@ export const LiquidTube: React.FC<LiquidTubeProps> = ({
     return () => cancelAnimationFrame(raf);
   }, []);
 
-  const liquidState = useMemo(() => {
-    if (healthScore === null) {
-      return {
-        color: "transparent",
-        showTube: true,
-        arrowY: MAX_ARROW_Y,
-        tubeHeight: 0,
-      };
-    }
-
-    const score = clamp(healthScore, 0, 100);
-    const percent = score / 100;
-    const isLow = score < 20;
-    const isHigh = score >= 80;
-    const arrowY = isLow ? MAX_ARROW_Y : MAX_ARROW_Y - (MAX_ARROW_Y - MIN_ARROW_Y) * percent;
-    const tubeHeight = Math.max(0, TUBE_BOTTOM - ARROW_BASE_Y - arrowY + SEAM_OVERLAP * 2);
-
-    return {
-      color: isLow ? "#FF6063" : isHigh ? "#51FF6E" : "#E1FF00",
-      showTube: true,
-      arrowY,
-      tubeHeight,
-    };
-  }, [healthScore]);
+  const liquidState = useMemo(() => getLiquidState(level), [level]);
 
   return (
     <div
@@ -85,7 +95,7 @@ export const LiquidTube: React.FC<LiquidTubeProps> = ({
         aria-label="Market liquidity thermometer"
         data-size={h5 ? "mobile" : "desktop"}
       >
-        <rect width="43" height="100" fill="#FFFFFF" />
+        <rect width="43" height="100" fill="rgba(248, 255, 220, var(--tw-bg-opacity, 1))" />
         <path
           d={SHELL_CENTER_PATH}
           fill="none"
@@ -94,33 +104,49 @@ export const LiquidTube: React.FC<LiquidTubeProps> = ({
           strokeLinejoin="round"
         />
         <g transform={LIQUID_TRANSFORM}>
-          <path
-            d={BULB_PATH}
-            fill={liquidState.color}
-            style={{ transition: "fill 420ms ease" }}
-          />
           <g
-            transform={`translate(0 ${liquidState.arrowY})`}
-            style={{ transition: "transform 420ms ease" }}
+            style={{
+              transformBox: "fill-box",
+              transformOrigin: "center bottom",
+              animation: "liquidTubeBreath 2.4s ease-in-out infinite",
+            }}
           >
-            <rect
-              x={TUBE_LEFT}
-              y={ARROW_BASE_Y - SEAM_OVERLAP}
-              width={TUBE_RIGHT - TUBE_LEFT}
-              height={liquidState.tubeHeight}
-              fill={liquidState.color}
-              style={{ transition: "height 420ms ease, fill 420ms ease" }}
-            />
-            <path
-              d={ARROW_PATH}
-              fill={liquidState.color}
-              style={{
-                transition: "fill 420ms ease, opacity 240ms ease",
-                opacity: 1,
-              }}
-            />
+            <path d={BULB_PATH} fill={liquidState.color} style={{ transition: "fill 420ms ease" }} />
+            <g transform={`translate(0 ${liquidState.arrowY})`} style={{ transition: "transform 420ms ease" }}>
+              <rect
+                x={TUBE_LEFT}
+                y={ARROW_BASE_Y - SEAM_OVERLAP}
+                width={TUBE_RIGHT - TUBE_LEFT}
+                height={liquidState.tubeHeight}
+                fill={liquidState.color}
+                style={{ transition: "height 420ms ease, fill 420ms ease" }}
+              />
+              <path
+                d={ARROW_PATH}
+                fill={liquidState.color}
+                style={{
+                  transition: "fill 420ms ease, opacity 240ms ease",
+                  opacity: 1,
+                }}
+              />
+            </g>
           </g>
         </g>
+        <style jsx>{`
+          @keyframes liquidTubeBreath {
+            0%,
+            100% {
+              filter: brightness(0.94) drop-shadow(0 0 0 rgba(229, 255, 127, 0));
+              opacity: 0.78;
+              transform: scaleY(0.965);
+            }
+            50% {
+              filter: brightness(1.12) drop-shadow(0 0 5px rgba(229, 255, 127, 0.75));
+              opacity: 1;
+              transform: scaleY(1.04);
+            }
+          }
+        `}</style>
       </svg>
     </div>
   );

@@ -38,7 +38,7 @@ export function Brc20() {
   const [total, setTotal] = useState(0);
   const [activePoolsCount, setActivePoolsCount] = useState<number | null>(null);
   const [updateTime, setUpdateTime] = useState<number | null>(null);
-  const [liquidPercentage, setLiquidPercentage] = useState<number | null>(null);
+  const [, setLiquidPercentage] = useState<number | null>(null);
   const [liquidityLevel, setLiquidityLevel] = useState<LiquidityLevel>("Critical");
   const [, setTick] = useState(0);
 
@@ -180,7 +180,7 @@ export function Brc20() {
           </div>
           <div className="flex-1 flex justify-end gap-[1vh] py-[2vh] h-full pr-[2vh]">
              <div className="flex items-center justify-center rounded-[8px] bg-[#F8FFDC] p-[1vh]">
-                <LiquidTube healthScore={liquidPercentage} className="h-[14vh] w-[8vh]" />
+                <LiquidTube level={liquidityLevel} className="h-[14vh] w-[8vh]" />
             </div>
             <div className="flex flex-wrap gap-[1vh] w-[60%]">
                <div className="flex w-full gap-2">
@@ -215,7 +215,7 @@ export function Brc20() {
             <div className="bg-white rounded-[8px] mx-[6px] p-[14px] h-[10rem]">
               <div className="h-full w-full flex lg:py-[0.3rem] gap-2">
                         <div className="w-[26%] flex items-center justify-center bg-[#F8FFDC] border-[1px] border-[#C4F402] rounded-[8px]">
-                  <LiquidTube healthScore={liquidPercentage} h5 className="w-[4rem] ml-[-0.22rem]" />
+                  <LiquidTube level={liquidityLevel} h5 className="w-[4rem] ml-[-0.22rem]" />
                 </div>
                <div className="w-full flex flex-col gap-2">
                  <div className="flex-1 flex justify-between gap-2">
