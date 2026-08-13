@@ -92,9 +92,9 @@ export const LiquidTube: React.FC<LiquidTubeProps> = ({
 
   const liquidState = useMemo(() => getLiquidState(level), [level]);
   const shortArrowY = MAX_ARROW_Y * 0.82;
-  const arrowValues = [liquidState.arrowY, MIN_ARROW_Y, shortArrowY, MIN_ARROW_Y, liquidState.arrowY];
-  const tubeYValues = `${getTubeY(liquidState.arrowY)};${getTubeY(MIN_ARROW_Y)};${getTubeY(shortArrowY)};${getTubeY(MIN_ARROW_Y)};${getTubeY(liquidState.arrowY)}`;
-  const tubeHeightValues = `${liquidState.tubeHeight};${getTubeHeight(MIN_ARROW_Y)};${getTubeHeight(shortArrowY)};${getTubeHeight(MIN_ARROW_Y)};${liquidState.tubeHeight}`;
+  const arrowValues = [shortArrowY, MIN_ARROW_Y, MAX_ARROW_Y, MIN_ARROW_Y, shortArrowY];
+  const tubeYValues = arrowValues.map((arrowY) => getTubeY(arrowY)).join(";");
+  const tubeHeightValues = arrowValues.map((arrowY) => getTubeHeight(arrowY)).join(";");
 
   return (
     <div
