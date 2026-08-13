@@ -598,7 +598,12 @@
         "agent": "Агент",
         "loading": "Загрузка...",
         "optimal": "Оптимально",
-        "noTokensAvailable": "Нет доступных токенов"
+        "noTokensAvailable": "Нет доступных токенов",
+        "liquidityLevels": {
+            "healthy": "Отлично",
+            "caution": "Предупреждение",
+            "critical": "Истощено"
+        }
     },
     "llax": {
         "title": "Панель LLAx",

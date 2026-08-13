@@ -37,6 +37,7 @@
     "disable-devtool": "^0.3.8",
     "echarts": "^6.0.0",
     "ethers": "^6.15.0",
+    "framer-motion": "^13.1.0",
     "github-markdown-css": "^5.8.1",
     "html-to-image": "^1.11.13",
     "html2canvas": "^1.4.1",

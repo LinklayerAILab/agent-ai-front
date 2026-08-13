@@ -614,7 +614,12 @@
         "agent": "代理",
         "loading": "加载中...",
         "optimal": "最佳",
-        "noTokensAvailable": "暂无可用代币"
+        "noTokensAvailable": "暂无可用代币",
+        "liquidityLevels": {
+            "healthy": "极佳",
+            "caution": "警告",
+            "critical": "枯竭"
+        }
     },
     "llax": {
         "title": "LLAx 看板",

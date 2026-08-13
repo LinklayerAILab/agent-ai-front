@@ -1,22 +1,34 @@
 "use client"
 import { Brc20Card } from "./Brc20Card";
 import { useEffect, useRef, useState } from "react";
-import topGreen from "@/app/images/brc20/top-green.svg";
-import topGreenH5 from "@/app/images/brc20/top-green-h5.svg";
 import bg from "@/app/images/brc20/bg.svg";
 import Image from "next/image";
 import bsc from "@/app/images/brc20/bsc.svg";
 import time from "@/app/images/brc20/whiteTime.svg";
 import "./Brc20Button.scss";
 import "./Brc20.scss";
+import { LiquidTube } from "./LiquidTube";
 import { getBinanceTokenScreen, getBinanceTokenPrice, BinanceTokenScreenItem } from "@/app/api/binance";
-import { get_binance_active_pools_count, get_binance_update_time } from "@/app/api/agent_c";
+import {
+  get_binance_active_pools_count,
+  get_binance_market_liquidity,
+  get_binance_update_time,
+} from "@/app/api/agent_c";
 import { Skeleton } from "antd";
 import { useTranslation } from "next-i18next";
 
 let activePoolsCountCache: number | null = null;
 let updateTimeCache: number | null = null;
 let tokenListCache: BinanceTokenScreenItem[] | null = null;
+type LiquidityLevel = "Healthy" | "Caution" | "Critical";
+
+function getLiquidityLevelKey(level: string | null) {
+  const normalized = level?.toLowerCase();
+  if (normalized === "healthy") return "brc20.liquidityLevels.healthy";
+  if (normalized === "caution") return "brc20.liquidityLevels.caution";
+  if (normalized === "critical") return "brc20.liquidityLevels.critical";
+  return "brc20.liquidityLevels.critical";
+}
 
 export function Brc20() {
   const { t } = useTranslation();
@@ -26,6 +38,8 @@ export function Brc20() {
   const [total, setTotal] = useState(0);
   const [activePoolsCount, setActivePoolsCount] = useState<number | null>(null);
   const [updateTime, setUpdateTime] = useState<number | null>(null);
+  const [liquidPercentage, setLiquidPercentage] = useState<number | null>(null);
+  const [liquidityLevel, setLiquidityLevel] = useState<LiquidityLevel>("Critical");
   const [, setTick] = useState(0);
 
   const formatTimeAgo = (timestamp: number | null): string => {
@@ -75,6 +89,25 @@ export function Brc20() {
         setUpdateTime(time);
       })
       .catch(console.error);
+  }, []);
+
+  // Fetch market liquidity on mount and refresh it every minute.
+  useEffect(() => {
+    const fetchMarketLiquidity = async () => {
+      try {
+        const res = await get_binance_market_liquidity();
+        setLiquidPercentage(res.data.healthScore ?? 0);
+        setLiquidityLevel((res.data.level as LiquidityLevel) ?? "Critical");
+      } catch {
+        setLiquidPercentage(0);
+        setLiquidityLevel("Critical");
+      }
+    };
+
+    fetchMarketLiquidity();
+    const timer = setInterval(fetchMarketLiquidity, 60_000);
+
+    return () => clearInterval(timer);
   }, []);
 
   // Fetch token screen list + prices independently
@@ -147,7 +180,7 @@ export function Brc20() {
           </div>
           <div className="flex-1 flex justify-end gap-[1vh] py-[2vh] h-full pr-[2vh]">
              <div className="flex items-center justify-center rounded-[8px] bg-[#F8FFDC] p-[1vh]">
-                <Image src={topGreen} alt="topGreen" className="h-[14vh] w-[8vh]" width={45} height={50}></Image>
+                <LiquidTube healthScore={liquidPercentage} className="h-[14vh] w-[8vh]" />
             </div>
             <div className="flex flex-wrap gap-[1vh] w-[60%]">
                <div className="flex w-full gap-2">
@@ -166,7 +199,7 @@ export function Brc20() {
             <div className="w-full">
               <div className="rounded-[8px] bg-[#F8FFDC] px-[14px] py-[10px] lg:px-[1vh] lg:py-[1vh] flex flex-col items-center justify-center h-[7.5vh] w-full">
               <div className="text-[13px] whitespace-nowrap">{t('brc20.totalLiquidity')}</div>
-              <div className="font-bold text-center text-[16px]">-</div>
+              <div className="font-bold text-center text-[14px]">{t(getLiquidityLevelKey(liquidityLevel))}</div>
             </div>
             </div>
             
@@ -182,7 +215,7 @@ export function Brc20() {
             <div className="bg-white rounded-[8px] mx-[6px] p-[14px] h-[10rem]">
               <div className="h-full w-full flex lg:py-[0.3rem] gap-2">
                         <div className="w-[26%] flex items-center justify-center bg-[#F8FFDC] border-[1px] border-[#C4F402] rounded-[8px]">
-                  <Image src={topGreenH5} className="w-[4rem] ml-[-0.22rem]" alt="topGreenH5"></Image>
+                  <LiquidTube healthScore={liquidPercentage} h5 className="w-[4rem] ml-[-0.22rem]" />
                 </div>
                <div className="w-full flex flex-col gap-2">
                  <div className="flex-1 flex justify-between gap-2">
@@ -202,7 +235,7 @@ export function Brc20() {
 
                  <div className="h-[3.8rem] flex flex-col items-center justify-center  bg-[#F8FFDC] border-[1px] border-[#C4F402] rounded-[8px] w-full">
                     <div className="text-center text-[11px]">{t('brc20.totalLiquidity')}</div>
-                    <div className="text-center text-[16px] font-bold">-</div>
+                    <div className="text-center text-[16px] font-bold">{t(getLiquidityLevelKey(liquidityLevel))}</div>
                   </div>
                 </div>
                </div>

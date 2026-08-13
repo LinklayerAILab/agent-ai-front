@@ -1,0 +1,127 @@
+"use client";
+
+import React, { useEffect, useMemo, useState } from "react";
+
+export interface LiquidTubeProps {
+  healthScore: number | null;
+  className?: string;
+  h5?: boolean;
+}
+
+const SHELL_CENTER_PATH =
+  "M21.5 5C26.1944 5 30 8.80558 30 13.5V66.3171C30 66.5663 30.1226 66.7988 30.3231 66.9468C33.9915 69.6554 36.3711 74.0091 36.3711 78.9189C36.3711 87.133 29.7121 93.792 21.498 93.792C13.284 93.792 6.625 87.133 6.625 78.9189C6.62503 74.0074 9.00617 69.6522 12.6767 66.9439C12.8773 66.7959 13 66.5633 13 66.314V13.5C13 8.80558 16.8056 5 21.5 5Z";
+
+const BULB_PATH =
+  "M26.2158 70.2031C29.089 71.8895 31.0331 75.0707 31.0332 78.7285C31.0332 84.1663 26.7463 88.5399 21.5 88.54C16.2536 88.54 11.9658 84.1664 11.9658 78.7285C11.9659 75.0706 13.9109 71.8895 16.7842 70.2031C17.7684 69.6254 18.5556 68.5793 18.5557 67.3096H24.4434C24.4434 68.5794 25.2315 69.6254 26.2158 70.2031Z";
+
+const ARROW_PATH = "M29.4893 23.4346H24.4434H18.5557H13.5098L21.499 13.96L29.4893 23.4346Z";
+
+const ARROW_BASE_Y = 23.4346;
+const ARROW_TOP_CLEARANCE_Y = 4;
+const TUBE_LEFT = 18.5557;
+const TUBE_RIGHT = 24.4434;
+const TUBE_BOTTOM = 67.3096;
+const MIN_ARROW_Y = ARROW_TOP_CLEARANCE_Y;
+const MAX_ARROW_Y = 43.8;
+const SEAM_OVERLAP = 0.8;
+const LIQUID_SCALE = 1.18;
+const LIQUID_TRANSFORM = `translate(21.5 78.7285) scale(${LIQUID_SCALE}) translate(-21.5 -78.7285)`;
+
+function clamp(value: number, min: number, max: number) {
+  return Math.min(max, Math.max(min, value));
+}
+
+export const LiquidTube: React.FC<LiquidTubeProps> = ({
+  healthScore,
+  className,
+  h5 = false,
+}) => {
+  const [isVisible, setIsVisible] = useState(false);
+
+  useEffect(() => {
+    const raf = requestAnimationFrame(() => setIsVisible(true));
+    return () => cancelAnimationFrame(raf);
+  }, []);
+
+  const liquidState = useMemo(() => {
+    if (healthScore === null) {
+      return {
+        color: "transparent",
+        showTube: true,
+        arrowY: MAX_ARROW_Y,
+        tubeHeight: 0,
+      };
+    }
+
+    const score = clamp(healthScore, 0, 100);
+    const percent = score / 100;
+    const isLow = score < 20;
+    const isHigh = score >= 80;
+    const arrowY = isLow ? MAX_ARROW_Y : MAX_ARROW_Y - (MAX_ARROW_Y - MIN_ARROW_Y) * percent;
+    const tubeHeight = Math.max(0, TUBE_BOTTOM - ARROW_BASE_Y - arrowY + SEAM_OVERLAP * 2);
+
+    return {
+      color: isLow ? "#FF6063" : isHigh ? "#51FF6E" : "#E1FF00",
+      showTube: true,
+      arrowY,
+      tubeHeight,
+    };
+  }, [healthScore]);
+
+  return (
+    <div
+      className={`relative transition-all duration-500 ease-out will-change-transform ${
+        isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-2"
+      } ${className ?? ""}`}
+    >
+      <svg
+        width="43"
+        height="94"
+        viewBox="0 0 43 94"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+        className="block h-full w-full"
+        role="img"
+        aria-label="Market liquidity thermometer"
+        data-size={h5 ? "mobile" : "desktop"}
+      >
+        <rect width="43" height="100" fill="#FFFFFF" />
+        <path
+          d={SHELL_CENTER_PATH}
+          fill="none"
+          stroke="#000000"
+          strokeWidth="2.57628"
+          strokeLinejoin="round"
+        />
+        <g transform={LIQUID_TRANSFORM}>
+          <path
+            d={BULB_PATH}
+            fill={liquidState.color}
+            style={{ transition: "fill 420ms ease" }}
+          />
+          <g
+            transform={`translate(0 ${liquidState.arrowY})`}
+            style={{ transition: "transform 420ms ease" }}
+          >
+            <rect
+              x={TUBE_LEFT}
+              y={ARROW_BASE_Y - SEAM_OVERLAP}
+              width={TUBE_RIGHT - TUBE_LEFT}
+              height={liquidState.tubeHeight}
+              fill={liquidState.color}
+              style={{ transition: "height 420ms ease, fill 420ms ease" }}
+            />
+            <path
+              d={ARROW_PATH}
+              fill={liquidState.color}
+              style={{
+                transition: "fill 420ms ease, opacity 240ms ease",
+                opacity: 1,
+              }}
+            />
+          </g>
+        </g>
+      </svg>
+    </div>
+  );
+};

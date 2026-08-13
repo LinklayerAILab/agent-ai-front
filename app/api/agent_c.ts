@@ -1020,6 +1020,27 @@ export const get_binance_update_time = () => {
   );
 };
 
+// ==================== Binance Market Liquidity ====================
+// GET /v1/binance_market_liquidity，无请求参数
+export interface MarketLiquidityResponseData {
+  /** 健康等级：Healthy / Caution / Critical（冷启动时为空） */
+  level: string;
+  /** 0-100 健康分（冷启动时为 0） */
+  healthScore: number;
+}
+export interface GetMarketLiquidityResponse extends AgentCResponse {
+  data: MarketLiquidityResponseData;
+}
+export const get_binance_market_liquidity = () => {
+  return request<GetMarketLiquidityResponse>(
+    `${AGENT_C_API}/v1/binance_market_liquidity`,
+    {
+      method: "get",
+      cache: "no-store",
+    },
+  );
+};
+
 // ==================== LLAx Claim Module ====================
 
 // GET /v1/llax/claim/nonce — 获取 nonce 和可领取金额

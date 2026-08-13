@@ -617,7 +617,12 @@
         "agent": "Agent",
         "loading": "Loading...",
         "optimal": "Optimal",
-        "noTokensAvailable": "No tokens available"
+        "noTokensAvailable": "No tokens available",
+        "liquidityLevels": {
+            "healthy": "Excellent",
+            "caution": "Warning",
+            "critical": "Depleted"
+        }
     },
     "llax": {
         "title": "LLAx Dashboard",

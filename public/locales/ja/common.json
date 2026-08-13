@@ -617,7 +617,12 @@
         "agent": "エージェント",
         "loading": "読み込み中...",
         "optimal": "最適",
-        "noTokensAvailable": "利用可能なトークンがありません"
+        "noTokensAvailable": "利用可能なトークンがありません",
+        "liquidityLevels": {
+            "healthy": "極めて良好",
+            "caution": "警告",
+            "critical": "枯渇"
+        }
     },
     "llax": {
         "title": "LLAx ダッシュボード",

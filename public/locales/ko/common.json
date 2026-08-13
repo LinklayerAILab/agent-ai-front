@@ -614,7 +614,12 @@
         "agent": "에이전트",
         "loading": "로딩 중...",
         "optimal": "최적",
-        "noTokensAvailable": "사용 가능한 토큰이 없습니다"
+        "noTokensAvailable": "사용 가능한 토큰이 없습니다",
+        "liquidityLevels": {
+            "healthy": "매우 좋음",
+            "caution": "경고",
+            "critical": "고갈"
+        }
     },
     "llax": {
         "title": "LLAx 대시보드",
