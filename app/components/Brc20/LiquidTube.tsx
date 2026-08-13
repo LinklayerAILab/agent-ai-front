@@ -138,12 +138,12 @@ export const LiquidTube: React.FC<LiquidTubeProps> = ({
             100% {
               filter: brightness(0.94) drop-shadow(0 0 0 rgba(229, 255, 127, 0));
               opacity: 0.78;
-              transform: scaleY(0.965);
+              transform: scaleY(0.72);
             }
             50% {
-              filter: brightness(1.12) drop-shadow(0 0 5px rgba(229, 255, 127, 0.75));
+              filter: brightness(1.2) drop-shadow(0 0 8px rgba(229, 255, 127, 0.9));
               opacity: 1;
-              transform: scaleY(1.04);
+              transform: scaleY(1.22);
             }
           }
         `}</style>
