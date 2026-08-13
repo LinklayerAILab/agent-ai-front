@@ -33,6 +33,7 @@ function getLiquidState(level: LiquidLevel | null) {
   if (level === null) {
     return {
       color: "transparent",
+      glowColor: "transparent",
       arrowY: MAX_ARROW_Y,
       tubeHeight: 0,
     };
@@ -42,6 +43,7 @@ function getLiquidState(level: LiquidLevel | null) {
     const arrowY = MIN_ARROW_Y;
     return {
       color: "#A5FFBF",
+      glowColor: "rgba(165, 255, 191, 0.9)",
       arrowY,
       tubeHeight: Math.max(0, TUBE_BOTTOM - ARROW_BASE_Y - arrowY + SEAM_OVERLAP * 2),
     };
@@ -51,6 +53,7 @@ function getLiquidState(level: LiquidLevel | null) {
     const arrowY = (MIN_ARROW_Y + MAX_ARROW_Y) / 2;
     return {
       color: "#E5FF7F",
+      glowColor: "rgba(229, 255, 127, 0.9)",
       arrowY,
       tubeHeight: Math.max(0, TUBE_BOTTOM - ARROW_BASE_Y - arrowY + SEAM_OVERLAP * 2),
     };
@@ -59,6 +62,7 @@ function getLiquidState(level: LiquidLevel | null) {
   const arrowY = MAX_ARROW_Y;
   return {
     color: "#FF888D",
+    glowColor: "rgba(255, 136, 141, 0.9)",
     arrowY,
     tubeHeight: Math.max(0, TUBE_BOTTOM - ARROW_BASE_Y - arrowY + SEAM_OVERLAP * 2),
   };
@@ -106,14 +110,16 @@ export const LiquidTube: React.FC<LiquidTubeProps> = ({
         <g transform={LIQUID_TRANSFORM}>
           <g
             style={{
-              transformBox: "fill-box",
-              transformOrigin: "center bottom",
               animation: "liquidTubePulse 3.2s ease-in-out infinite",
-            }}
+              "--liquid-glow": liquidState.glowColor,
+              "--liquid-arrow-y": `${liquidState.arrowY}px`,
+              "--liquid-height": `${liquidState.tubeHeight}px`,
+            } as React.CSSProperties}
           >
             <path d={BULB_PATH} fill={liquidState.color} style={{ transition: "fill 420ms ease" }} />
-            <g transform={`translate(0 ${liquidState.arrowY})`} style={{ transition: "transform 420ms ease" }}>
+            <g className="tube-fill">
               <rect
+                className="tube-column"
                 x={TUBE_LEFT}
                 y={ARROW_BASE_Y - SEAM_OVERLAP}
                 width={TUBE_RIGHT - TUBE_LEFT}
@@ -135,29 +141,59 @@ export const LiquidTube: React.FC<LiquidTubeProps> = ({
         <style jsx>{`
           @keyframes liquidTubePulse {
             0% {
-              filter: brightness(0.94) drop-shadow(0 0 0 rgba(229, 255, 127, 0));
-              opacity: 0.78;
-              transform: scaleY(0.72);
+              filter: drop-shadow(0 0 0 var(--liquid-glow));
             }
             18% {
-              filter: brightness(1.2) drop-shadow(0 0 8px rgba(229, 255, 127, 0.9));
-              opacity: 1;
-              transform: scaleY(1.22);
+              filter: drop-shadow(0 0 8px var(--liquid-glow));
             }
             34% {
-              filter: brightness(0.98) drop-shadow(0 0 2px rgba(229, 255, 127, 0.25));
-              opacity: 0.84;
-              transform: scaleY(0.82);
+              filter: drop-shadow(0 0 2px var(--liquid-glow));
             }
             72% {
-              filter: brightness(1.18) drop-shadow(0 0 8px rgba(229, 255, 127, 0.85));
-              opacity: 1;
-              transform: scaleY(1.18);
+              filter: drop-shadow(0 0 8px var(--liquid-glow));
             }
             100% {
-              filter: brightness(0.94) drop-shadow(0 0 0 rgba(229, 255, 127, 0));
-              opacity: 0.78;
-              transform: scaleY(0.72);
+              filter: drop-shadow(0 0 0 var(--liquid-glow));
+            }
+          }
+
+          .tube-fill {
+            animation: liquidTubeArrowPulse 3.2s ease-in-out infinite;
+          }
+
+          .tube-column {
+            animation: liquidTubeColumnPulse 3.2s ease-in-out infinite;
+          }
+
+          @keyframes liquidTubeArrowPulse {
+            0% {
+              transform: translateY(var(--liquid-arrow-y));
+            }
+            18%,
+            72% {
+              transform: translateY(${MIN_ARROW_Y}px);
+            }
+            34% {
+              transform: translateY(${MAX_ARROW_Y * 0.82}px);
+            }
+            100% {
+              transform: translateY(var(--liquid-arrow-y));
+            }
+          }
+
+          @keyframes liquidTubeColumnPulse {
+            0% {
+              height: var(--liquid-height);
+            }
+            18%,
+            72% {
+              height: ${Math.max(0, TUBE_BOTTOM - ARROW_BASE_Y - MIN_ARROW_Y + SEAM_OVERLAP * 2)}px;
+            }
+            34% {
+              height: ${Math.max(0, TUBE_BOTTOM - ARROW_BASE_Y - MAX_ARROW_Y * 0.82 + SEAM_OVERLAP * 2)}px;
+            }
+            100% {
+              height: var(--liquid-height);
             }
           }
         `}</style>
