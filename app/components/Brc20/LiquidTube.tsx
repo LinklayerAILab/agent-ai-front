@@ -108,7 +108,7 @@ export const LiquidTube: React.FC<LiquidTubeProps> = ({
             style={{
               transformBox: "fill-box",
               transformOrigin: "center bottom",
-              animation: "liquidTubeBreath 2.4s ease-in-out infinite",
+              animation: "liquidTubePulse 3.2s ease-in-out infinite",
             }}
           >
             <path d={BULB_PATH} fill={liquidState.color} style={{ transition: "fill 420ms ease" }} />
@@ -133,17 +133,31 @@ export const LiquidTube: React.FC<LiquidTubeProps> = ({
           </g>
         </g>
         <style jsx>{`
-          @keyframes liquidTubeBreath {
-            0%,
-            100% {
+          @keyframes liquidTubePulse {
+            0% {
               filter: brightness(0.94) drop-shadow(0 0 0 rgba(229, 255, 127, 0));
               opacity: 0.78;
               transform: scaleY(0.72);
             }
-            50% {
+            18% {
               filter: brightness(1.2) drop-shadow(0 0 8px rgba(229, 255, 127, 0.9));
               opacity: 1;
               transform: scaleY(1.22);
+            }
+            34% {
+              filter: brightness(0.98) drop-shadow(0 0 2px rgba(229, 255, 127, 0.25));
+              opacity: 0.84;
+              transform: scaleY(0.82);
+            }
+            72% {
+              filter: brightness(1.18) drop-shadow(0 0 8px rgba(229, 255, 127, 0.85));
+              opacity: 1;
+              transform: scaleY(1.18);
+            }
+            100% {
+              filter: brightness(0.94) drop-shadow(0 0 0 rgba(229, 255, 127, 0));
+              opacity: 0.78;
+              transform: scaleY(0.72);
             }
           }
         `}</style>
