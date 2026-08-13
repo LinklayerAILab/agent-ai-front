@@ -21,6 +21,7 @@ let activePoolsCountCache: number | null = null;
 let updateTimeCache: number | null = null;
 let tokenListCache: BinanceTokenScreenItem[] | null = null;
 type LiquidityLevel = "Healthy" | "Caution" | "Critical";
+const LIQUIDITY_LEVELS: LiquidityLevel[] = ["Critical", "Caution", "Healthy"];
 
 function getLiquidityLevelKey(level: string | null) {
   const normalized = level?.toLowerCase();
@@ -106,6 +107,17 @@ export function Brc20() {
 
     fetchMarketLiquidity();
     const timer = setInterval(fetchMarketLiquidity, 60_000);
+
+    return () => clearInterval(timer);
+  }, []);
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setLiquidityLevel((currentLevel) => {
+        const currentIndex = LIQUIDITY_LEVELS.indexOf(currentLevel);
+        return LIQUIDITY_LEVELS[(currentIndex + 1) % LIQUIDITY_LEVELS.length];
+      });
+    }, 6_000);
 
     return () => clearInterval(timer);
   }, []);
