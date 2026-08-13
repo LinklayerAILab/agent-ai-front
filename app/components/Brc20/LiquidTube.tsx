@@ -26,7 +26,6 @@ const MAX_ARROW_Y = 43.8;
 const SEAM_OVERLAP = 0.8;
 const LIQUID_SCALE = 1.18;
 const LIQUID_TRANSFORM = `translate(21.5 78.7285) scale(${LIQUID_SCALE}) translate(-21.5 -78.7285)`;
-const PULSE_DURATION = "3.2s";
 const PULSE_KEY_TIMES = "0;0.18;0.34;0.72;1";
 
 type LiquidLevel = NonNullable<LiquidTubeProps["level"]>;
@@ -37,6 +36,22 @@ function getTubeHeight(arrowY: number) {
 
 function getTubeY(arrowY: number) {
   return ARROW_BASE_Y - SEAM_OVERLAP + arrowY;
+}
+
+function getPulseDuration(level: LiquidLevel | null) {
+  if (level === "Healthy") {
+    return "2.4s";
+  }
+
+  if (level === "Caution") {
+    return "3.2s";
+  }
+
+  if (level === "Critical") {
+    return "4.2s";
+  }
+
+  return "3.2s";
 }
 
 function getLiquidState(level: LiquidLevel | null) {
@@ -91,6 +106,7 @@ export const LiquidTube: React.FC<LiquidTubeProps> = ({
   }, []);
 
   const liquidState = useMemo(() => getLiquidState(level), [level]);
+  const pulseDuration = useMemo(() => getPulseDuration(level), [level]);
   const shortArrowY = MAX_ARROW_Y * 0.82;
   const arrowValues = [shortArrowY, MIN_ARROW_Y, MAX_ARROW_Y, MIN_ARROW_Y, shortArrowY];
   const tubeYValues = arrowValues.map((arrowY) => getTubeY(arrowY)).join(";");
@@ -124,7 +140,7 @@ export const LiquidTube: React.FC<LiquidTubeProps> = ({
         <g transform={LIQUID_TRANSFORM}>
           <g
             style={{
-              animation: "liquidTubePulse 3.2s ease-in-out infinite",
+              animation: `liquidTubePulse ${pulseDuration} ease-in-out infinite`,
               "--liquid-glow": liquidState.glowColor,
             } as React.CSSProperties}
           >
@@ -139,14 +155,14 @@ export const LiquidTube: React.FC<LiquidTubeProps> = ({
             >
               <animate
                 attributeName="y"
-                dur={PULSE_DURATION}
+                dur={pulseDuration}
                 keyTimes={PULSE_KEY_TIMES}
                 repeatCount="indefinite"
                 values={tubeYValues}
               />
               <animate
                 attributeName="height"
-                dur={PULSE_DURATION}
+                dur={pulseDuration}
                 keyTimes={PULSE_KEY_TIMES}
                 repeatCount="indefinite"
                 values={tubeHeightValues}
@@ -164,7 +180,7 @@ export const LiquidTube: React.FC<LiquidTubeProps> = ({
               <animateTransform
                 attributeName="transform"
                 type="translate"
-                dur={PULSE_DURATION}
+                dur={pulseDuration}
                 keyTimes={PULSE_KEY_TIMES}
                 repeatCount="indefinite"
                 values={arrowValues.map((arrowY) => `0 ${arrowY}`).join(";")}

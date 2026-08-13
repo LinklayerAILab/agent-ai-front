@@ -30,6 +30,14 @@ function getLiquidityLevelKey(level: string | null) {
   return "brc20.liquidityLevels.critical";
 }
 
+function normalizeLiquidityLevel(level: string | null | undefined): LiquidityLevel | null {
+  if (level === "Healthy" || level === "Caution" || level === "Critical") {
+    return level;
+  }
+
+  return null;
+}
+
 export function Brc20() {
   const { t } = useTranslation();
   const scrollContainerRef = useRef<HTMLDivElement>(null);
@@ -39,7 +47,7 @@ export function Brc20() {
   const [activePoolsCount, setActivePoolsCount] = useState<number | null>(null);
   const [updateTime, setUpdateTime] = useState<number | null>(null);
   const [, setLiquidPercentage] = useState<number | null>(null);
-  const [liquidityLevel, setLiquidityLevel] = useState<LiquidityLevel>("Critical");
+  const [liquidityLevel, setLiquidityLevel] = useState<LiquidityLevel | null>(null);
   const [displayLiquidityLevel, setDisplayLiquidityLevel] = useState<LiquidityLevel>("Critical");
   const [isLiquidityLevelVisible, setIsLiquidityLevelVisible] = useState(true);
   const [, setTick] = useState(0);
@@ -99,10 +107,10 @@ export function Brc20() {
       try {
         const res = await get_binance_market_liquidity();
         setLiquidPercentage(res.data.healthScore ?? 0);
-        setLiquidityLevel((res.data.level as LiquidityLevel) ?? "Critical");
+        setLiquidityLevel(normalizeLiquidityLevel(res.data.level));
       } catch {
         setLiquidPercentage(0);
-        setLiquidityLevel("Critical");
+        setLiquidityLevel(null);
       }
     };
 
@@ -113,7 +121,7 @@ export function Brc20() {
   }, []);
 
   useEffect(() => {
-    if (liquidityLevel === displayLiquidityLevel) {
+    if (liquidityLevel === null || liquidityLevel === displayLiquidityLevel) {
       return;
     }
 
