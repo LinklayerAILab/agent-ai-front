@@ -26,6 +26,7 @@ import { keccak256, toBytes } from "viem";
 import llaxClaimJson from "@/app/abi/llaxClaim.json";
 import llaxClaimProdJson from "@/app/abi/llaxClaimProd.json";
 import { useAppKit, useAppKitAccount } from "@reown/appkit/react";
+import { SIWXUtil } from "@reown/appkit-controllers";
 import { disconnect } from "wagmi/actions";
 import { config } from "../config/appkit";
 import { useRouter } from "next/navigation";
@@ -313,11 +314,18 @@ const Connect = () => {
 
   const handleConfirmAccountChange = async () => {
     setShowAccountChangeDialog(false);
-    // 只清登录会话（不断开钱包连接），再用当前钱包地址重新登录
+    // 只清登录会话（不断开钱包连接），再用当前钱包地址主动触发签名登录
     dispatch(logout());
     localStorage.removeItem("access_token");
     localStorage.removeItem("address");
-    handleLogin(true);
+    try {
+      await SIWXUtil.requestSignMessage();
+    } catch (err) {
+      console.error("[Auth] requestSignMessage failed", err);
+      messageApi.error(
+        t("login.authFailed") || "Login failed. Please try again",
+      );
+    }
   };
 
   const handleCancelAccountChange = () => {
@@ -346,8 +354,8 @@ const Connect = () => {
     localStorage.removeItem("address");
   };
 
-  const handleLogin = async (force = false) => {
-    if (isLogin && !force) return;
+  const handleLogin = async () => {
+    if (isLogin) return;
     try {
       setLoading(true);
       // ReOwn SIWE handles the full flow: connect -> sign -> verify
