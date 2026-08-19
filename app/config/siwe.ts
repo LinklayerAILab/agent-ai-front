@@ -267,7 +267,7 @@ export const siweConfig: SIWEConfig = {
   required: false,
   nonceRefetchIntervalMs: 300_000, // 5 minutes, matches backend Redis TTL
   sessionRefetchIntervalMs: 300_000,
-  signOutOnDisconnect: true,
-  signOutOnAccountChange: true,
+  signOutOnDisconnect: false, // 断开不自动登出，保留登录态作为地址参照，重连后由前端弹窗检测
+  signOutOnAccountChange: false, // 改由前端弹窗提醒，不再静默登出
   signOutOnNetworkChange: true,
 };

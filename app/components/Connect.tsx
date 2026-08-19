@@ -25,7 +25,7 @@ import { waitForTransactionReceipt } from "wagmi/actions";
 import { keccak256, toBytes } from "viem";
 import llaxClaimJson from "@/app/abi/llaxClaim.json";
 import llaxClaimProdJson from "@/app/abi/llaxClaimProd.json";
-import { useAppKit } from "@reown/appkit/react";
+import { useAppKit, useAppKitAccount } from "@reown/appkit/react";
 import { disconnect } from "wagmi/actions";
 import { config } from "../config/appkit";
 import { useRouter } from "next/navigation";
@@ -89,6 +89,8 @@ const Connect = () => {
   const [earnDropdownOpen, setEarnDropdownOpen] = useState(false);
   const { open } = useAppKit();
   const { address, isConnected } = useAccount();
+  // AppKit 自己的账户状态（读 ChainController，能实时反映账户切换）
+  const appkitAccount = useAppKitAccount();
   const [messageApi, contextHolder] = message.useMessage();
   const router = useRouter();
   const localAddress = useSelector((state: RootState) => state.user.address);
@@ -100,30 +102,30 @@ const Connect = () => {
   const { switchChain } = useSwitchChain();
   const [claimLoading, setClaimLoading] = useState(false);
 
-  // Sync wallet address to localStorage when connected
+  // 未登录时同步当前钱包地址到 localStorage（供未登录接口使用）；
+  // 已登录（存在 access_token）时不覆盖，避免污染与 access_token 绑定的登录地址，
+  // 否则刷新后 initializeFromLocalStorage 会把 state.user.address 恢复成钱包地址，
+  // 导致账户切换检测（对比 localAddress）失效。
+  // 用 localStorage 的 access_token 判断而非 Redux isLogin，规避初始化时序竞态。
   useEffect(() => {
-    if (isConnected && address) {
+    if (isConnected && address && !localStorage.getItem("access_token")) {
       localStorage.setItem("address", address);
     }
   }, [isConnected, address]);
 
-  // Listen to wallet account switch event
+  // 监听钱包账户切换（基于 AppKit 的 ChainController 状态）。
+  // 不用 wagmi 的 useAccount().address（切换账户时会断连抖动），
+  // 也不用 window.ethereum（钱包走 AppKit 内部 provider 时收不到原生事件）。
   useEffect(() => {
-    const savedAddress = localStorage.getItem("address");
+    const newAddr = appkitAccount.address;
+    if (!newAddr) return;
 
-    // When wallet is connected, logged in, and address has changed (account switch)
-    if (
-      isConnected &&
-      address &&
-      savedAddress &&
-      address !== savedAddress &&
-      isLogin
-    ) {
-      setNewAddress(address);
-      // Show confirmation dialog
+    // 仅当「已登录」且「新地址与已登录地址不一致」时提示
+    if (isLogin && localAddress && newAddr.toLowerCase() !== localAddress.toLowerCase()) {
+      setNewAddress(newAddr);
       setShowAccountChangeDialog(true);
     }
-  }, [address, isConnected, isLogin]);
+  }, [appkitAccount.address, isLogin, localAddress]);
 
   const authFailEvent = () => {
     handleLogout();
@@ -311,8 +313,11 @@ const Connect = () => {
 
   const handleConfirmAccountChange = async () => {
     setShowAccountChangeDialog(false);
-    // Re-open the login modal to sign in with the new account
-    handleLogin();
+    // 只清登录会话（不断开钱包连接），再用当前钱包地址重新登录
+    dispatch(logout());
+    localStorage.removeItem("access_token");
+    localStorage.removeItem("address");
+    handleLogin(true);
   };
 
   const handleCancelAccountChange = () => {
@@ -341,8 +346,8 @@ const Connect = () => {
     localStorage.removeItem("address");
   };
 
-  const handleLogin = async () => {
-    if (isLogin) return;
+  const handleLogin = async (force = false) => {
+    if (isLogin && !force) return;
     try {
       setLoading(true);
       // ReOwn SIWE handles the full flow: connect -> sign -> verify
