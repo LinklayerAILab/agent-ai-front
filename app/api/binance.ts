@@ -208,3 +208,23 @@ export const binance_token_analysis_streaming = (
     },
   );
 };
+
+// ==================== Binance Liquidity Check ====================
+
+export interface BinanceLiquidityCheckRequest {
+  query: string; // symbol 或合约地址（模糊匹配）
+}
+
+/**
+ * Fuzzy query the token list by symbol or contract address.
+ * Response shape is identical to binance_token_screen.
+ */
+export const binanceLiquidityCheck = (query: string) => {
+  return request<GetBinanceTokenScreenResponse>(`${api}/v1/binance_liquidity_check`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ query } satisfies BinanceLiquidityCheckRequest),
+  });
+};

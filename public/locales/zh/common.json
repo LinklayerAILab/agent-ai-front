@@ -615,6 +615,7 @@
         "loading": "加载中...",
         "optimal": "最佳",
         "noTokensAvailable": "暂无可用代币",
+        "searchPlaceholder": "按代币符号或合约地址搜索",
         "liquidityLevels": {
             "healthy": "极佳",
             "caution": "警告",

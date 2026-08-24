@@ -615,6 +615,7 @@
         "loading": "로딩 중...",
         "optimal": "최적",
         "noTokensAvailable": "사용 가능한 토큰이 없습니다",
+        "searchPlaceholder": "심볼 또는 계약 주소로 검색",
         "liquidityLevels": {
             "healthy": "매우 좋음",
             "caution": "경고",

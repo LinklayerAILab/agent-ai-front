@@ -599,6 +599,7 @@
         "loading": "Загрузка...",
         "optimal": "Оптимально",
         "noTokensAvailable": "Нет доступных токенов",
+        "searchPlaceholder": "Поиск по символу или адресу контракта",
         "liquidityLevels": {
             "healthy": "Отлично",
             "caution": "Предупреждение",

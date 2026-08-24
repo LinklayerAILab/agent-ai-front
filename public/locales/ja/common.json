@@ -618,6 +618,7 @@
         "loading": "読み込み中...",
         "optimal": "最適",
         "noTokensAvailable": "利用可能なトークンがありません",
+        "searchPlaceholder": "シンボルまたはコントラクトアドレスで検索",
         "liquidityLevels": {
             "healthy": "極めて良好",
             "caution": "警告",

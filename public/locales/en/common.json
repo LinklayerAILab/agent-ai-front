@@ -618,6 +618,7 @@
         "loading": "Loading...",
         "optimal": "Optimal",
         "noTokensAvailable": "No tokens available",
+        "searchPlaceholder": "Search by symbol or address",
         "liquidityLevels": {
             "healthy": "Excellent",
             "caution": "Warning",

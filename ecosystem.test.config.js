@@ -3,9 +3,9 @@ module.exports = {
     {
       name: "agent-ai-front-test",
       script: "./node_modules/next/dist/bin/next",
-      args: "start -p 14002",
+      args: "dev --turbopack -H 0.0.0.0 -p 14002",
       env: {
-        NODE_ENV: "test",
+        NODE_ENV: "development",
       },
       env_file: ".env.test.local"
     },
