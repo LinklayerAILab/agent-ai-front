@@ -78,7 +78,7 @@ export function Brc20Card({ token }: Brc20CardProps) {
                 className="lg:w-[5vh] lg:h-[5vh] w-[34px] h-[34px] rounded-full bg-white"
               ></Image>
               <div className="flex gap-1 flex-col">
-              <div className="font-bold text-[14px] lg:text-[16px]">{token?.tokenSymbol.toUpperCase() || token?.tokenName || t('brc20.loading')}</div>
+              <div className="font-bold text-[14px] lg:text-[16px]">{token?.tokenSymbol?.toUpperCase() || token?.tokenName || t('brc20.loading')}</div>
               <div className="flex items-center gap-1 text-[12px] font-bold">
                 <Image
                   src={priceIcon}

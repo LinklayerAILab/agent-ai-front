@@ -216,15 +216,58 @@ export interface BinanceLiquidityCheckRequest {
 }
 
 /**
- * Fuzzy query the token list by symbol or contract address.
- * Response shape is identical to binance_token_screen.
+ * binance_liquidity_check 返回的是 PascalCase 字段（Go 默认 JSON tag），
+ * 与 binance_token_screen 的 camelCase 不同。这里统一归一化成
+ * BinanceTokenScreenItem（camelCase），方便复用 Brc20Card 渲染。
  */
-export const binanceLiquidityCheck = (query: string) => {
-  return request<GetBinanceTokenScreenResponse>(`${api}/v1/binance_liquidity_check`, {
+function normalizeLiquidityCheckItem(raw: Record<string, unknown>): BinanceTokenScreenItem {
+  const str = (v: unknown, fallback = ""): string =>
+    typeof v === "string" ? v : fallback;
+  const num = (v: unknown, fallback = 0): number =>
+    typeof v === "number" ? v : fallback;
+
+  return {
+    tokenId: str(raw.TokenID ?? raw.tokenId),
+    tokenSymbol: str(raw.TokenSymbol ?? raw.tokenSymbol),
+    tokenName: str(raw.TokenName ?? raw.tokenName),
+    contractAddress: str(raw.ContractAddress ?? raw.contractAddress),
+    poolAddress: str(raw.PoolAddress ?? raw.poolAddress),
+    poolType: str(raw.PoolType ?? raw.poolType),
+    quoteTokenSymbol: str(raw.QuoteTokenSymbol ?? raw.quoteTokenSymbol),
+    depthScore: num(raw.DepthScore ?? raw.depthScore),
+    stabilitySlope: num(raw.StabilitySlope ?? raw.stabilitySlope),
+    exitSlippage: num(raw.ExitSlippage ?? raw.exitSlippage),
+    overallScore: num(raw.OverallScore ?? raw.overallScore),
+    riskLevel: str(raw.RiskLevel ?? raw.riskLevel),
+    analysisResult: str(raw.AnalysisResult ?? raw.analysisResult),
+    screeningTime: num(raw.ScreeningTime ?? raw.screeningTime),
+    lastUpdated: num(raw.LastUpdated ?? raw.lastUpdated),
+    imageUrl: str(raw.ImageUrl ?? raw.imageUrl),
+  };
+}
+
+/**
+ * Fuzzy query the token list by symbol or contract address.
+ * Response items are normalized to the BinanceTokenScreenItem shape.
+ */
+export const binanceLiquidityCheck = async (
+  query: string
+): Promise<GetBinanceTokenScreenResponse> => {
+  const res = await request<{
+    code: number;
+    message: string;
+    data: { results: Record<string, unknown>[] };
+  }>(`${api}/v1/binance_liquidity_check`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
     },
-    body: JSON.stringify({ query } satisfies BinanceLiquidityCheckRequest),
+    body: JSON.stringify({ query }),
   });
+
+  const results = (res.data.results || []).map(normalizeLiquidityCheckItem);
+  return {
+    ...res,
+    data: { results, total: results.length },
+  };
 };
