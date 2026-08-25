@@ -46,25 +46,21 @@
   }
 
   // Status colors
+  // Static base mirrors the 0% keyframe (gradient bulb) so the light looks
+  // correct during the random animationDelay window before the animation starts.
   &.status-green {
-    background-color: #51FF6E;
-    // &::after {
-    //   background-color: #22c55e;
-    // }
+    background: linear-gradient(to bottom, #a7ffd5, #51ff6e);
+    box-shadow: inset 0 3px 0 0 #fff, 0 0 0 4px #e6e6e6;
   }
 
   &.status-red {
-    background-color: #E62F37;
-    // &::after {
-    //   background-color: #ef4444;
-    // }
+    background: linear-gradient(to bottom, #f2979b, #e62f37);
+    box-shadow: inset 0 3px 0 0 #fff, 0 0 0 4px #e6e6e6;
   }
 
   &.status-yellow {
-    background-color: #D6F200;
-    // &::after {
-    //   background-color: #f59e0b;
-    // }
+    background: linear-gradient(to bottom, #ebff70, #d6f200);
+    box-shadow: inset 0 3px 0 0 #fff, 0 0 0 4px #e6e6e6;
   }
 
   &.status-primary {
