@@ -6,7 +6,7 @@ import priceIcon from "@/app/images/brc20/price.svg";
 import topIcon from "@/app/images/brc20/top.svg";
 import { BinanceTokenScreenItem } from "@/app/api/binance";
 import { useTranslation } from "next-i18next";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import StreamingModal from "@/app/components/StreamingModal";
 
 interface Brc20CardProps {
@@ -62,10 +62,25 @@ const toStatusColor = (raw?: string | null): StatusColor => {
   return "GRAY";
 };
 
+/**
+ * Extract the fallback initial (first char, uppercase) for a token icon.
+ * Prefers the symbol, falls back to the token name.
+ */
+const tokenInitial = (token?: BinanceTokenScreenItem): string => {
+  const source = token?.tokenSymbol?.trim() || token?.tokenName?.trim() || "";
+  return source.charAt(0).toUpperCase() || "?";
+};
+
 
 export function Brc20Card({ token }: Brc20CardProps) {
   const { t } = useTranslation();
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [iconFailed, setIconFailed] = useState(false);
+
+  // Reset the fallback when a new token (e.g. after search) mounts the same card
+  useEffect(() => {
+    setIconFailed(false);
+  }, [token?.imageUrl, token?.tokenId]);
 
   const statusColor = toStatusColor(token?.color);
   const statusLabelKey =
@@ -91,13 +106,20 @@ export function Brc20Card({ token }: Brc20CardProps) {
         <div className="flex flex-col pr-[14px] lg:pr-[1.5vh] border-r-[1px] border-r-[#E7E7E7] border-r-solid w-full gap-[10px] lg:gap-[1vh]">
           <div className="flex gap-[10px] justify-between">
             <div className="flex items-center justify-center gap-[10px]">
-              <Image
-                src={token?.imageUrl || ''}
-                alt="aster"
-                width={40}
-                height={40}
-                className="lg:w-[5vh] lg:h-[5vh] w-[34px] h-[34px] rounded-full bg-white"
-              ></Image>
+              {token?.imageUrl && !iconFailed ? (
+                <Image
+                  src={token.imageUrl}
+                  alt={token.tokenSymbol || token.tokenName || "aster"}
+                  width={40}
+                  height={40}
+                  onError={() => setIconFailed(true)}
+                  className="lg:w-[5vh] lg:h-[5vh] w-[34px] h-[34px] rounded-full bg-white"
+                ></Image>
+              ) : (
+                <div className="lg:w-[5vh] lg:h-[5vh] w-[34px] h-[34px] rounded-full bg-white flex items-center justify-center font-bold text-[14px] lg:text-[16px] text-[#789600] overflow-hidden">
+                  {tokenInitial(token)}
+                </div>
+              )}
               <div className="flex gap-1 flex-col">
               <div className="font-bold text-[14px] lg:text-[16px]">{token?.tokenSymbol?.toUpperCase() || token?.tokenName || t('brc20.loading')}</div>
               <div className="flex items-center gap-1 text-[12px] font-bold">
