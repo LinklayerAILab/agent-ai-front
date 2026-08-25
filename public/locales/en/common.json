@@ -619,6 +619,12 @@
         "optimal": "Optimal",
         "noTokensAvailable": "No tokens available",
         "searchPlaceholder": "Search by symbol or address",
+        "tokenStatus": {
+            "green": "Optimal",
+            "yellow": "Warning",
+            "red": "Risk",
+            "gray": "Unknown"
+        },
         "liquidityLevels": {
             "healthy": "Excellent",
             "caution": "Warning",

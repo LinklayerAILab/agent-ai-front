@@ -1,7 +1,7 @@
 "use client"
 import Image from "next/image";
 import Brc20Button from "./Brc20Button";
-import StatusIndicator from "@/app/components/StatusIndicator";
+import StatusIndicator, { type StatusColor } from "@/app/components/StatusIndicator";
 import priceIcon from "@/app/images/brc20/price.svg";
 import topIcon from "@/app/images/brc20/top.svg";
 import { BinanceTokenScreenItem } from "@/app/api/binance";
@@ -48,10 +48,31 @@ const formatPrice = (price: number): string => {
   return parseFloat(price.toFixed(6)).toString();
 };
 
+/**
+ * Map a backend color string to a StatusColor for the traffic light.
+ * Backend contract: GREEN / YELLOW / RED. Tolerates lowercase and
+ * surrounding whitespace; anything else (missing, malformed) falls
+ * back to GRAY.
+ */
+const toStatusColor = (raw?: string | null): StatusColor => {
+  const normalized = (raw ?? "").trim().toUpperCase();
+  if (normalized === "GREEN" || normalized === "YELLOW" || normalized === "RED") {
+    return normalized;
+  }
+  return "GRAY";
+};
+
 
 export function Brc20Card({ token }: Brc20CardProps) {
   const { t } = useTranslation();
   const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const statusColor = toStatusColor(token?.color);
+  const statusLabelKey =
+    statusColor === "GREEN" ? "brc20.tokenStatus.green"
+    : statusColor === "YELLOW" ? "brc20.tokenStatus.yellow"
+    : statusColor === "RED" ? "brc20.tokenStatus.red"
+    : "brc20.tokenStatus.gray";
 
   const handleTrade = () => {
     window.open(`https://pancakeswap.finance/swap?inputCurrency=0x55d398326f99059fF775485246999027B3197955&outputCurrency=${token?.contractAddress}`,'__blank')
@@ -93,9 +114,12 @@ export function Brc20Card({ token }: Brc20CardProps) {
             </div>
 
             <div className="flex flex-col justify-between">
-              <div className="flex gap-[4px] h-[24px] items-center lg:items-center lg:h-[24px]">
-              <StatusIndicator statusColor="GREEN" size={20} borderWidth={1} />
-              <div className="text-[10px]">{t('brc20.optimal')}</div>
+              <div
+                className="flex gap-[4px] h-[24px] items-center lg:items-center lg:h-[24px]"
+                title={token?.description || undefined}
+              >
+              <StatusIndicator statusColor={statusColor} size={20} borderWidth={1} />
+              <div className="text-[10px]">{t(statusLabelKey)}</div>
             </div>
             <div>
               {/* 1111 */}

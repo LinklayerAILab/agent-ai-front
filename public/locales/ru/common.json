@@ -600,6 +600,12 @@
         "optimal": "Оптимально",
         "noTokensAvailable": "Нет доступных токенов",
         "searchPlaceholder": "Поиск по символу или адресу контракта",
+        "tokenStatus": {
+            "green": "Оптимально",
+            "yellow": "Предупреждение",
+            "red": "Риск",
+            "gray": "Неизвестно"
+        },
         "liquidityLevels": {
             "healthy": "Отлично",
             "caution": "Предупреждение",

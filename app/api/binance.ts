@@ -22,7 +22,13 @@ export interface BinanceTokenScreenItem {
   screeningTime: number;     // Screening time
   lastUpdated: number;       // Last update time
   price?: number;            // Token price (from price API)
-  imageUrl: string
+  imageUrl: string;
+  /** Traffic light color from backend: GREEN / YELLOW / RED */
+  color?: string;
+  /** YELLOW sub-level: Y1 / Y2 / Y3 (null unless color === YELLOW). Carried for contract completeness; not rendered. */
+  level?: string | null;
+  /** Backend-provided color description, shown as tooltip */
+  description?: string;
 }
 
 export interface BinanceTokenScreenResponseData {
@@ -243,6 +249,9 @@ function normalizeLiquidityCheckItem(raw: Record<string, unknown>): BinanceToken
     screeningTime: num(raw.ScreeningTime ?? raw.screeningTime),
     lastUpdated: num(raw.LastUpdated ?? raw.lastUpdated),
     imageUrl: str(raw.ImageUrl ?? raw.imageUrl),
+    color: str(raw.Color ?? raw.color),
+    level: str(raw.Level ?? raw.level) || null,
+    description: str(raw.Description ?? raw.description),
   };
 }
 

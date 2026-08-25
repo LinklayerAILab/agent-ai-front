@@ -619,6 +619,12 @@
         "optimal": "最適",
         "noTokensAvailable": "利用可能なトークンがありません",
         "searchPlaceholder": "シンボルまたはコントラクトアドレスで検索",
+        "tokenStatus": {
+            "green": "最適",
+            "yellow": "警告",
+            "red": "リスク",
+            "gray": "不明"
+        },
         "liquidityLevels": {
             "healthy": "極めて良好",
             "caution": "警告",
