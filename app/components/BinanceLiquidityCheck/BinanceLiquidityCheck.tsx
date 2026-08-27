@@ -1,7 +1,7 @@
 "use client"
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
-import { AutoComplete, Skeleton } from "antd";
+import { AutoComplete, Skeleton, Tooltip } from "antd";
 import { useTranslation } from "next-i18next";
 import { Brc20Card } from "@/app/components/Brc20/Brc20Card";
 import { LiquidTube } from "@/app/components/Brc20/LiquidTube";
@@ -259,9 +259,11 @@ export function BinanceLiquidityCheck() {
               </div>
             </div>
             <div className="flex-1 flex justify-end gap-[1vh] py-[2vh] h-full pr-[2vh]">
-              <div className="flex items-center justify-center rounded-[8px] bg-[#F8FFDC] p-[1vh]">
-                <LiquidTube level={liquidityLevel} className="h-[14vh] w-[8vh]" />
-              </div>
+              <Tooltip title={t('brc20.updateFrequency')} placement="top">
+                <div className="flex items-center justify-center rounded-[8px] bg-[#F8FFDC] p-[1vh]">
+                  <LiquidTube level={liquidityLevel} className="h-[14vh] w-[8vh]" />
+                </div>
+              </Tooltip>
               <div className="flex flex-wrap gap-[1vh] w-[60%]">
                 <div className="flex w-full gap-2">
                   <div className="rounded-[8px] bg-[#F8FFDC] px-[14px] py-[10px] lg:px-[1vh] lg:py-[1vh] flex flex-col items-center justify-center h-[7.5vh] w-[calc(50%-0.5vh)]">

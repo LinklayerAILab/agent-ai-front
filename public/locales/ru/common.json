@@ -591,6 +591,7 @@
         "healthyTokens": "Здоровые токены",
         "activePools": "Активные пулы",
         "totalLiquidity": "Статус ликвидности",
+        "updateFrequency": "Эти данные обновляются каждые 10 минут",
         "avgExitCost": "Средняя стоимость выхода",
         "lpDepth": "Глубина LP",
         "lpStability": "Стабильность LP",

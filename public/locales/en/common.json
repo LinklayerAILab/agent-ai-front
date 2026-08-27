@@ -610,6 +610,7 @@
         "healthyTokens": "Healthy Tokens",
         "activePools": "Active Pools",
         "totalLiquidity": "Liquidity Status",
+        "updateFrequency": "This data updates every 10 minutes",
         "avgExitCost": "Avg Exit Cost",
         "lpDepth": "LP Depth",
         "lpStability": "LP Stability",

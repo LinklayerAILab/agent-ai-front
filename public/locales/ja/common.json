@@ -610,6 +610,7 @@
         "healthyTokens": "健全なトークン",
         "activePools": "アクティブなプール",
         "totalLiquidity": "流動性ステータス",
+        "updateFrequency": "このデータは10分ごとに更新されます",
         "avgExitCost": "平均退出コスト",
         "lpDepth": "LP深度",
         "lpStability": "LP安定性",

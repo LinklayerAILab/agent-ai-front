@@ -607,6 +607,7 @@
         "healthyTokens": "건전한 토큰",
         "activePools": "활성 풀",
         "totalLiquidity": "유동성 상태",
+        "updateFrequency": "이 데이터는 10분마다 업데이트됩니다",
         "avgExitCost": "평균 출차 비용",
         "lpDepth": "LP 깊이",
         "lpStability": "LP 안정성",

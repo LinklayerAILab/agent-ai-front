@@ -607,6 +607,7 @@
         "healthyTokens": "健康代币",
         "activePools": "活跃池子",
         "totalLiquidity": "流动性状态",
+        "updateFrequency": "此数据每十分钟更新一次",
         "avgExitCost": "平均退出成本",
         "lpDepth": "LP深度",
         "lpStability": "LP稳定性",
