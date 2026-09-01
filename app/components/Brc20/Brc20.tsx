@@ -14,8 +14,9 @@ import {
   get_binance_market_liquidity,
   get_binance_update_time,
 } from "@/app/api/agent_c";
-import { Skeleton, Tooltip } from "antd";
+import { Skeleton } from "antd";
 import { useTranslation } from "next-i18next";
+import QuestionTip from "@/app/components/QuestionTip";
 
 let activePoolsCountCache: number | null = null;
 let updateTimeCache: number | null = null;
@@ -203,19 +204,24 @@ export function Brc20() {
             </div>
           </div>
           <div className="flex-1 flex justify-end gap-[1vh] py-[2vh] h-full pr-[2vh]">
-             <Tooltip title={t('brc20.updateFrequency')} placement="top">
-                <div className="flex items-center justify-center rounded-[8px] bg-[#F8FFDC] p-[1vh]">
-                    <LiquidTube level={liquidityLevel} className="h-[14vh] w-[8vh]" />
+             <div className="relative flex items-center justify-center rounded-[8px] bg-[#F8FFDC] p-[1vh]">
+                <LiquidTube level={liquidityLevel} className="h-[14vh] w-[8vh]" />
+                <div className="absolute top-[4px] right-[4px] lg:top-3 lg:right-4">
+                  <QuestionTip content={t('brc20.updateFrequency')} />
                 </div>
-            </Tooltip>
+            </div>
             <div className="flex flex-wrap gap-[1vh] w-[60%]">
                <div className="flex w-full gap-2">
                             <div className="rounded-[8px] bg-[#F8FFDC] px-[14px] py-[10px] lg:px-[1vh] lg:py-[1vh] flex flex-col items-center justify-center h-[7.5vh] w-[calc(50%-0.5vh)]">
-              <div className="text-[13px] whitespace-nowrap">{t('brc20.activePools')}</div>
+              <div className="text-[13px] whitespace-nowrap flex items-center gap-[4px]">{t('brc20.activePools')}
+                <QuestionTip content={t('brc20.activePoolsTip')} />
+              </div>
               <div className="font-bold text-center text-[16px]">{activePoolsCount ?? "-"}</div>
             </div>
                  <div className="rounded-[8px] bg-[#F8FFDC] px-[14px] py-[10px] lg:px-[1vh] lg:py-[1vh] flex flex-col items-center justify-center h-[7.5vh] w-[calc(50%-0.5vh)]">
-              <div className="text-[13px] whitespace-nowrap">{t('brc20.healthyTokens')}</div>
+              <div className="text-[13px] whitespace-nowrap flex items-center gap-[4px]">{t('brc20.healthyTokens')}
+                <QuestionTip content={t('brc20.healthyTokensTip')} />
+              </div>
               <div className="font-bold text-center text-[16px]">{total}</div>
             </div>
 
@@ -224,7 +230,9 @@ export function Brc20() {
 
             <div className="w-full">
               <div className="rounded-[8px] bg-[#F8FFDC] px-[14px] py-[10px] lg:px-[1vh] lg:py-[1vh] flex flex-col items-center justify-center h-[7.5vh] w-full">
-              <div className="text-[13px] whitespace-nowrap">{t('brc20.totalLiquidity')}</div>
+              <div className="text-[13px] whitespace-nowrap flex items-center gap-[4px]">{t('brc20.totalLiquidity')}
+                <QuestionTip content={t('brc20.totalLiquidityTip')} />
+              </div>
               <div
                 className={`font-bold text-center text-[14px] transition-opacity duration-300 ${
                   isLiquidityLevelVisible ? "opacity-100" : "opacity-0"
@@ -246,17 +254,24 @@ export function Brc20() {
             </div>
             <div className="bg-white rounded-[8px] mx-[6px] p-[14px] h-[10rem]">
               <div className="h-full w-full flex lg:py-[0.3rem] gap-2">
-                        <div className="w-[26%] flex items-center justify-center bg-[#F8FFDC] border-[1px] border-[#C4F402] rounded-[8px]">
+                        <div className="relative w-[26%] flex items-center justify-center bg-[#F8FFDC] border-[1px] border-[#C4F402] rounded-[8px]">
                   <LiquidTube level={liquidityLevel} h5 className="w-[4rem] ml-[-0.22rem]" />
+                  <div className="absolute top-[3px] right-[3px]">
+                    <QuestionTip content={t('brc20.updateFrequency')} className="text-[12px]" />
+                  </div>
                 </div>
                <div className="w-full flex flex-col gap-2">
                  <div className="flex-1 flex justify-between gap-2">
                   <div className="h-[3.8rem] flex flex-col items-center justify-center flex-1 bg-[#F8FFDC] border-[1px] border-[#C4F402] rounded-[8px]">
-                    <div className="text-center text-[11px]">{t('brc20.healthyTokens')}</div>
+                    <div className="text-center text-[11px] flex items-center justify-center gap-[4px]">{t('brc20.healthyTokens')}
+                      <QuestionTip content={t('brc20.healthyTokensTip')} className="text-[12px]" />
+                    </div>
                     <div className="text-center text-[16px] font-bold">{total}</div>
                   </div>
        <div className="h-[3.8rem] flex flex-col items-center justify-center flex-1 bg-[#F8FFDC] border-[1px] border-[#C4F402] rounded-[8px]">
-                    <div className="text-center text-[11px]">{t('brc20.activePools')}</div>
+                    <div className="text-center text-[11px] flex items-center justify-center gap-[4px]">{t('brc20.activePools')}
+                      <QuestionTip content={t('brc20.activePoolsTip')} className="text-[12px]" />
+                    </div>
                     <div className="text-center text-[16px] font-bold">{activePoolsCount ?? "0"}</div>
                   </div>
             
@@ -266,7 +281,9 @@ export function Brc20() {
       
 
                  <div className="h-[3.8rem] flex flex-col items-center justify-center  bg-[#F8FFDC] border-[1px] border-[#C4F402] rounded-[8px] w-full">
-                    <div className="text-center text-[11px]">{t('brc20.totalLiquidity')}</div>
+                    <div className="text-center text-[11px] flex items-center justify-center gap-[4px]">{t('brc20.totalLiquidity')}
+                      <QuestionTip content={t('brc20.totalLiquidityTip')} className="text-[12px]" />
+                    </div>
                     <div
                       className={`text-center text-[16px] font-bold transition-opacity duration-300 ${
                         isLiquidityLevelVisible ? "opacity-100" : "opacity-0"

@@ -29,6 +29,7 @@ import botBig from "@/app/images/agent/botBig.svg";
 import billIconGary from "@/app/images/agent/billIconGary.svg";
 import CoinsList, { CoinItem } from "../components/CoinsList";
 import SmaltImage from "../components/SmaltImage/SmaltImage";
+import QuestionTip from "@/app/components/QuestionTip";
 import go from '@/app/images/agent/go.svg';
 import Link from "next/link";
 
@@ -602,9 +603,11 @@ const Page = () => {
           <div className="flex text-[18px] font-bold rounded-[8px] h-[44px] lg:h-[5vh] cursor-pointer">
               <div onClick={() => handleTab(2)} className={`home-btn flex-1 flex items-center justify-center gap-2 border-[2px] border-black border-solid rounded-l-[8px] ${tab === 2 && 'selected'}`}>
               {t('menu.picker')}
+              <QuestionTip content={t('menu.pickerTip')} />
             </div>
-            <div onClick={() => handleTab(1)} className={`home-btn flex-1 flex items-center justify-center bg-black text-white gap-2  border-[2px] border-black border-solid rounded-r-[8px] ${tab === 1 && 'selected'}`}>
+            <div onClick={() => handleTab(1)} className={`home-btn flex-1 flex items-center justify-center bg-black text-white gap-2 border-[2px] border-black border-solid rounded-r-[8px] ${tab === 1 && 'selected'}`}>
               {t('menu.tracker')}
+              <QuestionTip content={t('menu.trackerTip')} />
             </div>
 
           </div>

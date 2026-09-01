@@ -7,6 +7,7 @@ import "./Alpha.scss";
 import { AlphaCard } from "./AlphaCard";
 import { SoundWave } from "./SoundWave";
 import { AlphaEmptyState } from "./AlphaEmptyState";
+import QuestionTip from "@/app/components/QuestionTip";
 import bot from "@/app/images/alpha/bot.svg";
 import bg from "@/app/images/alpha/bg.svg"
 import clockIcon from "@/app/images/alpha/clock.svg";
@@ -419,6 +420,7 @@ export default function Alpha() {
                 <div className="flex items-center gap-2 py-[4px] lg:py-0 bg-[#cf0] w-full px-4 lg:px-0 rounded-[8px]">
                   <Image src={dunIcon} alt="" width={24} height={24}></Image>
                   <span className="font-bold text-[16px]">{t('alpha.worstToken')}</span>
+                  <QuestionTip content={t('alpha.worstTokenTip')} />
                 </div>
                 <div className="flex gap-2 items-center pb-4 lg:pb-0" id="alpha-list-box">
                   {alphaData.filter(item => item.color === 'RED').length > 0 ? (
