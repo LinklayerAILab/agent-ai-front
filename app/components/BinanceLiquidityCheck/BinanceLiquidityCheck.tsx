@@ -1,7 +1,7 @@
 "use client"
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import Image from "next/image";
-import { AutoComplete, Skeleton } from "antd";
+import { Skeleton } from "antd";
 import { useTranslation } from "next-i18next";
 import { Brc20Card } from "@/app/components/Brc20/Brc20Card";
 import { LiquidTube } from "@/app/components/Brc20/LiquidTube";
@@ -9,13 +9,10 @@ import QuestionTip from "@/app/components/QuestionTip";
 import bg from "@/app/images/brc20/bg.svg";
 import bsc from "@/app/images/brc20/bsc.svg";
 import time from "@/app/images/brc20/whiteTime.svg";
-import searchIcon from "@/app/images/agent/search.svg";
 import "@/app/components/Brc20/Brc20Button.scss";
 import "@/app/components/Brc20/Brc20.scss";
 import {
   getBinanceTokenScreenWithPrices,
-  getBinanceTokenPrice,
-  binanceLiquidityCheck,
   BinanceTokenScreenItem,
 } from "@/app/api/binance";
 import {
@@ -27,22 +24,6 @@ import {
 let activePoolsCountCache: number | null = null;
 let updateTimeCache: number | null = null;
 type LiquidityLevel = "Healthy" | "Caution" | "Critical";
-
-// Debounce utility (same as CoinsList)
-function debounce<T extends (...args: unknown[]) => void>(
-  func: T,
-  delay: number
-): (...args: Parameters<T>) => void {
-  let timeoutId: ReturnType<typeof setTimeout> | null = null;
-  return function (this: ThisParameterType<T>, ...args: Parameters<T>) {
-    if (timeoutId) {
-      clearTimeout(timeoutId);
-    }
-    timeoutId = setTimeout(() => {
-      func.apply(this, args);
-    }, delay);
-  };
-}
 
 function getLiquidityLevelKey(level: string | null) {
   const normalized = level?.toLowerCase();
@@ -59,40 +40,10 @@ function normalizeLiquidityLevel(level: string | null | undefined): LiquidityLev
   return null;
 }
 
-// Merge batch prices into a token list (same logic as Brc20 first-load)
-async function mergeTokenPrices(
-  list: BinanceTokenScreenItem[]
-): Promise<BinanceTokenScreenItem[]> {
-  if (list.length === 0) return list;
-
-  const contractAddresses = list.map((token) => token.contractAddress).filter(Boolean);
-  if (contractAddresses.length === 0) return list;
-
-  try {
-    const priceResponse = await getBinanceTokenPrice(contractAddresses);
-    const prices = priceResponse.data.prices || [];
-
-    const priceMap = new Map<string, number>();
-    prices.forEach((item) => {
-      priceMap.set(item.token_address.toLowerCase(), item.price);
-    });
-
-    return list.map((token) => ({
-      ...token,
-      price: priceMap.get(token.contractAddress.toLowerCase()),
-    }));
-  } catch (error) {
-    console.error("Failed to fetch prices:", error);
-    return list;
-  }
-}
-
 export function BinanceLiquidityCheck() {
   const { t } = useTranslation();
   const [tokens, setTokens] = useState<BinanceTokenScreenItem[]>([]);
   const [tokensLoading, setTokensLoading] = useState(true);
-  const [searching, setSearching] = useState(false);
-  const [searchStr, setSearchStr] = useState("");
   const [total, setTotal] = useState(0);
   const [activePoolsCount, setActivePoolsCount] = useState<number | null>(null);
   const [updateTime, setUpdateTime] = useState<number | null>(null);
@@ -101,9 +52,6 @@ export function BinanceLiquidityCheck() {
   const [displayLiquidityLevel, setDisplayLiquidityLevel] = useState<LiquidityLevel>("Critical");
   const [isLiquidityLevelVisible, setIsLiquidityLevelVisible] = useState(true);
   const [, setTick] = useState(0);
-
-  const allTokensRef = useRef<BinanceTokenScreenItem[]>([]);
-  const searchSeqRef = useRef(0);
 
   const formatTimeAgo = (timestamp: number | null): string => {
     if (!timestamp) return "0m ago";
@@ -193,7 +141,6 @@ export function BinanceLiquidityCheck() {
       try {
         setTokensLoading(true);
         const tokenList = await getBinanceTokenScreenWithPrices();
-        allTokensRef.current = tokenList;
         setTokens(tokenList);
         setTotal(tokenList.length);
       } catch (error) {
@@ -205,43 +152,6 @@ export function BinanceLiquidityCheck() {
 
     fetchTokens();
   }, []);
-
-  // Fuzzy search via binance_liquidity_check
-  const doSearch = async (query: string) => {
-    const seq = ++searchSeqRef.current;
-
-    if (!query) {
-      setSearching(false);
-      const list = allTokensRef.current;
-      setTokens(list);
-      setTotal(list.length);
-      return;
-    }
-
-    setSearching(true);
-    try {
-      const res = await binanceLiquidityCheck(query);
-      if (seq !== searchSeqRef.current) return; // stale response
-      const results = res.data.results || [];
-      const merged = await mergeTokenPrices(results);
-      if (seq !== searchSeqRef.current) return; // stale after price merge
-      setTokens(merged);
-      setTotal(merged.length);
-    } catch (error) {
-      console.error("Failed to fuzzy query binance liquidity check:", error);
-    } finally {
-      if (seq === searchSeqRef.current) {
-        setSearching(false);
-      }
-    }
-  };
-
-  const debouncedSearchRef = useRef(debounce((q: string) => doSearch(q), 500));
-
-  const handleSearchChange = (value: string) => {
-    setSearchStr(value);
-    debouncedSearchRef.current(value);
-  };
 
   return (
     <div className="w-[calc(100vw-28px)] mt-[20px] lg:mt-0 lg:w-[100%] h-auto lg:h-[83vh] lg:border-solid lg:border-black lg:border-2 lg:bg-[#EBEBEB] rounded-[8px] flex flex-col lg:flex-row items-center lg:p-[2vh] page-alpha-inner">
@@ -360,25 +270,8 @@ export function BinanceLiquidityCheck() {
             </div>
           </div>
 
-          {/* Search box */}
-          <div className="border-[2px] border-solid border-black bg-white pl-[6px] rounded-[8px] h-[42px] lg:h-[6vh] flex items-center my-[14px] lg:my-0">
-            <AutoComplete
-              placeholder={t('brc20.searchPlaceholder')}
-              allowClear={true}
-              value={searchStr}
-              onChange={handleSearchChange}
-              className="flex-1 w-[100%] font-bold text-[16px]"
-              variant="borderless"
-            />
-            <div className="px-[10px] cursor-pointer">
-              <Image src={searchIcon} alt="search" />
-            </div>
-          </div>
-
           <div
-            className={`brc20-list flex flex-wrap w-full sm:gap-[2vw] lg:gap-[0.96vw] gap-[14px] transition-opacity duration-200 ${
-              searching ? "opacity-60" : "opacity-100"
-            }`}
+            className="brc20-list flex flex-wrap w-full sm:gap-[2vw] lg:gap-[0.96vw] gap-[14px]"
           >
             {tokensLoading ? (
               Array.from({ length: 9 }).map((_, index) => (

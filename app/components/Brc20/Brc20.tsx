@@ -4,17 +4,18 @@ import { useEffect, useRef, useState } from "react";
 import bg from "@/app/images/brc20/bg.svg";
 import Image from "next/image";
 import bsc from "@/app/images/brc20/bsc.svg";
+import searchIcon from "@/app/images/agent/search.svg";
 import time from "@/app/images/brc20/whiteTime.svg";
 import "./Brc20Button.scss";
 import "./Brc20.scss";
 import { LiquidTube } from "./LiquidTube";
-import { getBinanceTokenScreen, getBinanceTokenPrice, BinanceTokenScreenItem } from "@/app/api/binance";
+import { getBinanceTokenScreen, getBinanceTokenPrice, binanceLiquidityCheck, BinanceTokenScreenItem } from "@/app/api/binance";
 import {
   get_binance_active_pools_count,
   get_binance_market_liquidity,
   get_binance_update_time,
 } from "@/app/api/agent_c";
-import { Skeleton } from "antd";
+import { AutoComplete, Skeleton } from "antd";
 import { useTranslation } from "next-i18next";
 import QuestionTip from "@/app/components/QuestionTip";
 
@@ -22,6 +23,22 @@ let activePoolsCountCache: number | null = null;
 let updateTimeCache: number | null = null;
 let tokenListCache: BinanceTokenScreenItem[] | null = null;
 type LiquidityLevel = "Healthy" | "Caution" | "Critical";
+
+// Debounce utility (same as CoinsList)
+function debounce<T extends (...args: unknown[]) => void>(
+  func: T,
+  delay: number
+): (...args: Parameters<T>) => void {
+  let timeoutId: ReturnType<typeof setTimeout> | null = null;
+  return function (this: ThisParameterType<T>, ...args: Parameters<T>) {
+    if (timeoutId) {
+      clearTimeout(timeoutId);
+    }
+    timeoutId = setTimeout(() => {
+      func.apply(this, args);
+    }, delay);
+  };
+}
 
 function getLiquidityLevelKey(level: string | null) {
   const normalized = level?.toLowerCase();
@@ -39,11 +56,41 @@ function normalizeLiquidityLevel(level: string | null | undefined): LiquidityLev
   return null;
 }
 
-export function Brc20() {
+// Merge batch prices into a token list (same logic as first-load merge)
+async function mergeTokenPrices(
+  list: BinanceTokenScreenItem[]
+): Promise<BinanceTokenScreenItem[]> {
+  if (list.length === 0) return list;
+
+  const contractAddresses = list.map((token) => token.contractAddress).filter(Boolean);
+  if (contractAddresses.length === 0) return list;
+
+  try {
+    const priceResponse = await getBinanceTokenPrice(contractAddresses);
+    const prices = priceResponse.data.prices || [];
+
+    const priceMap = new Map<string, number>();
+    prices.forEach((item) => {
+      priceMap.set(item.token_address.toLowerCase(), item.price);
+    });
+
+    return list.map((token) => ({
+      ...token,
+      price: priceMap.get(token.contractAddress.toLowerCase()),
+    }));
+  } catch (error) {
+    console.error("Failed to fetch prices:", error);
+    return list;
+  }
+}
+
+export function Brc20({ showSearch = false }: { showSearch?: boolean }) {
   const { t } = useTranslation();
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const [tokens, setTokens] = useState<BinanceTokenScreenItem[]>([]);
   const [tokensLoading, setTokensLoading] = useState(true);
+  const [searching, setSearching] = useState(false);
+  const [searchStr, setSearchStr] = useState("");
   const [total, setTotal] = useState(0);
   const [activePoolsCount, setActivePoolsCount] = useState<number | null>(null);
   const [updateTime, setUpdateTime] = useState<number | null>(null);
@@ -52,6 +99,65 @@ export function Brc20() {
   const [displayLiquidityLevel, setDisplayLiquidityLevel] = useState<LiquidityLevel>("Critical");
   const [isLiquidityLevelVisible, setIsLiquidityLevelVisible] = useState(true);
   const [, setTick] = useState(0);
+  const searchSeqRef = useRef(0);
+  const [searchStuck, setSearchStuck] = useState(false);
+  const [searchStuckMobile, setSearchStuckMobile] = useState(false);
+
+  // Track when the search box sticks to the top of the scroll container:
+  // the box is pinned exactly when the hero section has scrolled out of it.
+  useEffect(() => {
+    if (!showSearch) return;
+    const scrollContainer = scrollContainerRef.current?.parentElement;
+    const hero = scrollContainer?.firstElementChild;
+    if (!scrollContainer || !hero) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => setSearchStuck(!entry.isIntersecting),
+      { root: scrollContainer }
+    );
+    observer.observe(hero);
+    return () => observer.disconnect();
+  }, [showSearch]);
+
+  // Mobile: page-level scroll with overflow ancestors breaks position:sticky,
+  // so emulate it — pin the search box below the fixed header once the page
+  // scrolls past its natural position.
+  const searchStuckMobileRef = useRef(false);
+  useEffect(() => {
+    if (!showSearch) return;
+    const HEADER_HEIGHT = 56;
+    const mql = window.matchMedia("(max-width: 1023px)");
+    const searchBox = scrollContainerRef.current?.previousElementSibling as HTMLElement | null;
+
+    const evaluate = () => {
+      if (!mql.matches || !searchBox) {
+        searchStuckMobileRef.current = false;
+        setSearchStuckMobile(false);
+        return;
+      }
+      // Once pinned the box goes fixed and its static rect collapses,
+      // so remember the scroll threshold at the moment of pinning.
+      const stickAt = Number(searchBox.dataset.stickAt);
+      if (searchStuckMobileRef.current) {
+        if (stickAt && window.scrollY + HEADER_HEIGHT < stickAt) {
+          searchStuckMobileRef.current = false;
+          setSearchStuckMobile(false);
+        }
+      } else if (searchBox.getBoundingClientRect().top <= HEADER_HEIGHT) {
+        searchBox.dataset.stickAt = String(window.scrollY + HEADER_HEIGHT);
+        searchStuckMobileRef.current = true;
+        setSearchStuckMobile(true);
+      }
+    };
+
+    evaluate();
+    window.addEventListener("scroll", evaluate, { passive: true });
+    mql.addEventListener("change", evaluate);
+    return () => {
+      window.removeEventListener("scroll", evaluate);
+      mql.removeEventListener("change", evaluate);
+    };
+  }, [showSearch]);
 
   const formatTimeAgo = (timestamp: number | null): string => {
     if (!timestamp) return "0m ago";
@@ -147,31 +253,7 @@ export function Brc20() {
         }
         const response = await getBinanceTokenScreen();
         let tokenList: BinanceTokenScreenItem[] = response.data.results || [];
-
-        if (tokenList.length > 0) {
-          try {
-            const contractAddresses = tokenList
-              .map((token) => token.contractAddress)
-              .filter(Boolean);
-
-            if (contractAddresses.length > 0) {
-              const priceResponse = await getBinanceTokenPrice(contractAddresses);
-              const prices = priceResponse.data.prices || [];
-
-              const priceMap = new Map<string, number>();
-              prices.forEach((item) => {
-                priceMap.set(item.token_address.toLowerCase(), item.price);
-              });
-
-              tokenList = tokenList.map((token) => ({
-                ...token,
-                price: priceMap.get(token.contractAddress.toLowerCase()),
-              }));
-            }
-          } catch (error) {
-            console.error("Failed to fetch prices:", error);
-          }
-        }
+        tokenList = await mergeTokenPrices(tokenList);
 
         tokenListCache = tokenList;
         setTokens(tokenList);
@@ -185,6 +267,43 @@ export function Brc20() {
 
     fetchTokens();
   }, []);
+
+  // Fuzzy search via binance_liquidity_check
+  const doSearch = async (query: string) => {
+    const seq = ++searchSeqRef.current;
+
+    if (!query) {
+      setSearching(false);
+      const list = tokenListCache ?? [];
+      setTokens(list);
+      setTotal(list.length);
+      return;
+    }
+
+    setSearching(true);
+    try {
+      const res = await binanceLiquidityCheck(query);
+      if (seq !== searchSeqRef.current) return; // stale response
+      const results = res.data.results || [];
+      const merged = await mergeTokenPrices(results);
+      if (seq !== searchSeqRef.current) return; // stale after price merge
+      setTokens(merged);
+      setTotal(merged.length);
+    } catch (error) {
+      console.error("Failed to fuzzy query binance liquidity check:", error);
+    } finally {
+      if (seq === searchSeqRef.current) {
+        setSearching(false);
+      }
+    }
+  };
+
+  const debouncedSearchRef = useRef(debounce((q: string) => doSearch(q), 500));
+
+  const handleSearchChange = (value: string) => {
+    setSearchStr(value);
+    debouncedSearchRef.current(value);
+  };
 
 
   return (
@@ -309,9 +428,40 @@ export function Brc20() {
             </div>
           </div>
         </div>
+        {showSearch && (
+          <div
+            className={`sticky top-[55px] lg:top-0 z-[10] w-full transition-all duration-300 ease-[cubic-bezier(0.25,0.46,0.45,0.94)] ${
+              searchStuck
+                ? "lg:bg-white lg:pt-[1.2vh] lg:-my-[0.8vh] lg:pb-[1vh] lg:shadow-[0_6px_10px_-6px_rgba(0,0,0,0.3)]"
+                : ""
+            }`}
+          >
+            <div
+              className={`border-[2px] border-solid border-black bg-white pl-[6px] rounded-[8px] h-[42px] lg:h-[6vh] flex items-center my-[14px] lg:my-0 ${
+                searchStuckMobile
+                  ? "fixed left-[14px] right-[14px] top-[64px] z-[110] my-0 shadow-[0_6px_10px_-6px_rgba(0,0,0,0.3)]"
+                  : ""
+              }`}
+            >
+              <AutoComplete
+                placeholder={t('brc20.searchPlaceholder')}
+                allowClear={true}
+                value={searchStr}
+                onChange={handleSearchChange}
+                className="flex-1 w-[100%] font-bold text-[16px]"
+                variant="borderless"
+              />
+              <div className="px-[10px] cursor-pointer">
+                <Image src={searchIcon} alt="search" />
+              </div>
+            </div>
+          </div>
+        )}
         <div
           ref={scrollContainerRef}
-          className="brc20-list flex flex-wrap w-full sm:gap-[2vw] lg:gap-[0.96vw] gap-[14px]"
+          className={`brc20-list flex flex-wrap w-full sm:gap-[2vw] lg:gap-[0.96vw] gap-[14px] transition-opacity duration-200 ${
+            searching ? "opacity-60" : "opacity-100"
+          }`}
         >
           {tokensLoading ? (
             // Loading state - use Ant Design skeleton screen

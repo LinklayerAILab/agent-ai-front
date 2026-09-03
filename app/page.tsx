@@ -54,7 +54,7 @@ const Page = () => {
     <div className="flex items-center justify-center w-[100%] h-[100%]">
       <div className="max-w-[100vw] lg:w-[100%] flex justify-between gap-[20px] h-[100%] lg:h-[80vh] mx-[0]">
         <div className="rounded-[8px] w-[100%] h-[100%] lg:h-[80vh] flex flex-col-reverse lg:flex-row lg:px-[2vh]">
-          <Brc20 />
+          <Brc20 showSearch />
         </div>
       </div>
     </div>
