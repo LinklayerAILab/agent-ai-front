@@ -373,8 +373,8 @@ export function Brc20({ showSearch = false }: { showSearch?: boolean }) {
             <div className="bg-white rounded-[8px] mx-[6px] p-[14px] h-[10rem]">
               <div className="h-full w-full flex lg:py-[0.3rem] gap-2">
                         <QuestionTip content={t('brc20.updateFrequency')}>
-                          <div className="relative w-[26%] flex items-center justify-center bg-[#F8FFDC] border-[1px] border-[#C4F402] rounded-[8px]">
-                            <LiquidTube level={liquidityLevel} h5 className="w-[4rem] ml-[-0.22rem]" />
+                          <div className="relative w-[30%] min-w-[5.5rem] flex items-center justify-center bg-[#F8FFDC] border-[1px] border-[#C4F402] rounded-[8px]">
+                            <LiquidTube level={liquidityLevel} h5 className="w-[4.8rem] h-[7.2rem] ml-[-0.22rem]" />
                           </div>
                         </QuestionTip>
                <div className="w-full flex flex-col gap-2">
