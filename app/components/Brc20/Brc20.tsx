@@ -437,7 +437,7 @@ export function Brc20({ showSearch = false }: { showSearch?: boolean }) {
             }`}
           >
             <div
-              className={`border-[2px] border-solid border-black bg-white pl-[6px] rounded-[8px] h-[42px] lg:h-[6vh] flex items-center my-[14px] lg:my-0 ${
+              className={`border-[2px] border-solid border-black bg-white pl-[6px] rounded-[8px] h-[42px] lg:h-[6vh] flex items-center my-[4px] lg:my-0 ${
                 searchStuckMobile
                   ? "fixed left-[14px] right-[14px] top-[64px] z-[110] my-0 shadow-[0_6px_10px_-6px_rgba(0,0,0,0.3)]"
                   : ""
