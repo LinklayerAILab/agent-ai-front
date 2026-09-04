@@ -376,20 +376,20 @@ export function Brc20({ showSearch = false }: { showSearch?: boolean }) {
                         <div className="relative w-[26%] flex items-center justify-center bg-[#F8FFDC] border-[1px] border-[#C4F402] rounded-[8px]">
                   <LiquidTube level={liquidityLevel} h5 className="w-[4rem] ml-[-0.22rem]" />
                   <div className="absolute top-[3px] right-[3px]">
-                    <QuestionTip content={t('brc20.updateFrequency')} className="text-[12px]" />
+                    <QuestionTip content={t('brc20.updateFrequency')} className="text-[10px]" />
                   </div>
                 </div>
                <div className="w-full flex flex-col gap-2">
                  <div className="flex-1 flex justify-between gap-2">
                   <div className="h-[3.8rem] flex flex-col items-center justify-center flex-1 bg-[#F8FFDC] border-[1px] border-[#C4F402] rounded-[8px]">
                     <div className="text-center text-[11px] flex items-center justify-center gap-[4px]">{t('brc20.healthyTokens')}
-                      <QuestionTip content={t('brc20.healthyTokensTip')} className="text-[12px]" />
+                      <QuestionTip content={t('brc20.healthyTokensTip')} className="text-[10px]" />
                     </div>
                     <div className="text-center text-[16px] font-bold">{total}</div>
                   </div>
        <div className="h-[3.8rem] flex flex-col items-center justify-center flex-1 bg-[#F8FFDC] border-[1px] border-[#C4F402] rounded-[8px]">
                     <div className="text-center text-[11px] flex items-center justify-center gap-[4px]">{t('brc20.activePools')}
-                      <QuestionTip content={t('brc20.activePoolsTip')} className="text-[12px]" />
+                      <QuestionTip content={t('brc20.activePoolsTip')} className="text-[10px]" />
                     </div>
                     <div className="text-center text-[16px] font-bold">{activePoolsCount ?? "0"}</div>
                   </div>
@@ -401,7 +401,7 @@ export function Brc20({ showSearch = false }: { showSearch?: boolean }) {
 
                  <div className="h-[3.8rem] flex flex-col items-center justify-center  bg-[#F8FFDC] border-[1px] border-[#C4F402] rounded-[8px] w-full">
                     <div className="text-center text-[11px] flex items-center justify-center gap-[4px]">{t('brc20.totalLiquidity')}
-                      <QuestionTip content={t('brc20.totalLiquidityTip')} className="text-[12px]" />
+                      <QuestionTip content={t('brc20.totalLiquidityTip')} className="text-[10px]" />
                     </div>
                     <div
                       className={`text-center text-[16px] font-bold transition-opacity duration-300 ${

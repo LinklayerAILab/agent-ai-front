@@ -12,7 +12,7 @@ type QuestionTipProps = {
 export default function QuestionTip({ content, className }: QuestionTipProps) {
   return (
     <Popover content={<PopoverContent>{content}</PopoverContent>}>
-      <QuestionCircleOutlined className={`${className ?? "text-[14px] lg:text-[16px]"}`}></QuestionCircleOutlined>
+      <QuestionCircleOutlined className={`${className ?? "text-[12px] lg:text-[14px]"}`}></QuestionCircleOutlined>
     </Popover>
   );
 }
