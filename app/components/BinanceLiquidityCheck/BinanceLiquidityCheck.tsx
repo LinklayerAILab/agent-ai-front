@@ -171,10 +171,9 @@ export function BinanceLiquidityCheck() {
             </div>
             <div className="flex-1 flex justify-end gap-[1vh] py-[2vh] h-full pr-[2vh]">
               <div className="relative flex items-center justify-center rounded-[8px] bg-[#F8FFDC] p-[1vh]">
-                  <LiquidTube level={liquidityLevel} className="h-[14vh] w-[8vh]" />
-                  <div className="absolute top-[4px] right-[4px]">
-                    <QuestionTip content={t('brc20.updateFrequency')} />
-                  </div>
+                  <QuestionTip content={t('brc20.updateFrequency')}>
+                    <LiquidTube level={liquidityLevel} className="h-[14vh] w-[8vh]" />
+                  </QuestionTip>
               </div>
               <div className="flex flex-wrap gap-[1vh] w-[60%]">
                 <div className="flex w-full gap-2">
@@ -219,10 +218,9 @@ export function BinanceLiquidityCheck() {
               <div className="bg-white rounded-[8px] mx-[6px] p-[14px] h-[10rem]">
                 <div className="h-full w-full flex lg:py-[0.3rem] gap-2">
                   <div className="relative w-[26%] flex items-center justify-center bg-[#F8FFDC] border-[1px] border-[#C4F402] rounded-[8px]">
-                    <LiquidTube level={liquidityLevel} h5 className="w-[4rem] ml-[-0.22rem]" />
-                    <div className="absolute top-[3px] right-[3px]">
-                      <QuestionTip content={t('brc20.updateFrequency')} className="text-[10px]" />
-                    </div>
+                    <QuestionTip content={t('brc20.updateFrequency')}>
+                      <LiquidTube level={liquidityLevel} h5 className="w-[4rem] ml-[-0.22rem]" />
+                    </QuestionTip>
                   </div>
                   <div className="w-full flex flex-col gap-2">
                     <div className="flex-1 flex justify-between gap-2">

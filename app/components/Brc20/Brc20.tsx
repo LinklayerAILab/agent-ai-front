@@ -322,13 +322,12 @@ export function Brc20({ showSearch = false }: { showSearch?: boolean }) {
                 <Image src={bg} alt="bg" className="lg:w-[16vh] lg:h-[16vh] object-contain" />
             </div>
           </div>
-          <div className="flex-1 flex justify-end gap-[1vh] py-[2vh] h-full pr-[2vh]">
-             <div className="relative flex items-center justify-center rounded-[8px] bg-[#F8FFDC] p-[1vh]">
-                <LiquidTube level={liquidityLevel} className="h-[14vh] w-[8vh]" />
-                <div className="absolute top-[4px] right-[4px] lg:top-3 lg:right-4">
-                  <QuestionTip content={t('brc20.updateFrequency')} />
-                </div>
-            </div>
+           <div className="flex-1 flex justify-end gap-[1vh] py-[2vh] h-full pr-[2vh]">
+             <QuestionTip content={t('brc20.updateFrequency')}>
+               <div className="relative flex items-center justify-center rounded-[8px] bg-[#F8FFDC] p-[1vh]">
+                  <LiquidTube level={liquidityLevel} className="h-[14vh] w-[8vh]" />
+               </div>
+             </QuestionTip>
             <div className="flex flex-wrap gap-[1vh] w-[60%]">
                <div className="flex w-full gap-2">
                             <div className="rounded-[8px] bg-[#F8FFDC] px-[14px] py-[10px] lg:px-[1vh] lg:py-[1vh] flex flex-col items-center justify-center h-[7.5vh] w-[calc(50%-0.5vh)]">
@@ -373,12 +372,11 @@ export function Brc20({ showSearch = false }: { showSearch?: boolean }) {
             </div>
             <div className="bg-white rounded-[8px] mx-[6px] p-[14px] h-[10rem]">
               <div className="h-full w-full flex lg:py-[0.3rem] gap-2">
-                        <div className="relative w-[26%] flex items-center justify-center bg-[#F8FFDC] border-[1px] border-[#C4F402] rounded-[8px]">
-                  <LiquidTube level={liquidityLevel} h5 className="w-[4rem] ml-[-0.22rem]" />
-                  <div className="absolute top-[3px] right-[3px]">
-                    <QuestionTip content={t('brc20.updateFrequency')} className="text-[10px]" />
-                  </div>
-                </div>
+                        <QuestionTip content={t('brc20.updateFrequency')}>
+                          <div className="relative w-[26%] flex items-center justify-center bg-[#F8FFDC] border-[1px] border-[#C4F402] rounded-[8px]">
+                            <LiquidTube level={liquidityLevel} h5 className="w-[4rem] ml-[-0.22rem]" />
+                          </div>
+                        </QuestionTip>
                <div className="w-full flex flex-col gap-2">
                  <div className="flex-1 flex justify-between gap-2">
                   <div className="h-[3.8rem] flex flex-col items-center justify-center flex-1 bg-[#F8FFDC] border-[1px] border-[#C4F402] rounded-[8px]">
