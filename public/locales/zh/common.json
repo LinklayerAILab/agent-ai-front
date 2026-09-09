@@ -581,7 +581,37 @@
         "recharge": "充值",
         "pointsRecord": "积分记录",
         "waitingConfirmation": "等待链上确认...",
-        "subscribeSuccess": "订阅成功！"
+        "subscribeSuccess": "订阅成功！",
+        "stripe": {
+            "cardLabel": "银行卡",
+            "redirecting": "创建支付中...",
+            "notAvailable": "卡支付暂未开放",
+            "invalidPackage": "套餐无效",
+            "upstreamError": "支付服务暂不可用，请稍后重试",
+            "pendingLimit": "未完成订单过多，请先完成已有订单",
+            "tooManyRequests": "操作过于频繁，请稍后再试",
+            "loadOrdersFailed": "订单加载失败，请重试",
+            "orders": "卡支付订单",
+            "statusPending": "确认中",
+            "statusPaid": "已支付",
+            "statusExpired": "已过期",
+            "statusFailed": "支付失败"
+        }
+    },
+    "stripeResult": {
+        "confirming": "支付确认中...",
+        "confirmingDesc": "支付正在处理中，银行转账等延迟支付方式可能需要更长时间，本页面将自动更新",
+        "success": "支付成功！",
+        "successDesc": "{{points}} 积分与 {{llax}} LLAx 已到账",
+        "cancelled": "支付未完成",
+        "cancelledDesc": "本次支付未完成，未产生扣款",
+        "timeout": "仍在确认中",
+        "timeoutDesc": "支付确认时间较长，可稍后在 My Points 查看订单状态",
+        "notFound": "未找到订单",
+        "notFoundDesc": "未找到最近的卡支付订单",
+        "backToPoints": "返回积分页",
+        "retry": "再试一次",
+        "refresh": "刷新状态"
     },
     "alpha": {
         "liquidityAnalysis": "流动性分析",

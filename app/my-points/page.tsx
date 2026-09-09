@@ -11,7 +11,7 @@ import Image from "next/image";
 import usdt from "@/app/images/components/usdt.svg";
 import usdc from "@/app/images/components/usdc.svg";
 import lla from "@/app/images/components/lla.svg";
-import google from "@/app/images/components/google.svg";
+import card from "@/app/images/components/card.svg";
 import diamond from "@/app/images/components/diamond.svg";
 import percent12 from "@/app/images/points/12percent.svg";
 import percent20 from "@/app/images/points/20percent.svg";
@@ -21,7 +21,13 @@ import {
   QueryTasksParams,
   QueryTasksType,
 } from "../api/agent_c";
-import { Empty, message, Skeleton } from "antd";
+import {
+  stripe_checkout,
+  savePendingOrder,
+  STRIPE_ERROR_CODES,
+  StripePackageType,
+} from "../api/stripe";
+import { Empty, message, Skeleton, Tabs } from "antd";
 import { CloseOutlined } from "@ant-design/icons";
 import { formatDate } from "../utils";
 import { useSelector } from "react-redux";
@@ -30,12 +36,14 @@ import { useAccount, useChainId, useWriteContract, useSwitchChain, useConfig } f
 import { readContract } from "wagmi/actions";
 import { parseUnits } from "viem";
 import erc20Abi from "@/app/abi/erc20.json";
+import StripeOrders from "./components/StripeOrders";
 
 interface ListItem {
   value: number;
   select: boolean;
   money: string;
   count: number;
+  type: StripePackageType;
 }
 interface CoinListItem {
   value: string;
@@ -81,18 +89,21 @@ const Page = () => {
       select: true,
       money: "9.9",
       count: 990,
+      type: "basic",
     },
     {
       value: 2,
       select: false,
       money: "29.9",
       count: 3400,
+      type: "standard",
     },
     {
       value: 3,
       select: false,
       money: "99.9",
       count: 12500,
+      type: "professional",
     },
   ]);
 
@@ -123,11 +134,11 @@ const Page = () => {
       disabled: true,
     },
     {
-      label: "Google Pay",
-      value: "google pay",
+      label: "Card",
+      value: "stripe",
       select: false,
-      icon: google,
-      disabled: true,
+      icon: card,
+      disabled: false,
     },
   ]);
 
@@ -177,6 +188,8 @@ const Page = () => {
   };
 
   const isLogin = useSelector((state: RootState) => state.user.isLogin);
+  const [stripePaying, setStripePaying] = useState(false);
+  const [activeTab, setActiveTab] = useState<"record" | "stripe">("record");
   const [records, setRecords] = useState<QueryTasksItem[]>([]);
   const params = useRef<QueryTasksParams>({
     page: 1,
@@ -276,7 +289,70 @@ const Page = () => {
     };
   }, [isLogin]);
 
+  // Stripe hosted checkout: create session then leave the SPA entirely.
+  // No wallet connection required for card payment.
+  const handleStripePay = async () => {
+    if (stripePaying) return;
+
+    if (!isLogin) {
+      messageApi.error(t("login.connectFirst") || "Please log in first");
+      return;
+    }
+
+    const selectedItem = list.find((item) => item.select);
+    if (!selectedItem) {
+      messageApi.warning(t("common.select") || "Please select a package");
+      return;
+    }
+
+    setStripePaying(true);
+    try {
+      const res = await stripe_checkout(selectedItem.type);
+      savePendingOrder({
+        order_no: res.data.order_no,
+        package_type: selectedItem.type,
+        created_at: Math.floor(Date.now() / 1000),
+      });
+      // full page redirect to the Stripe hosted checkout page
+      window.location.href = res.data.checkout_url;
+    } catch (err) {
+      const e = err as { code?: number; message?: string };
+      if (e.code === STRIPE_ERROR_CODES.NOT_ENABLED) {
+        messageApi.warning(t("myPoints.stripe.notAvailable"));
+        // disable the card option and fall back to USDT
+        setCoinList((prev) => {
+          const next = prev.map((it) =>
+            it.value === "stripe" ? { ...it, disabled: true, select: false } : it
+          );
+          if (!next.some((it) => it.select && !it.disabled)) {
+            return next.map((it) => ({ ...it, select: it.value === "usdt" }));
+          }
+          return next;
+        });
+      } else if (e.code === STRIPE_ERROR_CODES.INVALID_PACKAGE) {
+        messageApi.error(t("myPoints.stripe.invalidPackage"));
+      } else if (e.code === STRIPE_ERROR_CODES.UPSTREAM_ERROR) {
+        messageApi.error(t("myPoints.stripe.upstreamError"));
+      } else if (e.code === STRIPE_ERROR_CODES.PENDING_LIMIT) {
+        messageApi.error(t("myPoints.stripe.pendingLimit"));
+        setActiveTab("stripe");
+      } else if (e.code === 429) {
+        messageApi.warning(t("myPoints.stripe.tooManyRequests"));
+      } else {
+        messageApi.error(e.message || t("common.transactionFailed") || "Request failed");
+      }
+      setStripePaying(false);
+    }
+  };
+
   const handlePay = async () => {
+    // Stripe branch must run before wallet checks - card payment needs no wallet
+    const payCoin = coinList.find((item) => item.select);
+    if (payCoin?.value === "stripe") {
+      await handleStripePay();
+      return;
+    }
+
     if (isPending) return;
 
     const selectedItem = list.find((item) => item.select);
@@ -456,7 +532,9 @@ const Page = () => {
                     className="w-[24px] h-[24px]"
                     alt="icon"
                   ></Image>
-                  <span className="font-bold">{item.label}</span>
+                  <span className="font-bold">
+                    {item.value === "stripe" ? t("myPoints.stripe.cardLabel") : item.label}
+                  </span>
                 </div>
 
                 <div
@@ -474,18 +552,33 @@ const Page = () => {
             ))}
           </div>
           <div className="border-[1px] border-solid border-black rounded-[5px] pb-[2px] h-[40px] lg:h-[6vh] mt-[14px] lg:mt-[3vh] cursor-pointer select-none">
-            <div className="h-[100%] bg-black text-white text-[16px] font-bold text-center flex justify-center items-center rounded-[4px]" onClick={handlePay}>
-              {t("myPoints.recharge")}
+            <div
+              className={`h-[100%] bg-black text-white text-[16px] font-bold text-center flex justify-center items-center rounded-[4px] ${
+                stripePaying ? "opacity-60 pointer-events-none" : ""
+              }`}
+              onClick={handlePay}
+            >
+              {stripePaying ? t("myPoints.stripe.redirecting") : t("myPoints.recharge")}
             </div>
           </div>
         </div>
 
         <div className="bg-white rounded-[8px] py-[18px] lg:py-[2vh] lg:w-[42%]">
-          <div className="text-[16px] lg:text-[24px] flex items-center gap-[4px] justify-center font-bold">
-            <Image src={diamond} className="lg:w-[24px]" alt="diamond"></Image>
-            {t("myPoints.pointsRecord")}
-          </div>
-          <div className="rounded-[8px] overflow-hidden mx-[0] lg:mx-[3vh] list-box mt-[14px] lg:mt-[3vh] lg:h-[59vh] overflow-y-auto">
+          <Tabs
+            activeKey={activeTab}
+            onChange={(key) => setActiveTab(key as "record" | "stripe")}
+            centered
+            items={[
+              {
+                key: "record",
+                label: (
+                  <span className="text-[14px] lg:text-[16px] flex items-center gap-[4px] font-bold">
+                    <Image src={diamond} className="lg:w-[24px]" alt="diamond"></Image>
+                    {t("myPoints.pointsRecord")}
+                  </span>
+                ),
+                children: (
+                  <div className="rounded-[8px] overflow-hidden mx-[0] lg:mx-[3vh] list-box mt-[8px] lg:mt-[1vh] lg:h-[55vh] overflow-y-auto">
             {listLoading ? (
               // Skeleton loading
               <div className="p-4 space-y-2 w-[100%]">
@@ -546,7 +639,20 @@ const Page = () => {
                 <Empty description={t("common.noData")} />
               </div>
             )}
-          </div>
+                  </div>
+                ),
+              },
+              {
+                key: "stripe",
+                label: (
+                  <span className="text-[14px] lg:text-[16px] font-bold">
+                    {t("myPoints.stripe.orders")}
+                  </span>
+                ),
+                children: <StripeOrders />,
+              },
+            ]}
+          />
         </div>
       </div>
     </div>

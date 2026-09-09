@@ -586,7 +586,37 @@
         "recharge": "チャージ",
         "pointsRecord": "ポイント履歴",
         "waitingConfirmation": "チェーン確認を待っています...",
-        "subscribeSuccess": "購読成功！"
+        "subscribeSuccess": "購読成功！",
+        "stripe": {
+            "cardLabel": "カード",
+            "redirecting": "決済を作成中...",
+            "notAvailable": "カード決済はまだ利用できません",
+            "invalidPackage": "無効なプランです",
+            "upstreamError": "決済サービスは一時的に利用できません。後でもう一度お試しください",
+            "pendingLimit": "未完了の注文が多すぎます。既存の注文を完了してからお試しください",
+            "tooManyRequests": "リクエストが多すぎます。しばらく待ってからお試しください",
+            "loadOrdersFailed": "注文の読み込みに失敗しました。もう一度お試しください",
+            "orders": "カード決済注文",
+            "statusPending": "確認中",
+            "statusPaid": "支払い済み",
+            "statusExpired": "期限切れ",
+            "statusFailed": "支払い失敗"
+        }
+    },
+    "stripeResult": {
+        "confirming": "決済を確認中...",
+        "confirmingDesc": "お支払いは処理中です。銀行振込などの遅延決済には時間がかかる場合があります。このページは自動的に更新されます",
+        "success": "支払いが完了しました！",
+        "successDesc": "{{points}} ポイントと {{llax}} LLAx がアカウントに追加されました",
+        "cancelled": "支払い未完了",
+        "cancelledDesc": "今回のお支払いは完了しませんでした。請求は発生していません",
+        "timeout": "確認中",
+        "timeoutDesc": "決済の確認に時間がかかっています。後ほど My Points でご確認いただけます",
+        "notFound": "注文が見つかりません",
+        "notFoundDesc": "最近のカード決済注文が見つかりませんでした",
+        "backToPoints": "ポイントページに戻る",
+        "retry": "再試行",
+        "refresh": "ステータスを更新"
     },
     "alpha": {
         "card": {

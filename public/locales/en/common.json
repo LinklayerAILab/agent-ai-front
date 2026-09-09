@@ -584,7 +584,37 @@
         "recharge": "Recharge",
         "pointsRecord": "Points Record",
         "waitingConfirmation": "Waiting for chain confirmation...",
-        "subscribeSuccess": "Subscribe successful!"
+        "subscribeSuccess": "Subscribe successful!",
+        "stripe": {
+            "cardLabel": "Card",
+            "redirecting": "Creating payment...",
+            "notAvailable": "Card payment is not available yet.",
+            "invalidPackage": "Invalid package selected.",
+            "upstreamError": "Payment service is temporarily unavailable. Please try again later.",
+            "pendingLimit": "You have too many unfinished orders. Please complete them before starting a new one.",
+            "tooManyRequests": "Too many requests. Please wait a moment and try again.",
+            "loadOrdersFailed": "Failed to load orders. Please try again.",
+            "orders": "Card Orders",
+            "statusPending": "Pending",
+            "statusPaid": "Paid",
+            "statusExpired": "Expired",
+            "statusFailed": "Failed"
+        }
+    },
+    "stripeResult": {
+        "confirming": "Payment confirming...",
+        "confirmingDesc": "Your payment is being processed. Delayed payment methods (e.g. bank transfer) may take longer. This page will update automatically.",
+        "success": "Payment successful!",
+        "successDesc": "{{points}} points and {{llax}} LLAx have been added to your account.",
+        "cancelled": "Payment not completed",
+        "cancelledDesc": "The payment was not completed. No charges were made.",
+        "timeout": "Still confirming",
+        "timeoutDesc": "Your payment is taking longer than expected. You can check the order status later in My Points.",
+        "notFound": "Order not found",
+        "notFoundDesc": "No recent card payment order was found for your account.",
+        "backToPoints": "Back to My Points",
+        "retry": "Try Again",
+        "refresh": "Refresh Status"
     },
     "alpha": {
         "liquidityAnalysis": "Liquidity Analysis",
