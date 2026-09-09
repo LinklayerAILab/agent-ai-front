@@ -430,12 +430,12 @@ export function Brc20({ showSearch = false }: { showSearch?: boolean }) {
           <div
             className={`sticky top-[55px] lg:top-0 z-[10] w-full transition-all duration-300 ease-[cubic-bezier(0.25,0.46,0.45,0.94)] ${
               searchStuck
-                ? "lg:bg-white lg:pt-[1.2vh] lg:-my-[0.8vh] lg:pb-[1vh] lg:shadow-[0_6px_10px_-6px_rgba(0,0,0,0.3)]"
+                ? "lg:bg-white lg:-my-[0.8vh] lg:pb-[1vh] lg:shadow-[0_6px_10px_-6px_rgba(0,0,0,0.3)]"
                 : ""
             }`}
           >
             <div
-              className={`border-[2px] border-solid border-black bg-white pl-[6px] rounded-[8px] h-[42px] lg:h-[6vh] flex items-center my-[4px] lg:my-0 ${
+              className={`border-[2px] border-solid border-black bg-white pl-[6px] rounded-[8px] h-[42px] lg:h-[5vh] flex items-center my-[4px] lg:my-0 ${
                 searchStuckMobile
                   ? "fixed left-[14px] right-[14px] top-[64px] z-[110] my-0 shadow-[0_6px_10px_-6px_rgba(0,0,0,0.3)]"
                   : ""
@@ -449,19 +449,21 @@ export function Brc20({ showSearch = false }: { showSearch?: boolean }) {
                 className="flex-1 w-[100%] font-bold text-[16px]"
                 variant="borderless"
               />
-              <div className="px-[10px] cursor-pointer">
-                <Image src={searchIcon} alt="search" />
+              <div className="px-[10px] cursor-pointer flex items-center justify-center">
+                {searching ? (
+                  <div className="w-[17px] h-[17px] border-[3px] border-gray-300 border-t-[#8AA90B] rounded-full animate-spin" />
+                ) : (
+                  <Image src={searchIcon} alt="search" />
+                )}
               </div>
             </div>
           </div>
         )}
         <div
           ref={scrollContainerRef}
-          className={`brc20-list flex flex-wrap w-full sm:gap-[2vw] lg:gap-[0.96vw] gap-[14px] transition-opacity duration-200 ${
-            searching ? "opacity-60" : "opacity-100"
-          }`}
+          className="brc20-list flex flex-wrap w-full sm:gap-[2vw] lg:gap-[0.96vw] gap-[14px]"
         >
-          {tokensLoading ? (
+          {tokensLoading || searching ? (
             // Loading state - use Ant Design skeleton screen
             Array.from({ length: 9 }).map((_, index) => (
               <div
