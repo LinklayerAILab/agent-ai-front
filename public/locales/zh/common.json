@@ -589,6 +589,7 @@
             "invalidPackage": "套餐无效",
             "upstreamError": "支付服务暂不可用，请稍后重试",
             "pendingLimit": "未完成订单过多，请先完成已有订单",
+            "resumingPayment": "该套餐存在未完成订单，正在跳转至该订单的支付页面...",
             "tooManyRequests": "操作过于频繁，请稍后再试",
             "loadOrdersFailed": "订单加载失败，请重试",
             "orders": "卡支付订单",

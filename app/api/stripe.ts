@@ -53,10 +53,70 @@ let mockOrders: StripeOrderItem[] = [];
 
 const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
+// The mock list dies with the module on every full page navigation (the
+// checkout redirect leaves the SPA), so persist it in sessionStorage to keep
+// the "one pending order per package" state across the redirect round trip.
+// Mock-only; never touched when STRIPE_MOCK is off.
+const MOCK_ORDERS_STORAGE_KEY = "stripe_mock_orders";
+// Raised from 5s so the 6006 resume flow can be walked through manually
+// after coming back from the mock checkout landing page.
+const MOCK_AUTO_PAY_DELAY_MS = 20000;
+
+function loadMockOrders(): StripeOrderItem[] {
+  try {
+    const raw = sessionStorage.getItem(MOCK_ORDERS_STORAGE_KEY);
+    if (!raw) return [];
+    const orders = JSON.parse(raw) as StripeOrderItem[];
+    if (!Array.isArray(orders)) return [];
+    const now = Math.floor(Date.now() / 1000);
+    const ttlSec = Math.floor(MOCK_AUTO_PAY_DELAY_MS / 1000);
+    // settle pendings whose auto-paid timer fired while the page was away
+    return orders.map((o) =>
+      o.status === "pending" && o.created_at + ttlSec <= now
+        ? { ...o, status: "paid" as const, paid_at: o.created_at + ttlSec }
+        : o
+    );
+  } catch {
+    return [];
+  }
+}
+
+function persistMockOrders(): void {
+  try {
+    sessionStorage.setItem(MOCK_ORDERS_STORAGE_KEY, JSON.stringify(mockOrders));
+  } catch {
+    // ignore
+  }
+}
+
 const mockCheckout = async (
   package_type: StripePackageType
 ): Promise<StripeCheckoutResponse> => {
   await delay(400);
+  mockOrders = loadMockOrders();
+  // simulate the backend rule "one pending order per package" (error 6006):
+  // instead of a new session, the existing pending order's payment link is
+  // returned in the rejected body's data field
+  const existing = mockOrders.find(
+    (o) => o.package_type === package_type && o.status === "pending"
+  );
+  if (existing) {
+    return Promise.reject({
+      code: STRIPE_ERROR_CODES.PENDING_LIMIT,
+      message:
+        "you have unfinished purchase orders, please complete them or try again later",
+      // same shape as a successful checkout (snapshot fields included),
+      // mirroring the backend contract for the resume-payment payload
+      data: {
+        order_no: existing.order_no,
+        checkout_url: `/pay/success?order_no=${existing.order_no}`,
+        amount_cents: existing.amount_cents,
+        currency: existing.currency,
+        points: existing.points,
+        llax_amount: existing.llax_amount,
+      },
+    });
+  }
   const pkg = STRIPE_PACKAGES[package_type];
   const order_no = `SO${Date.now()}${Math.random().toString(36).slice(2, 8)}`;
   mockOrders = [
@@ -73,14 +133,16 @@ const mockCheckout = async (
     },
     ...mockOrders,
   ];
-  // flip the newest order to paid after ~5s so polling can be observed
+  persistMockOrders();
+  // flip the newest order to paid after a while so polling can be observed
   setTimeout(() => {
     mockOrders = mockOrders.map((o) =>
       o.order_no === order_no
         ? { ...o, status: "paid", paid_at: Math.floor(Date.now() / 1000) }
         : o
     );
-  }, 5000);
+    persistMockOrders();
+  }, MOCK_AUTO_PAY_DELAY_MS);
   return {
     code: 0,
     message: "ok",
@@ -95,6 +157,14 @@ const mockCheckout = async (
   };
 };
 
+/**
+ * Creates a Stripe hosted checkout session.
+ * Rejects with the raw response body `{ code, message, data? }` (see request.ts),
+ * delivered with HTTP 500 for business errors.
+ * On code 6006 (PENDING_LIMIT) with non-empty `data`, the payload is a
+ * {@link StripeCheckoutData} (same shape as a successful checkout) pointing
+ * at the existing pending order of the same package - resume its checkout_url.
+ */
 export const stripe_checkout = (package_type: StripePackageType) => {
   if (STRIPE_MOCK) return mockCheckout(package_type);
   return request<StripeCheckoutResponse>(`${AGENT_C_API}/v1/stripe/checkout`, {
@@ -130,6 +200,7 @@ const mockOrdersResponse = async (params?: {
   status?: StripeOrderStatus;
 }): Promise<StripeOrdersResponse> => {
   await delay(200);
+  mockOrders = loadMockOrders();
   const list = params?.status
     ? mockOrders.filter((o) => o.status === params.status)
     : mockOrders;

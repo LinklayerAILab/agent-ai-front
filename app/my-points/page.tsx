@@ -25,6 +25,7 @@ import {
   stripe_checkout,
   savePendingOrder,
   STRIPE_ERROR_CODES,
+  StripeCheckoutData,
   StripePackageType,
 } from "../api/stripe";
 import { Empty, message, Skeleton, Tabs } from "antd";
@@ -316,7 +317,11 @@ const Page = () => {
       // full page redirect to the Stripe hosted checkout page
       window.location.href = res.data.checkout_url;
     } catch (err) {
-      const e = err as { code?: number; message?: string };
+      const e = err as {
+        code?: number;
+        message?: string;
+        data?: StripeCheckoutData;
+      };
       if (e.code === STRIPE_ERROR_CODES.NOT_ENABLED) {
         messageApi.warning(t("myPoints.stripe.notAvailable"));
         // disable the card option and fall back to USDT
@@ -334,6 +339,22 @@ const Page = () => {
       } else if (e.code === STRIPE_ERROR_CODES.UPSTREAM_ERROR) {
         messageApi.error(t("myPoints.stripe.upstreamError"));
       } else if (e.code === STRIPE_ERROR_CODES.PENDING_LIMIT) {
+        // 6006: the backend returns the existing pending order of the same
+        // package in data - resume its checkout exactly like a fresh success.
+        const conflict = e.data;
+        if (conflict?.order_no && conflict.checkout_url) {
+          savePendingOrder({
+            order_no: conflict.order_no,
+            package_type: selectedItem.type,
+            created_at: Math.floor(Date.now() / 1000),
+          });
+          messageApi.info(t("myPoints.stripe.resumingPayment"));
+          // full page redirect, same as the success path; early return keeps
+          // the button in its "redirecting" state (no setStripePaying(false))
+          window.location.href = conflict.checkout_url;
+          return;
+        }
+        // backend did not send a usable checkout link - old behaviour
         messageApi.error(t("myPoints.stripe.pendingLimit"));
         setActiveTab("stripe");
       } else if (e.code === 429) {

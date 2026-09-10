@@ -592,6 +592,7 @@
             "invalidPackage": "Invalid package selected.",
             "upstreamError": "Payment service is temporarily unavailable. Please try again later.",
             "pendingLimit": "You have too many unfinished orders. Please complete them before starting a new one.",
+            "resumingPayment": "You already have an unfinished order for this package. Redirecting to its payment page...",
             "tooManyRequests": "Too many requests. Please wait a moment and try again.",
             "loadOrdersFailed": "Failed to load orders. Please try again.",
             "orders": "Card Orders",
