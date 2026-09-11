@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Empty, message, Pagination, Skeleton } from "antd";
+import { Button, Empty, message, Pagination, Skeleton } from "antd";
 import { useSelector } from "react-redux";
 import { RootState } from "@/app/store";
 import { formatDate } from "@/app/utils";
@@ -11,6 +11,10 @@ import {
   StripeOrderItem,
   StripeOrderStatus,
 } from "@/app/api/stripe";
+import StripeRefunds from "./StripeRefunds";
+import StripeRefundModal, {
+  StripeRefundTarget,
+} from "./StripeRefundModal";
 
 const PAGE_SIZE = 10;
 
@@ -31,15 +35,22 @@ const STATUS_KEY: Record<StripeOrderStatus, string> = {
 const shortenOrderNo = (orderNo: string) =>
   orderNo.length > 12 ? `${orderNo.slice(0, 4)}...${orderNo.slice(-4)}` : orderNo;
 
+type ListMode = "orders" | "refunds";
+
 const StripeOrders = () => {
   const { t } = useTranslation();
   const [messageApi, messageContext] = message.useMessage();
   const isLogin = useSelector((state: RootState) => state.user.isLogin);
 
+  const [mode, setMode] = useState<ListMode>("orders");
   const [orders, setOrders] = useState<StripeOrderItem[]>([]);
   const [total, setTotal] = useState(0);
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(true);
+  const [refundTarget, setRefundTarget] = useState<StripeRefundTarget | null>(
+    null
+  );
+  const [refundsSignal, setRefundsSignal] = useState(0);
 
   // only paid orders are listed; payment confirmation moved to /pay landing pages
   const fetchOrders = async (targetPage: number) => {
@@ -71,10 +82,42 @@ const StripeOrders = () => {
     fetchOrders(page);
   }, [page, isLogin]);
 
+  const openRefundModal = (order: StripeOrderItem) =>
+    setRefundTarget({
+      orderNo: order.order_no,
+      amountCents: order.amount_cents,
+      points: order.points,
+      llaxAmount: order.llax_amount,
+    });
+
   return (
     <div className="px-[8px] lg:px-[3vh] mt-[8px] lg:mt-[1vh]">
       {messageContext}
-      {loading ? (
+      <div className="flex gap-[8px] mb-[10px]">
+        {(["orders", "refunds"] as const).map((m) => (
+          <button
+            key={m}
+            className={`h-[28px] px-[14px] rounded-[16px] text-[12px] font-bold border ${
+              mode === m
+                ? "bg-[#DFFF67] border-[#1B1E1D] text-[#1B1E1D]"
+                : "bg-white border-[#EBEBEB] text-[#666666]"
+            }`}
+            onClick={() => setMode(m)}
+          >
+            {t(
+              m === "orders"
+                ? "myPoints.stripe.subOrders"
+                : "myPoints.stripe.subRefunds"
+            )}
+          </button>
+        ))}
+      </div>
+      {mode === "refunds" ? (
+        <StripeRefunds
+          refreshSignal={refundsSignal}
+          onReapply={(target) => setRefundTarget(target)}
+        />
+      ) : loading ? (
         <div className="p-4 space-y-2 w-[100%]">
           {Array.from({ length: 8 }).map((_, index) => (
             <div
@@ -135,10 +178,23 @@ const StripeOrders = () => {
                     {t(STATUS_KEY[item.status])}
                   </span>
                 </div>
-                <div className="flex-1 pr-[10px] flex justify-end font-bold whitespace-nowrap">
+                <div className="flex-[0.9] pr-[4px] flex justify-end font-bold whitespace-nowrap">
                   {item.created_at
                     ? formatDate(item.created_at * 1000, "MM/DD HH:mm")
                     : ""}
+                </div>
+                <div className="flex-[0.7] pr-[10px] flex justify-end">
+                  {item.status === "paid" && (
+                    <Button
+                      size="small"
+                      type="text"
+                      danger
+                      className="h-[22px] px-[6px] text-[11px] font-bold"
+                      onClick={() => openRefundModal(item)}
+                    >
+                      {t("myPoints.stripe.refundApply")}
+                    </Button>
+                  )}
                 </div>
               </div>
             ))}
@@ -161,6 +217,16 @@ const StripeOrders = () => {
           <Empty description={t("common.noData")} />
         </div>
       )}
+      <StripeRefundModal
+        target={refundTarget}
+        onClose={() => setRefundTarget(null)}
+        onSubmitted={() => setRefundsSignal((s) => s + 1)}
+        onOrderStale={() => fetchOrders(page)}
+        onRequestExists={() => {
+          setRefundsSignal((s) => s + 1);
+          setMode("refunds");
+        }}
+      />
     </div>
   );
 };

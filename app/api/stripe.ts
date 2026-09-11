@@ -11,6 +11,13 @@ export const STRIPE_ERROR_CODES = {
   INVALID_PACKAGE: 6002,
   UPSTREAM_ERROR: 6003,
   PENDING_LIMIT: 6006,
+  // refund endpoints (see /v1/stripe/refund in the backend integration guide):
+  // 6011/6012/6017 arrive with HTTP 200, 6015 with HTTP 400 - request.ts only
+  // reads the body code, so the HTTP status does not matter here.
+  REFUND_NOT_REFUNDABLE: 6011,
+  REFUND_ALREADY_REFUNDED: 6012,
+  REFUND_BAD_REASON: 6015,
+  REFUND_REQUEST_EXISTS: 6017,
 } as const;
 
 export interface StripePackage {
@@ -215,6 +222,222 @@ export const stripe_orders = (params: {
   if (STRIPE_MOCK) return mockOrdersResponse({ status: params.status });
   return request<StripeOrdersResponse>(
     `${AGENT_C_API}/v1/stripe/orders?limit=${params.limit}&offset=${params.offset}${params.status ? `&status=${params.status}` : ""}`,
+    {
+      method: "get",
+      cache: "no-store",
+    }
+  );
+};
+
+// ---------------------------------------------------------------------------
+// Refund (ticket-based): user submits a request, an admin approves it, then
+// the payment is returned and all granted benefits are revoked.
+// ---------------------------------------------------------------------------
+
+export type StripeRefundStatus =
+  | "requested"
+  | "processing"
+  | "refunded"
+  | "refund_failed"
+  | "revoke_failed"
+  | "rejected";
+
+export interface StripeRefundRequestData {
+  id: number;
+  order_ref: string;
+  status: StripeRefundStatus;
+  /** enum; user-submitted requests are always "user_request" */
+  reason: string;
+  /** free text the user submitted with the request */
+  user_reason: string;
+  /** admin note, may be set on approve/reject */
+  admin_note: string;
+  refund_amount: number;
+  refund_currency: string;
+  /** ISO 8601 */
+  requested_at: string;
+  /** ISO 8601, empty until handled */
+  handled_at: string;
+  /** ISO 8601, only non-empty once refunded */
+  refunded_at: string;
+  created_at: string;
+}
+
+export interface StripeRefundSubmitData {
+  id: number;
+  status: StripeRefundStatus;
+  /** ISO 8601 */
+  requested_at: string;
+}
+
+export interface StripeRefundSubmitResponse {
+  code: number;
+  message: string;
+  data: StripeRefundSubmitData;
+}
+
+// total is assumed pending backend confirmation; adjust if the real payload
+// differs (see stripe_frontend_integration_guide.md section 7)
+export interface StripeRefundsResponse {
+  code: number;
+  message: string;
+  data: {
+    total: number;
+    refunds: StripeRefundRequestData[];
+  };
+}
+
+// Same sessionStorage persistence idea as the mock orders above: the refund
+// list must survive full page navigations. Mock-only.
+const MOCK_REFUNDS_STORAGE_KEY = "stripe_mock_refunds";
+
+let mockRefunds: StripeRefundRequestData[] = [];
+
+function loadMockRefunds(): StripeRefundRequestData[] {
+  try {
+    const raw = sessionStorage.getItem(MOCK_REFUNDS_STORAGE_KEY);
+    if (!raw) return [];
+    const refunds = JSON.parse(raw) as StripeRefundRequestData[];
+    return Array.isArray(refunds) ? refunds : [];
+  } catch {
+    return [];
+  }
+}
+
+function persistMockRefunds(): void {
+  try {
+    sessionStorage.setItem(MOCK_REFUNDS_STORAGE_KEY, JSON.stringify(mockRefunds));
+  } catch {
+    // ignore
+  }
+}
+
+const REASON_MAX_BYTES = 1024;
+
+const reasonBytes = (reason: string) => new TextEncoder().encode(reason).length;
+
+const mockRefundRequest = async (
+  order_no: string,
+  reason: string
+): Promise<StripeRefundSubmitResponse> => {
+  await delay(500);
+  const trimmed = reason.trim();
+  if (!trimmed || reasonBytes(trimmed) > REASON_MAX_BYTES) {
+    return Promise.reject({
+      code: STRIPE_ERROR_CODES.REFUND_BAD_REASON,
+      message: "reason must be non-empty and at most 1024 bytes",
+    });
+  }
+  mockRefunds = loadMockRefunds();
+  mockOrders = loadMockOrders();
+  const order = mockOrders.find((o) => o.order_no === order_no);
+  if (!order || order.status !== "paid") {
+    return Promise.reject({
+      code: STRIPE_ERROR_CODES.REFUND_NOT_REFUNDABLE,
+      message: "order not found or not refundable",
+    });
+  }
+  const existing = mockRefunds.find((r) => r.order_ref === order_no);
+  if (existing) {
+    if (existing.status === "refunded" || existing.status === "revoke_failed") {
+      return Promise.reject({
+        code: STRIPE_ERROR_CODES.REFUND_ALREADY_REFUNDED,
+        message: "order has already been refunded",
+      });
+    }
+    if (existing.status !== "rejected") {
+      return Promise.reject({
+        code: STRIPE_ERROR_CODES.REFUND_REQUEST_EXISTS,
+        message: "a refund request already exists for this order",
+      });
+    }
+    // rejected tickets are reused on re-submission (same id, refreshed fields)
+    mockRefunds = mockRefunds.map((r) =>
+      r.id === existing.id
+        ? {
+            ...r,
+            status: "requested" as const,
+            user_reason: trimmed,
+            admin_note: "",
+            requested_at: new Date().toISOString(),
+          }
+        : r
+    );
+    persistMockRefunds();
+    return {
+      code: 0,
+      message: "ok",
+      data: {
+        id: existing.id,
+        status: "requested",
+        requested_at: new Date().toISOString(),
+      },
+    };
+  }
+  const now = new Date().toISOString();
+  const item: StripeRefundRequestData = {
+    id: mockRefunds.reduce((max, r) => Math.max(max, r.id), 0) + 1,
+    order_ref: order_no,
+    status: "requested",
+    reason: "user_request",
+    user_reason: trimmed,
+    admin_note: "",
+    refund_amount: order.amount_cents / 100,
+    refund_currency: order.currency,
+    requested_at: now,
+    handled_at: "",
+    refunded_at: "",
+    created_at: now,
+  };
+  mockRefunds = [item, ...mockRefunds];
+  persistMockRefunds();
+  return {
+    code: 0,
+    message: "ok",
+    data: { id: item.id, status: item.status, requested_at: item.requested_at },
+  };
+};
+
+const mockRefundsResponse = async (params: {
+  limit: number;
+  offset: number;
+}): Promise<StripeRefundsResponse> => {
+  await delay(200);
+  mockRefunds = loadMockRefunds();
+  return {
+    code: 0,
+    message: "ok",
+    data: {
+      total: mockRefunds.length,
+      refunds: mockRefunds.slice(params.offset, params.offset + params.limit),
+    },
+  };
+};
+
+/**
+ * Submits a refund request (ticket-based, admin approval required - no
+ * immediate charge). Rejects with the raw response body `{ code, message }`:
+ * 6011 order missing / not paid, 6012 already refunded, 6015 bad reason,
+ * 6017 a request already exists, HTTP 429 rate limited (3 req / 300s).
+ */
+export const stripe_refund_request = (order_no: string, reason: string) => {
+  if (STRIPE_MOCK) return mockRefundRequest(order_no, reason);
+  return request<StripeRefundSubmitResponse>(
+    `${AGENT_C_API}/v1/stripe/refund`,
+    {
+      method: "post",
+      cache: "no-store",
+      headers: { "Content-Type": "application/json; charset=UTF-8" },
+      body: JSON.stringify({ order_no, reason }),
+    }
+  );
+};
+
+/** Lists the current user's refund requests, newest first. */
+export const stripe_refunds = (params: { limit: number; offset: number }) => {
+  if (STRIPE_MOCK) return mockRefundsResponse(params);
+  return request<StripeRefundsResponse>(
+    `${AGENT_C_API}/v1/stripe/refunds?limit=${params.limit}&offset=${params.offset}`,
     {
       method: "get",
       cache: "no-store",
