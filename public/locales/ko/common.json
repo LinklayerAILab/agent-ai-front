@@ -586,6 +586,7 @@
         "subscribeSuccess": "구독 성공!",
         "stripe": {
             "cardLabel": "카드",
+            "cardOrder": "카드 결제",
             "redirecting": "결제 생성 중...",
             "notAvailable": "카드 결제는 아직 이용할 수 없습니다",
             "invalidPackage": "잘못된 패키지입니다",

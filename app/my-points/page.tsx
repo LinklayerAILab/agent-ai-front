@@ -19,7 +19,6 @@ import {
   query_tasks,
   QueryTasksItem,
   QueryTasksParams,
-  QueryTasksType,
 } from "../api/agent_c";
 import {
   stripe_checkout,
@@ -28,16 +27,15 @@ import {
   StripeCheckoutData,
   StripePackageType,
 } from "../api/stripe";
-import { Empty, message, Skeleton, Tabs } from "antd";
+import { message } from "antd";
 import { CloseOutlined } from "@ant-design/icons";
-import { formatDate } from "../utils";
 import { useSelector } from "react-redux";
 import { RootState } from "../store";
 import { useAccount, useChainId, useWriteContract, useSwitchChain, useConfig } from "wagmi";
 import { readContract } from "wagmi/actions";
 import { parseUnits } from "viem";
 import erc20Abi from "@/app/abi/erc20.json";
-import StripeOrders from "./components/StripeOrders";
+import PointsHistory from "./components/PointsHistory";
 
 interface ListItem {
   value: number;
@@ -128,18 +126,18 @@ const Page = () => {
       decimal: Number(process.env.NEXT_PUBLIC_USDC_DECIMAL) || 18
     },
     {
-      label: "LLA",
-      value: "lla",
-      select: false,
-      icon: lla,
-      disabled: true,
-    },
-    {
       label: "Card",
       value: "stripe",
       select: false,
       icon: card,
       disabled: false,
+    },
+    {
+      label: "LLA",
+      value: "lla",
+      select: false,
+      icon: lla,
+      disabled: true,
     },
   ]);
 
@@ -190,7 +188,6 @@ const Page = () => {
 
   const isLogin = useSelector((state: RootState) => state.user.isLogin);
   const [stripePaying, setStripePaying] = useState(false);
-  const [activeTab, setActiveTab] = useState<"record" | "stripe">("record");
   const [records, setRecords] = useState<QueryTasksItem[]>([]);
   const params = useRef<QueryTasksParams>({
     page: 1,
@@ -250,25 +247,6 @@ const Page = () => {
       }, 400);
     }
   };
-  function getTypeKey(type: QueryTasksType) {
-    switch (type) {
-      case 1:
-        return "bind_web3";
-      case 2:
-        return "bind_email";
-      case 3:
-        return "follow_x";
-      case 4:
-        return "telegram_group";
-      case 5:
-        return "new_user";
-      case 6:
-        return "invite_user";
-      case 7:
-        return "subcribe";
-    }
-  }
-
   useEffect(() => {
     let t: NodeJS.Timeout;
     if (isLogin) {
@@ -356,7 +334,6 @@ const Page = () => {
         }
         // backend did not send a usable checkout link - old behaviour
         messageApi.error(t("myPoints.stripe.pendingLimit"));
-        setActiveTab("stripe");
       } else if (e.code === 429) {
         messageApi.warning(t("myPoints.stripe.tooManyRequests"));
       } else {
@@ -585,95 +562,11 @@ const Page = () => {
         </div>
 
         <div className="bg-white rounded-[8px] py-[18px] lg:py-[2vh] lg:w-[42%]">
-          <Tabs
-            activeKey={activeTab}
-            onChange={(key) => setActiveTab(key as "record" | "stripe")}
-            centered
-            items={[
-              {
-                key: "record",
-                label: (
-                  <span className="text-[14px] lg:text-[16px] flex items-center gap-[4px] font-bold">
-                    <Image src={diamond} className="lg:w-[24px]" alt="diamond"></Image>
-                    {t("myPoints.pointsRecord")}
-                  </span>
-                ),
-                children: (
-                  <div className="rounded-[8px] overflow-hidden mx-[0] lg:mx-[3vh] list-box mt-[8px] lg:mt-[1vh] lg:h-[55vh] overflow-y-auto">
-            {listLoading ? (
-              // Skeleton loading
-              <div className="p-4 space-y-2 w-[100%]">
-                {Array.from({ length: 12 }).map((_, index) => (
-                  <div
-                    key={index}
-                    className="flex items-center justify-between gap-[4%]"
-                  >
-                    <Skeleton.Input
-                      style={{
-                        width: "35%",
-                      }}
-                      className="h-[36px] lg:h-[3.6vh] flex items-center"
-                      active
-                      size="small"
-                    />
-                    <Skeleton.Input
-                      style={{
-                        width: "35%",
-                      }}
-                      className="h-[36px] lg:h-[3.6vh] flex items-center"
-                      active
-                      size="small"
-                    />
-                    <Skeleton.Input
-                      style={{
-                        width: "25%",
-                      }}
-                      className="h-[36px] lg:h-[3.6vh] flex items-center"
-                      active
-                      size="small"
-                    />
-                  </div>
-                ))}
-              </div>
-            ) : records.length ? (
-              records.map((item, idx) => (
-                <div
-                  key={idx}
-                  className="flex items-center h-[40px] lg:h-[4.85vh] list-item-ele justify-evenly"
-                >
-                  <div className="flex-1 flex items-center justify-start text-[12px] lg:text-[14px] pl-[14px] font-bold">
-                    {item.type ? t(`subscribe.${getTypeKey(item.type)}`) : ""}
-                  </div>
-                  {/* <div className="flex-1"><span className="lh-[16px] bg-[#cf0] px-[8px] text-[12px] rounded-[4px]">{t('common.success')}</span></div> */}
-                  <div className="flex-1  flex justify-center items-center text-[12px] lg:text-[14px] font-bold">
-                    {item.point}
-                  </div>
-                  <div className="flex-1 pl-[14px] flex justify-end items-center text-[14px] pr-[14px] font-bold">
-                    {item.timestamp
-                      ? formatDate(item.timestamp * 1000, "MM/DD HH:mm")
-                      : ""}
-                  </div>
-                </div>
-              ))
-            ) : (
-              <div className="h-[100%] flex items-center justify-center">
-                <Empty description={t("common.noData")} />
-              </div>
-            )}
-                  </div>
-                ),
-              },
-              {
-                key: "stripe",
-                label: (
-                  <span className="text-[14px] lg:text-[16px] font-bold">
-                    {t("myPoints.stripe.orders")}
-                  </span>
-                ),
-                children: <StripeOrders />,
-              },
-            ]}
-          />
+          <div className="text-[14px] lg:text-[16px] flex items-center justify-center gap-[4px] font-bold">
+            <Image src={diamond} className="lg:w-[24px]" alt="diamond"></Image>
+            {t("myPoints.pointsRecord")}
+          </div>
+          <PointsHistory records={records} recordsLoading={listLoading} />
         </div>
       </div>
     </div>

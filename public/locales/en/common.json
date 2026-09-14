@@ -587,6 +587,7 @@
         "subscribeSuccess": "Subscribe successful!",
         "stripe": {
             "cardLabel": "Card",
+            "cardOrder": "Card payment",
             "redirecting": "Creating payment...",
             "notAvailable": "Card payment is not available yet.",
             "invalidPackage": "Invalid package selected.",

@@ -570,6 +570,7 @@
         "subscribeSuccess": "Подписка успешна!",
         "stripe": {
             "cardLabel": "Карта",
+            "cardOrder": "Оплата картой",
             "redirecting": "Создание платежа...",
             "notAvailable": "Оплата картой пока недоступна",
             "invalidPackage": "Выбран недействительный пакет",

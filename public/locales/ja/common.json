@@ -589,6 +589,7 @@
         "subscribeSuccess": "購読成功！",
         "stripe": {
             "cardLabel": "カード",
+            "cardOrder": "カード払い",
             "redirecting": "決済を作成中...",
             "notAvailable": "カード決済はまだ利用できません",
             "invalidPackage": "無効なプランです",

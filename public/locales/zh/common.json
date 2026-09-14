@@ -584,6 +584,7 @@
         "subscribeSuccess": "订阅成功！",
         "stripe": {
             "cardLabel": "银行卡",
+            "cardOrder": "卡支付",
             "redirecting": "创建支付中...",
             "notAvailable": "卡支付暂未开放",
             "invalidPackage": "套餐无效",
