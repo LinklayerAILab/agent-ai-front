@@ -132,6 +132,9 @@ const StripeRefundModal = ({
         }
         cancelText={t("common.cancel")}
         okButtonProps={{ danger: true, disabled: cooldownLeft > 0 }}
+        // push the footer buttons down: 15px on mobile, 1vh from lg up
+        // (! needed - antd injects .ant-modal-footer margin-top at runtime)
+        classNames={{ footer: "!mt-[24px] lg:!mt-[3vh]" }}
         confirmLoading={refunding}
         maskClosable={false}
       >

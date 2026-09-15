@@ -54,6 +54,20 @@ interface CoinListItem {
   decimal?:number
 }
 
+// ⚠️ TEMP MOCK for mobile style preview - flip to true (or delete) after review
+const USE_MOCK_DATA = false;
+// fixed epoch (~2026-09-14) instead of Date.now() so SSR and client render match
+const MOCK_NOW = 1789400000;
+const MOCK_RECORDS: QueryTasksItem[] = [
+  { type: 7, point: "990", timestamp: MOCK_NOW - 60 * 10 },
+  { type: 6, point: "50", timestamp: MOCK_NOW - 3600 * 2 },
+  { type: 1, point: "100", timestamp: MOCK_NOW - 86400 },
+  { type: 2, point: "100", timestamp: MOCK_NOW - 86400 - 3600 * 2 },
+  { type: 3, point: "50", timestamp: MOCK_NOW - 86400 * 2 },
+  { type: 4, point: "50", timestamp: MOCK_NOW - 86400 * 3 },
+  { type: 5, point: "200", timestamp: MOCK_NOW - 86400 * 5 },
+];
+
 const getActualRecords = (records: QueryTasksItem[]) =>
   records.filter((record) => record.timestamp !== undefined);
 
@@ -188,7 +202,9 @@ const Page = () => {
 
   const isLogin = useSelector((state: RootState) => state.user.isLogin);
   const [stripePaying, setStripePaying] = useState(false);
-  const [records, setRecords] = useState<QueryTasksItem[]>([]);
+  const [records, setRecords] = useState<QueryTasksItem[]>(
+    USE_MOCK_DATA ? MOCK_RECORDS : []
+  );
   const params = useRef<QueryTasksParams>({
     page: 1,
     size: 1000,
@@ -207,6 +223,9 @@ const Page = () => {
 
   const handleGetList = async () => {
     try {
+      // TEMP MOCK: skip the api call and the 8s polling overwrite while
+      // previewing (inside try so the finally still clears the loading state)
+      if (USE_MOCK_DATA) return;
       const res = await query_tasks(params.current);
       const arr: QueryTasksItem[] = [];
       const total = 12;
@@ -561,7 +580,7 @@ const Page = () => {
           </div>
         </div>
 
-        <div className="bg-white rounded-[8px] py-[18px] lg:py-[2vh] lg:w-[42%]">
+        <div className="bg-white rounded-[8px] py-[18px] lg:py-[2vh] lg:w-[60%]">
           <div className="text-[14px] lg:text-[16px] flex items-center justify-center gap-[4px] font-bold">
             <Image src={diamond} className="lg:w-[24px]" alt="diamond"></Image>
             {t("myPoints.pointsRecord")}

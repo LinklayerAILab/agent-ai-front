@@ -589,7 +589,7 @@
         "subscribeSuccess": "購読成功！",
         "stripe": {
             "cardLabel": "カード",
-            "cardOrder": "カード払い",
+            "cardOrder": "カード",
             "redirecting": "決済を作成中...",
             "notAvailable": "カード決済はまだ利用できません",
             "invalidPackage": "無効なプランです",
@@ -605,7 +605,7 @@
             "statusFailed": "支払い失敗",
             "subOrders": "注文",
             "subRefunds": "返金申請",
-            "refundApply": "返金を申請",
+            "refundApply": "返金",
             "refundTitle": "返金を申請",
             "refundReasonLabel": "返金理由",
             "refundReasonPlaceholder": "返金理由を簡単にご記入ください",

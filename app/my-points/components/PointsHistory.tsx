@@ -18,6 +18,102 @@ import StripeRefundModal, {
   StripeRefundTarget,
 } from "./StripeRefundModal";
 
+// ⚠️ TEMP MOCK for mobile style preview - flip to true (or delete) after review
+const USE_MOCK_DATA = false;
+// fixed epoch (~2026-09-14), see page.tsx
+const MOCK_NOW = 1789400000;
+const MOCK_ORDERS: StripeOrderItem[] = [
+  {
+    order_no: "SO1789400001",
+    package_type: "professional",
+    amount_cents: 9990,
+    currency: "usd",
+    points: 12500,
+    llax_amount: 130000,
+    status: "paid",
+    created_at: MOCK_NOW - 3700,
+    paid_at: MOCK_NOW - 3600,
+  },
+  {
+    order_no: "SO1789300002",
+    package_type: "basic",
+    amount_cents: 990,
+    currency: "usd",
+    points: 990,
+    llax_amount: 10000,
+    status: "paid",
+    created_at: MOCK_NOW - 86400,
+    paid_at: MOCK_NOW - 86400 + 300,
+  },
+  {
+    order_no: "SO1789200003",
+    package_type: "standard",
+    amount_cents: 2990,
+    currency: "usd",
+    points: 3400,
+    llax_amount: 36000,
+    status: "paid",
+    created_at: MOCK_NOW - 86400 * 2,
+    paid_at: MOCK_NOW - 86400 * 2 + 120,
+  },
+  {
+    order_no: "SO1789000004",
+    package_type: "basic",
+    amount_cents: 990,
+    currency: "usd",
+    points: 990,
+    llax_amount: 10000,
+    status: "paid",
+    created_at: MOCK_NOW - 86400 * 4,
+    paid_at: MOCK_NOW - 86400 * 4 + 60,
+  },
+];
+// one order per status so every badge variant is visible
+const MOCK_REFUNDS: StripeRefundRequestData[] = [
+  {
+    id: 2,
+    order_ref: "SO1789300002",
+    status: "requested",
+    reason: "user_request",
+    user_reason: "bought the wrong package",
+    admin_note: "",
+    refund_amount: 990,
+    refund_currency: "usd",
+    requested_at: "2026-09-13T10:24:00Z",
+    handled_at: "",
+    refunded_at: "",
+    created_at: "2026-09-13T10:24:00Z",
+  },
+  {
+    id: 1,
+    order_ref: "SO1789200003",
+    status: "refunded",
+    reason: "user_request",
+    user_reason: "duplicate payment",
+    admin_note: "",
+    refund_amount: 2990,
+    refund_currency: "usd",
+    requested_at: "2026-09-12T08:00:00Z",
+    handled_at: "2026-09-12T09:30:00Z",
+    refunded_at: "2026-09-12T09:30:00Z",
+    created_at: "2026-09-12T08:00:00Z",
+  },
+  {
+    id: 3,
+    order_ref: "SO1789000004",
+    status: "rejected",
+    reason: "user_request",
+    user_reason: "points already spent",
+    admin_note: "refund window exceeded",
+    refund_amount: 990,
+    refund_currency: "usd",
+    requested_at: "2026-09-10T15:00:00Z",
+    handled_at: "2026-09-11T09:00:00Z",
+    refunded_at: "",
+    created_at: "2026-09-10T15:00:00Z",
+  },
+];
+
 // one-shot fetch and scroll - both lists are per-user and small
 const FETCH_LIMIT = 1000;
 
@@ -89,8 +185,12 @@ const PointsHistory = ({ records, recordsLoading }: Props) => {
   const [messageApi, messageContext] = message.useMessage();
   const isLogin = useSelector((state: RootState) => state.user.isLogin);
 
-  const [orders, setOrders] = useState<StripeOrderItem[]>([]);
-  const [refunds, setRefunds] = useState<StripeRefundRequestData[]>([]);
+  const [orders, setOrders] = useState<StripeOrderItem[]>(
+    USE_MOCK_DATA ? MOCK_ORDERS : []
+  );
+  const [refunds, setRefunds] = useState<StripeRefundRequestData[]>(
+    USE_MOCK_DATA ? MOCK_REFUNDS : []
+  );
   const [ordersLoading, setOrdersLoading] = useState(true);
   const [refundTarget, setRefundTarget] = useState<StripeRefundTarget | null>(
     null
@@ -99,6 +199,11 @@ const PointsHistory = ({ records, recordsLoading }: Props) => {
   const [refreshSignal, setRefreshSignal] = useState(0);
 
   const fetchOrders = async () => {
+    // TEMP MOCK: skip the api while previewing styles
+    if (USE_MOCK_DATA) {
+      setOrdersLoading(false);
+      return;
+    }
     setOrdersLoading(true);
     try {
       const [ordersRes, refundsRes] = await Promise.all([
@@ -221,7 +326,7 @@ const PointsHistory = ({ records, recordsLoading }: Props) => {
             row.kind === "task" ? (
               <div
                 key={row.key}
-                className="flex items-center h-[40px] lg:h-[4.85vh] list-item-ele text-[11px] lg:text-[12px]"
+                className="flex items-center h-[40px] lg:h-[4.85vh] list-item-ele text-[10px] lg:text-[12px]"
               >
                 <div className="flex-[1.2] pl-[10px] font-bold truncate">
                   {row.type ? t(`subscribe.${getTypeKey(row.type)}`) : ""}
@@ -238,7 +343,7 @@ const PointsHistory = ({ records, recordsLoading }: Props) => {
             ) : (
               <div
                 key={row.key}
-                className="flex items-center h-[40px] lg:h-[4.85vh] list-item-ele text-[11px] lg:text-[12px]"
+                className="flex items-center h-[40px] lg:h-[4.85vh] list-item-ele text-[10px] lg:text-[12px]"
               >
                 <div
                   className="flex-[1.2] pl-[10px] font-bold truncate"
@@ -257,7 +362,7 @@ const PointsHistory = ({ records, recordsLoading }: Props) => {
                         ? `${t("myPoints.stripe.adminNoteLabel")}: ${row.refund.admin_note}`
                         : undefined
                     }
-                    className={`flex items-center h-[20px] px-[8px] rounded-[10px] text-[11px] font-bold whitespace-nowrap ${
+                    className={`flex items-center h-[20px] px-[8px] rounded-[10px] text-[10px] lg:text-[11px] font-bold whitespace-nowrap ${
                       row.refund
                         ? REFUND_STATUS_BADGE[row.refund.status]
                         : PAID_BADGE
@@ -277,7 +382,7 @@ const PointsHistory = ({ records, recordsLoading }: Props) => {
                       size="small"
                       type="text"
                       danger
-                      className="h-[22px] px-[6px] text-[11px] font-bold"
+                      className="h-[22px] px-[6px] text-[10px] lg:text-[11px] font-bold"
                       onClick={() => openRefundModal(row.order)}
                     >
                       {t("myPoints.stripe.refundApply")}
@@ -287,7 +392,7 @@ const PointsHistory = ({ records, recordsLoading }: Props) => {
                       size="small"
                       type="text"
                       danger
-                      className="h-[22px] px-[6px] text-[11px] font-bold"
+                      className="h-[22px] px-[6px] text-[10px] lg:text-[11px] font-bold"
                       onClick={() => openReapplyModal(row)}
                     >
                       {t("myPoints.stripe.reapply")}
