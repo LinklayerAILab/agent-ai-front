@@ -2,21 +2,12 @@
 
 import React, { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Button, Empty, message, Skeleton } from "antd";
+import { Empty, message, Skeleton } from "antd";
 import { useSelector } from "react-redux";
 import { RootState } from "@/app/store";
 import { formatDate } from "@/app/utils";
 import { QueryTasksItem, QueryTasksType } from "@/app/api/agent_c";
-import {
-  stripe_orders,
-  stripe_refunds,
-  StripeOrderItem,
-  StripeRefundRequestData,
-  StripeRefundStatus,
-} from "@/app/api/stripe";
-import StripeRefundModal, {
-  StripeRefundTarget,
-} from "./StripeRefundModal";
+import { stripe_orders, StripeOrderItem } from "@/app/api/stripe";
 
 // ⚠️ TEMP MOCK for mobile style preview - flip to true (or delete) after review
 const USE_MOCK_DATA = false;
@@ -68,75 +59,12 @@ const MOCK_ORDERS: StripeOrderItem[] = [
     paid_at: MOCK_NOW - 86400 * 4 + 60,
   },
 ];
-// one order per status so every badge variant is visible
-const MOCK_REFUNDS: StripeRefundRequestData[] = [
-  {
-    id: 2,
-    order_ref: "SO1789300002",
-    status: "requested",
-    reason: "user_request",
-    user_reason: "bought the wrong package",
-    admin_note: "",
-    refund_amount: 990,
-    refund_currency: "usd",
-    requested_at: "2026-09-13T10:24:00Z",
-    handled_at: "",
-    refunded_at: "",
-    created_at: "2026-09-13T10:24:00Z",
-  },
-  {
-    id: 1,
-    order_ref: "SO1789200003",
-    status: "refunded",
-    reason: "user_request",
-    user_reason: "duplicate payment",
-    admin_note: "",
-    refund_amount: 2990,
-    refund_currency: "usd",
-    requested_at: "2026-09-12T08:00:00Z",
-    handled_at: "2026-09-12T09:30:00Z",
-    refunded_at: "2026-09-12T09:30:00Z",
-    created_at: "2026-09-12T08:00:00Z",
-  },
-  {
-    id: 3,
-    order_ref: "SO1789000004",
-    status: "rejected",
-    reason: "user_request",
-    user_reason: "points already spent",
-    admin_note: "refund window exceeded",
-    refund_amount: 990,
-    refund_currency: "usd",
-    requested_at: "2026-09-10T15:00:00Z",
-    handled_at: "2026-09-11T09:00:00Z",
-    refunded_at: "",
-    created_at: "2026-09-10T15:00:00Z",
-  },
-];
 
 // one-shot fetch and scroll - both lists are per-user and small
 const FETCH_LIMIT = 1000;
 
 // only paid orders are listed; payment confirmation moved to /pay landing pages
 const PAID_BADGE = "bg-[#E9FF93] text-[#7A9900]";
-
-const REFUND_STATUS_BADGE: Record<StripeRefundStatus, string> = {
-  requested: "bg-[#FFF7D6] text-[#8A6D00]",
-  processing: "bg-[#FFF7D6] text-[#8A6D00]",
-  refunded: "bg-[#E0EDFF] text-[#1D4ED8]",
-  refund_failed: "bg-[#FFE1E1] text-[#C53030]",
-  revoke_failed: "bg-[#E0EDFF] text-[#1D4ED8]",
-  rejected: "bg-[#EBEBEB] text-[#666666]",
-};
-
-const REFUND_STATUS_KEY: Record<StripeRefundStatus, string> = {
-  requested: "myPoints.stripe.statusRefundRequested",
-  processing: "myPoints.stripe.statusRefundProcessing",
-  refunded: "myPoints.stripe.statusRefundRefunded",
-  refund_failed: "myPoints.stripe.statusRefundFailed",
-  revoke_failed: "myPoints.stripe.statusRefundRevokeFailed",
-  rejected: "myPoints.stripe.statusRefundRejected",
-};
 
 function getTypeKey(type: QueryTasksType) {
   switch (type) {
@@ -157,7 +85,7 @@ function getTypeKey(type: QueryTasksType) {
   }
 }
 
-/** unified row: a task point record or a paid card order (with its refund ticket, if any) */
+/** unified row: a task point record or a paid card order */
 type UnifiedRow =
   | {
       kind: "task";
@@ -170,7 +98,6 @@ type UnifiedRow =
       kind: "order";
       key: string;
       order: StripeOrderItem;
-      refund?: StripeRefundRequestData;
       time: number;
     };
 
@@ -188,15 +115,7 @@ const PointsHistory = ({ records, recordsLoading }: Props) => {
   const [orders, setOrders] = useState<StripeOrderItem[]>(
     USE_MOCK_DATA ? MOCK_ORDERS : []
   );
-  const [refunds, setRefunds] = useState<StripeRefundRequestData[]>(
-    USE_MOCK_DATA ? MOCK_REFUNDS : []
-  );
   const [ordersLoading, setOrdersLoading] = useState(true);
-  const [refundTarget, setRefundTarget] = useState<StripeRefundTarget | null>(
-    null
-  );
-  // bump to re-fetch (e.g. after a refund request was submitted)
-  const [refreshSignal, setRefreshSignal] = useState(0);
 
   const fetchOrders = async () => {
     // TEMP MOCK: skip the api while previewing styles
@@ -206,12 +125,12 @@ const PointsHistory = ({ records, recordsLoading }: Props) => {
     }
     setOrdersLoading(true);
     try {
-      const [ordersRes, refundsRes] = await Promise.all([
-        stripe_orders({ limit: FETCH_LIMIT, offset: 0, status: "paid" }),
-        stripe_refunds({ limit: FETCH_LIMIT, offset: 0 }),
-      ]);
+      const ordersRes = await stripe_orders({
+        limit: FETCH_LIMIT,
+        offset: 0,
+        status: "paid",
+      });
       setOrders(ordersRes.data?.orders ?? []);
-      setRefunds(refundsRes.data?.refunds ?? []);
     } catch {
       messageApi.error(t("myPoints.stripe.loadOrdersFailed"));
     } finally {
@@ -228,17 +147,7 @@ const PointsHistory = ({ records, recordsLoading }: Props) => {
       return;
     }
     fetchOrders();
-  }, [isLogin, refreshSignal]);
-
-  // latest refund ticket per order (highest id wins)
-  const refundByOrder = useMemo(() => {
-    const map = new Map<string, StripeRefundRequestData>();
-    for (const r of refunds) {
-      const prev = map.get(r.order_ref);
-      if (!prev || r.id > prev.id) map.set(r.order_ref, r);
-    }
-    return map;
-  }, [refunds]);
+  }, [isLogin]);
 
   // drop the padding rows the page pads its records with, merge with the paid
   // orders and sort everything by time, newest first
@@ -256,32 +165,12 @@ const PointsHistory = ({ records, recordsLoading }: Props) => {
       kind: "order" as const,
       key: o.order_no,
       order: o,
-      refund: refundByOrder.get(o.order_no),
       time: o.paid_at ?? o.created_at,
     }));
     return [...taskRows, ...orderRows].sort((a, b) => b.time - a.time);
-  }, [records, orders, refundByOrder]);
+  }, [records, orders]);
 
   const loading = recordsLoading || ordersLoading;
-
-  const openRefundModal = (order: StripeOrderItem) =>
-    setRefundTarget({
-      orderNo: order.order_no,
-      amountCents: order.amount_cents,
-      points: order.points,
-      llaxAmount: order.llax_amount,
-    });
-
-  const openReapplyModal = (row: Extract<UnifiedRow, { kind: "order" }>) =>
-    setRefundTarget({
-      orderNo: row.order.order_no,
-      presetReason: row.refund?.user_reason,
-      amountCents: row.order.amount_cents,
-      points: row.order.points,
-      llaxAmount: row.order.llax_amount,
-    });
-
-  const refundRefresh = () => setRefreshSignal((s) => s + 1);
 
   return (
     <div className="mx-[0] lg:mx-[3vh] mt-[8px] lg:mt-[1vh]">
@@ -357,48 +246,15 @@ const PointsHistory = ({ records, recordsLoading }: Props) => {
                 </div>
                 <div className="flex-1 flex justify-center">
                   <span
-                    title={
-                      row.refund?.status === "rejected" && row.refund.admin_note
-                        ? `${t("myPoints.stripe.adminNoteLabel")}: ${row.refund.admin_note}`
-                        : undefined
-                    }
-                    className={`flex items-center h-[20px] px-[8px] rounded-[10px] text-[10px] lg:text-[11px] font-bold whitespace-nowrap ${
-                      row.refund
-                        ? REFUND_STATUS_BADGE[row.refund.status]
-                        : PAID_BADGE
-                    }`}
+                    className={`flex items-center h-[20px] px-[8px] rounded-[10px] text-[10px] lg:text-[11px] font-bold whitespace-nowrap ${PAID_BADGE}`}
                   >
-                    {row.refund
-                      ? t(REFUND_STATUS_KEY[row.refund.status])
-                      : t("myPoints.stripe.statusPaid")}
+                    {t("myPoints.stripe.statusPaid")}
                   </span>
                 </div>
                 <div className="flex-[0.9] pr-[4px] flex justify-end font-bold whitespace-nowrap">
                   {formatDate(row.time * 1000, "MM/DD HH:mm")}
                 </div>
-                <div className="flex-[0.7] pr-[10px] flex justify-end">
-                  {!row.refund ? (
-                    <Button
-                      size="small"
-                      type="text"
-                      danger
-                      className="h-[22px] px-[6px] text-[10px] lg:text-[11px] font-bold"
-                      onClick={() => openRefundModal(row.order)}
-                    >
-                      {t("myPoints.stripe.refundApply")}
-                    </Button>
-                  ) : row.refund.status === "rejected" ? (
-                    <Button
-                      size="small"
-                      type="text"
-                      danger
-                      className="h-[22px] px-[6px] text-[10px] lg:text-[11px] font-bold"
-                      onClick={() => openReapplyModal(row)}
-                    >
-                      {t("myPoints.stripe.reapply")}
-                    </Button>
-                  ) : null}
-                </div>
+                <div className="flex-[0.7] pr-[10px]" />
               </div>
             )
           )
@@ -408,13 +264,6 @@ const PointsHistory = ({ records, recordsLoading }: Props) => {
           </div>
         )}
       </div>
-      <StripeRefundModal
-        target={refundTarget}
-        onClose={() => setRefundTarget(null)}
-        onSubmitted={refundRefresh}
-        onOrderStale={refundRefresh}
-        onRequestExists={refundRefresh}
-      />
     </div>
   );
 };
