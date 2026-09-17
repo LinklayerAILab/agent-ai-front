@@ -224,10 +224,9 @@ const PointsHistory = ({ records, recordsLoading }: Props) => {
                   {row.point}
                 </div>
                 <div className="flex-1" />
-                <div className="flex-[0.9] pr-[4px] flex justify-end font-bold whitespace-nowrap">
+                <div className="flex-[0.9] pr-[10px] flex justify-end font-bold whitespace-nowrap">
                   {formatDate(row.time * 1000, "MM/DD HH:mm")}
                 </div>
-                <div className="flex-[0.7] pr-[10px]" />
               </div>
             ) : (
               <div
@@ -251,10 +250,9 @@ const PointsHistory = ({ records, recordsLoading }: Props) => {
                     {t("myPoints.stripe.statusPaid")}
                   </span>
                 </div>
-                <div className="flex-[0.9] pr-[4px] flex justify-end font-bold whitespace-nowrap">
+                <div className="flex-[0.9] pr-[10px] flex justify-end font-bold whitespace-nowrap">
                   {formatDate(row.time * 1000, "MM/DD HH:mm")}
                 </div>
-                <div className="flex-[0.7] pr-[10px]" />
               </div>
             )
           )

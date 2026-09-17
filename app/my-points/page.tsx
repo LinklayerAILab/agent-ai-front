@@ -580,7 +580,7 @@ const Page = () => {
           </div>
         </div>
 
-        <div className="bg-white rounded-[8px] py-[18px] lg:py-[2vh] lg:w-[60%]">
+        <div className="bg-white rounded-[8px] py-[18px] lg:py-[2vh] lg:w-[55%]">
           <div className="text-[14px] lg:text-[16px] flex items-center justify-center gap-[4px] font-bold">
             <Image src={diamond} className="lg:w-[24px]" alt="diamond"></Image>
             {t("myPoints.pointsRecord")}
