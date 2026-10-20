@@ -277,13 +277,6 @@ export default function Menus(props: MenusProps) {
                   >
                     {t("menu.insight")}
                   </MenuButton>
-                  <MenuButton
-                    key={"/piloter"}
-                    checked={pathname === "/piloter" ? true : false}
-                    onClick={() => handleTo("/piloter")}
-                  >
-                    {t("menu.piloter")}
-                  </MenuButton>
 
                   <div className="block lg:hidden">
                     <MenuButton

@@ -53,11 +53,6 @@
         "medium": "Medium",
         "subscribe": "購読",
         "exchange": "リワード",
-        "tracker": "追跡",
-        "trackerTip": "戦略に基づいてトークンを絞り込む",
-        "picker": "選択",
-        "pickerTip": "現物または先物分析用のトークンを選択",
-        "piloter": "パイロット",
         "brc20": "BEP20"
     },
     "header": {
@@ -215,7 +210,6 @@
         "radicalShortDesc": "弱気志向で下降トレンドを鋭く見抜き、ショートポジションに自然に適しています。",
         "guardian": "守護型",
         "perpsMining": "パーペチュアルマイニング",
-        "perpsPilot": "パーペチュアルパイロット",
         "liquidationRewards": "清算報酬",
         "claim": "請求",
         "received": "受領済み",
@@ -245,11 +239,6 @@
         "insufficientPoints": "ポイントが不足しています。最低{{cost}}ポイント必要です",
         "syncPointsError": "ポイントの同期に失敗しました。もう一度お試しください",
         "claimHistory": "受取履歴",
-        "personalPosition": "個人ポジション",
-        "liveMonitoring": "リアルタイム監視",
-        "publicFactors": "公開要因",
-        "agentAdvice": "エージェントアドバイス",
-        "analyzing": "分析中...",
         "pointsNotEnough": "ポイントが不足しています"
     },
     "tribe": {
@@ -546,9 +535,6 @@
             "atr_trend": "ATRトレンド",
             "atr_exceed_highest": "ATR最高値超過"
         }
-    },
-    "piloter": {
-        "description": "パイロットページ - 近日公開"
     },
     "ranking": {
         "uploadApi": "API アップロード",

@@ -53,11 +53,6 @@
         "medium": "Medium",
         "subscribe": "Subscribe",
         "exchange": "Rewards",
-        "tracker": "Tracker",
-        "trackerTip": "Filter tokens by strategy",
-        "picker": "Picker",
-        "pickerTip": "Select a token for Spot or Futures analysis",
-        "piloter": "Piloter",
         "brc20": "BEP20"
     },
     "header": {
@@ -215,7 +210,6 @@
         "radicalShortDesc": "Bearish-oriented and sharp in spotting downturns, making him a natural fit for the short-side role.",
         "guardian": "Guardian",
         "perpsMining": "Perps Mining",
-        "perpsPilot": "Perps Pilot",
         "liquidationRewards": "Liquidation Rewards",
         "claim": "Claim",
         "received": "Received",
@@ -245,11 +239,6 @@
         "insufficientPoints": "Insufficient points, at least {{cost}} points required",
         "syncPointsError": "Failed to sync points, please try again",
         "claimHistory": "Claim History",
-        "personalPosition": "Personal Position",
-        "liveMonitoring": "Live Monitoring",
-        "publicFactors": "Public Factors",
-        "agentAdvice": "Agent Advice",
-        "analyzing": "Analyzing...",
         "pointsNotEnough": "Points not enough"
     },
     "tribe": {
@@ -544,9 +533,6 @@
             "atr_trend": "ATR Trend",
             "atr_exceed_highest": "ATR Exceed Highest"
         }
-    },
-    "piloter": {
-        "description": "Piloter page - Coming soon"
     },
     "ranking": {
         "uploadApi": "UPLOAD API",

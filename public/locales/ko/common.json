@@ -53,11 +53,6 @@
         "medium": "Medium",
         "subscribe": "교환",
         "exchange": "리워드",
-        "tracker": "거래",
-        "trackerTip": "전략별로 토큰 필터링",
-        "picker": "선택",
-        "pickerTip": "현물 또는 선물 분석을 위한 토큰 선택",
-        "piloter": "파일럿",
         "brc20": "BEP20"
     },
     "header": {
@@ -212,7 +207,6 @@
         "radicalShortDesc": "약세 지향적이며 하락세를 예리하게 감지하여 숏 포지션에 자연스럽게 적합합니다.",
         "guardian": "수호형",
         "perpsMining": "무기한 계약 마이닝",
-        "perpsPilot": "무기한 계약 파일럿",
         "liquidationRewards": "청산 보상",
         "claim": "청구",
         "received": "수령 완료",
@@ -242,11 +236,6 @@
         "insufficientPoints": "포인트가 부족합니다. 최소 {{cost}}포인트가 필요합니다",
         "syncPointsError": "포인트 동기화에 실패했습니다. 다시 시도해주세요",
         "claimHistory": "수령 내역",
-        "personalPosition": "개인 포지션",
-        "liveMonitoring": "실시간 모니터링",
-        "publicFactors": "공개 요인",
-        "agentAdvice": "에이전트 조언",
-        "analyzing": "분석 중...",
         "pointsNotEnough": "포인트가 부족합니다"
     },
     "tribe": {
@@ -543,9 +532,6 @@
             "atr_trend": "ATR 추세",
             "atr_exceed_highest": "ATR 최고치 초과"
         }
-    },
-    "piloter": {
-        "description": "파일럿 페이지 - 곧 출시"
     },
     "ranking": {
         "uploadApi": "API 업로드",

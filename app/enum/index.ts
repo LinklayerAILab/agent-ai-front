@@ -28,7 +28,6 @@ export const CONTRACT=process.env.NEXT_PUBLIC_CONTRACT;
 export const AGENT_POINTS_COST = {
   ALPHA: 5,
   TRACKER: 5,
-  PERPS: 10,
   INSIGHT_SPOT: 10,
   PICKER: 10,
 } as const;

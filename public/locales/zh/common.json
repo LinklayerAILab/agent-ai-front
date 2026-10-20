@@ -53,11 +53,6 @@
         "medium": "Medium",
         "subscribe": "订阅",
         "exchange": "奖励",
-        "tracker": "跟踪",
-        "trackerTip": "按策略筛选符合条件的代币",
-        "picker": "选择",
-        "pickerTip": "选择代币进行现货或合约分析",
-        "piloter": "领航员",
         "brc20": "BEP20"
     },
     "header": {
@@ -210,7 +205,6 @@
         "radicalShortDesc": "看跌导向且善于发现下跌趋势，自然适合做空。",
         "guardian": "守护型",
         "perpsMining": "合约挖矿",
-        "perpsPilot": "合约领航",
         "liquidationRewards": "清算奖励",
         "claim": "领取",
         "received": "已领取",
@@ -240,11 +234,6 @@
         "insufficientPoints": "积分不足，需要至少{{cost}}积分",
         "syncPointsError": "同步积分失败，请重试",
         "claimHistory": "领取历史",
-        "personalPosition": "个人持仓",
-        "liveMonitoring": "实时监控",
-        "publicFactors": "公开因子",
-        "agentAdvice": "代理建议",
-        "analyzing": "分析中...",
         "pointsNotEnough": "积分不足"
     },
     "tribe": {
@@ -541,9 +530,6 @@
             "atr_trend": "ATR持续走高或走低",
             "atr_exceed_highest": "ATR突破历史高点"
         }
-    },
-    "piloter": {
-        "description": "领航员页面 - 即将推出"
     },
     "ranking": {
         "uploadApi": "上传 API",

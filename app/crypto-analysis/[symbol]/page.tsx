@@ -21,10 +21,16 @@ import {
   analyse_coin_c_steaming,
   get_spot_price,
 } from "@/app/api/agent_c";
-import { MessageChunk } from "@/app/piloter/types";
 import { message } from "antd";
 import { StreamMessage } from "@/app/components/StreamMessage";
 import FlipNumbers from "react-flip-numbers";
+
+// Define message chunk interface
+interface MessageChunk {
+  id: string;
+  content: string;
+  timestamp: number;
+}
 
 export default function CryptoAnalysis() {
   const params = useParams();
