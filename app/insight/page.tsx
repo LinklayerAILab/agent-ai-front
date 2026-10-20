@@ -4,7 +4,7 @@ import netbox from "@/app/images/home/netbg.svg";
 import { useTranslation } from "react-i18next";
 import Image from "next/image";
 import { useEffect, useMemo, useState } from "react";
-import { useRouter, usePathname } from "next/navigation";
+import { useRouter } from "next/navigation";
 import PlatformList from "../components/Home/PlatformList";
 import light from "@/app/images/home/light.svg";
 import clock2 from "@/app/images/home/clock2.svg";
@@ -13,12 +13,7 @@ import rightIcon3 from "@/app/images/home/rightIcon3.svg";
 import selectOut from "@/app/images/home/selectOut.svg";
 import dayjs from "dayjs";
 
-import { LeftOutlined, RightOutlined } from "@ant-design/icons";
 import { Popover, Rate, Statistic } from "antd";
-import { Swiper, SwiperSlide } from "swiper/react";
-import { Navigation } from "swiper/modules";
-import "swiper/css";
-import "swiper/css/navigation";
 
 const { Countdown } = Statistic;
 
@@ -29,7 +24,6 @@ import PopoverContent from "../components/PopoverContent";
 import {
   ClaimInfoItem,
   get_claim_info,
-  GetAssetWithLogoItem,
   liquidation_calculated,
   liquidation_undue,
   LiquidationCalculatedResponse,
@@ -39,14 +33,9 @@ import { AppDispatch, RootState } from "@/app/store";
 import {
   getContractExpertScore,
   getSpotExpertScore,
-  getSyncAssets,
-  setAssets,
   setLongScore,
   setShortScore,
 } from "@/app/store/assetsSlice";
-import { syncPoints } from "@/app/store/userSlice";
-import { AGENT_POINTS_COST } from "@/app/enum";
-import { message } from "antd";
 
 interface InsightDashboardData {
   claimInfo: ClaimInfoItem[] | null;
@@ -77,7 +66,6 @@ const fetchInsightDashboardData = async (
 
 export default function InsightPage() {
   const router = useRouter();
-  const pathname = usePathname();
   const { t } = useTranslation();
 
   const longScore = useSelector((state: RootState) => state.assets.longScore);
@@ -94,30 +82,10 @@ export default function InsightPage() {
     router.push("/apiForm");
   };
 
-  const handleCryptoClick = async (crypto: GetAssetWithLogoItem) => {
-    try {
-      const spotCost = AGENT_POINTS_COST.INSIGHT_SPOT;
-      const result = await dispatch(syncPoints()).unwrap();
-
-      if (result < spotCost) {
-        message.warning(t("home.insufficientPoints", { cost: spotCost }));
-        return;
-      }
-
-      const currentPath = encodeURIComponent(pathname!);
-      router.push(`/crypto-analysis/${crypto.asset}?backUrl=${currentPath}`);
-    } catch {
-      message.error(t("home.syncPointsError"));
-    }
-  };
-
-  const assets = useSelector((state: RootState) => state.assets.assets);
-
   const dispatch = useDispatch<AppDispatch>();
 
   useEffect(() => {
     if (isLogin) {
-      dispatch(getSyncAssets("binance"));
       dispatch(getContractExpertScore("binance"));
       dispatch(getSpotExpertScore("binance"));
 
@@ -129,7 +97,6 @@ export default function InsightPage() {
         clearInterval(scoreInterval);
       };
     } else {
-      dispatch(setAssets([]));
       dispatch(setLongScore(0));
       dispatch(setShortScore(0));
     }
@@ -338,83 +305,6 @@ export default function InsightPage() {
                 </div>
               </div>
             </div>
-            {assets.length > 0 && (
-            <div className="platform-box rounded-[8px] bg-black lg:bg-[#F2F2F2] h-[48px] lg:h-[7vh] xl:h-[10vh] px-[14px] flex items-center gap-3">
-              <div className="flex w-[100%] items-center h-[33px] lg:h-[100%] select-none">
-                <div className="crypto-swiper-button-prev flex items-center justify-center cursor-pointer hover:opacity-70 transition-opacity pr-[10px]">
-                  <LeftOutlined
-                    style={{ fontSize: "16px" }}
-                    className="text-white lg:text-black"
-                  />
-                </div>
-
-                {
-                  <Swiper
-                    key={assets.length}
-                    modules={[Navigation]}
-                    slidesPerView={7}
-                    slidesPerGroup={7}
-                    spaceBetween={12}
-                    watchOverflow={false}
-                    breakpoints={{
-                      320: {
-                        slidesPerView: 6,
-                        slidesPerGroup: 6,
-                        spaceBetween: 12,
-                      },
-                      1024: {
-                        slidesPerView: 8,
-                        slidesPerGroup: 8,
-                        spaceBetween: 12,
-                      },
-                    }}
-                    navigation={{
-                      prevEl: ".crypto-swiper-button-prev",
-                      nextEl: ".crypto-swiper-button-next",
-                    }}
-                    loop={assets.length > 8}
-                    className="w-full h-full"
-                  >
-                    {assets.map((crypto, index) => (
-                          <SwiperSlide
-                            title={crypto.asset}
-                            key={index}
-                            className="flex items-center justify-center h-[100%]"
-                          >
-                            <div
-                              className={`rounded-full flex items-center justify-center text-white text-[12px] font-bold cursor-pointer hover:scale-110 transition-transform h-[100%] `}
-                              onClick={() => handleCryptoClick(crypto)}
-                            >
-                              {crypto.logo ? (
-                                <Image
-                                  src={crypto.logo}
-                                  alt={crypto.asset}
-                                  width={32}
-                                  height={32}
-                                  className="w-[32px] h-[32px] lg:w-[3.8vh] lg:h-[3.8vh] rounded-full bg-white"
-                                />
-                              ) : (
-                                <div
-                                  className={`bg-[#eee] text-black rounded-full flex items-center justify-center w-[32px] h-[32px] lg:w-[3.8vh] lg:h-[3.8vh] rounded-full font-bold cursor-pointer hover:scale-110 border-[#666] border-solid border-[1px] transition-transform `}
-                                >
-                                  {crypto.asset.slice(0, 2)}
-                                </div>
-                              )}
-                            </div>
-                          </SwiperSlide>
-                        ))}
-                  </Swiper>
-                }
-
-                <div className="crypto-swiper-button-next flex items-center justify-center cursor-pointer hover:opacity-70 transition-opacity pl-[10px]">
-                  <RightOutlined
-                    style={{ fontSize: "16px" }}
-                    className="text-white lg:text-black"
-                  />
-                </div>
-              </div>
-            </div>
-            )}
           </div>
         </div>
         <div className="rounded-[8px] h-[100%] w-[100%] lg:w-[59%] mt-[20px] lg:mt-0">
