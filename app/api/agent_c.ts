@@ -291,6 +291,35 @@ export const recommend_coin_c_steaming = (
   );
 };
 
+export const position_risk_management = (
+  str: string,
+  symbol?: string,
+  endFun?: () => void,
+  abortController?: AbortController,
+) => {
+  const requestBody: Record<string, unknown> = { input: str };
+  if (symbol) {
+    requestBody.include_funding = true;
+    requestBody.symbol = symbol;
+  }
+
+  return streamingRequest<StreamingResponse>(
+    `/api/v1/position_risk_management`,
+    {
+      method: "post",
+      cache: "no-store",
+      body: JSON.stringify(requestBody),
+      headers: {
+        "Content-Type": "application/json; charset=UTF-8",
+      },
+    },
+    {
+      endFun,
+      abortController,
+    },
+  );
+};
+
 export const liquidity_check_dify = (
   str: string,
   endFun?: () => void,
@@ -613,6 +642,32 @@ export const get_cex = () => {
     method: "get",
     cache: "no-store",
   });
+};
+
+// /position_symbols
+export interface PositionSymbolsParams {
+  cex_name: string;
+}
+export interface PositionSymbolsItem {
+  symbol: string;
+  position_side: string;
+  update_time: number;
+}
+export interface PositionSymbolsResponse extends AgentCResponse {
+  data: {
+    symbols: PositionSymbolsItem[];
+    total_count: number;
+  };
+}
+export const position_symbols = (data: PositionSymbolsParams) => {
+  return request<PositionSymbolsResponse>(
+    `${AGENT_C_API}/v1/position_symbols`,
+    {
+      method: "post",
+      body: JSON.stringify(data),
+      cache: "no-store",
+    },
+  );
 };
 
 export interface ClaimInfoItem {

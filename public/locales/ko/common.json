@@ -207,6 +207,11 @@
         "radicalShortDesc": "약세 지향적이며 하락세를 예리하게 감지하여 숏 포지션에 자연스럽게 적합합니다.",
         "guardian": "수호형",
         "perpsMining": "무기한 계약 마이닝",
+        "perpsPilot": "무기한 계약 파일럿",
+        "personalPosition": "개인 포지션",
+        "liveMonitoring": "실시간 모니터링",
+        "publicFactors": "공개 요인",
+        "agentAdvice": "에이전트 조언",
         "liquidationRewards": "청산 보상",
         "claim": "청구",
         "received": "수령 완료",
@@ -609,7 +614,8 @@
         "entry": "분석 기록",
         "tabs": {
             "bep20": "BEP20",
-            "alpha": "ALPHA"
+            "alpha": "ALPHA",
+            "insight": "INSIGHT"
         },
         "type": {
             "analyse_coin": "코인 분석",

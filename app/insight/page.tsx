@@ -3,7 +3,7 @@ import "./Home.scss";
 import netbox from "@/app/images/home/netbg.svg";
 import { useTranslation } from "react-i18next";
 import Image from "next/image";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import PlatformList from "../components/Home/PlatformList";
 import light from "@/app/images/home/light.svg";
@@ -13,7 +13,7 @@ import rightIcon3 from "@/app/images/home/rightIcon3.svg";
 import selectOut from "@/app/images/home/selectOut.svg";
 import dayjs from "dayjs";
 
-import { Popover, Rate, Statistic } from "antd";
+import { message, Popover, Rate, Statistic } from "antd";
 
 const { Countdown } = Statistic;
 
@@ -27,7 +27,14 @@ import {
   liquidation_calculated,
   liquidation_undue,
   LiquidationCalculatedResponse,
+  position_risk_management,
+  position_symbols,
+  PositionSymbolsResponse,
 } from "@/app/api/agent_c";
+import { MessageChunk } from "@/app/components/ChatMessage";
+import { HomeAnalysisResult } from "../components/Home/HomeAnalysisResult";
+import { CoinSlide } from "../components/Home/CoinSlide";
+import star from "@/app/images/home/star.svg";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "@/app/store";
 import {
@@ -36,11 +43,14 @@ import {
   setLongScore,
   setShortScore,
 } from "@/app/store/assetsSlice";
+import { syncPoints } from "@/app/store/userSlice";
+import { AGENT_POINTS_COST } from "@/app/enum";
 
 interface InsightDashboardData {
   claimInfo: ClaimInfoItem[] | null;
   undue?: LiquidationCalculatedResponse;
   calculated?: LiquidationCalculatedResponse;
+  positionSymbols?: PositionSymbolsResponse;
 }
 
 const insightDashboardCache = new Map<string, InsightDashboardData>();
@@ -49,10 +59,11 @@ const insightDashboardPromise = new Map<string, Promise<InsightDashboardData>>()
 const fetchInsightDashboardData = async (
   cexName: string
 ): Promise<InsightDashboardData> => {
-  const [claimRes, undueRes, calculatedRes] = await Promise.allSettled([
+  const [claimRes, undueRes, calculatedRes, symbolsRes] = await Promise.allSettled([
     get_claim_info({ cex_name: cexName, channel_ids: [2,3] }),
     liquidation_undue({ cex_name: cexName }),
     liquidation_calculated({ cex_name: cexName }),
+    position_symbols({ cex_name: cexName }),
   ]);
 
   return {
@@ -61,6 +72,8 @@ const fetchInsightDashboardData = async (
     undue: undueRes.status === "fulfilled" ? undueRes.value : undefined,
     calculated:
       calculatedRes.status === "fulfilled" ? calculatedRes.value : undefined,
+    positionSymbols:
+      symbolsRes.status === "fulfilled" ? symbolsRes.value : undefined,
   };
 };
 
@@ -78,6 +91,264 @@ export default function InsightPage() {
     }
     return false;
   }, [longScore, shortScore]);
+  const points = useSelector((state: RootState) => state.user.points);
+  const [tab, setTab] = useState(1);
+
+  // Coin analysis related states
+  const [messageChunks, setMessageChunks] = useState<MessageChunk[]>([]);
+  const [status, setStatus] = useState<
+    "init" | "loading" | "generating" | "end"
+  >("init");
+  const [loading, setLoading] = useState(false);
+  const streamAbortController = useRef<AbortController | null>(null);
+
+  const initData = {
+    code: 0,
+    message: "",
+    data: {
+      symbols: [
+        {
+          symbol: "",
+          position_side: "",
+          update_time: 0,
+        },
+        {
+          symbol: "",
+          position_side: "",
+          update_time: 0,
+        },
+        {
+          symbol: "",
+          position_side: "",
+          update_time: 0,
+        },
+        {
+          symbol: "",
+          position_side: "",
+          update_time: 0,
+        },
+        {
+          symbol: "",
+          position_side: "",
+          update_time: 0,
+        },
+        {
+          symbol: "",
+          position_side: "",
+          update_time: 0,
+        },
+        {
+          symbol: "",
+          position_side: "",
+          update_time: 0,
+        },
+      ],
+      total_count: 0,
+    },
+  };
+  const [positionSymbols, setPositionSymbols] =
+    useState<PositionSymbolsResponse>(initData);
+
+  const handleTab = async (v: number) => {
+    setTab(v);
+    if (!isLogin) {
+      return;
+    }
+    if (v === 2) {
+      try {
+        const res = await position_symbols({ cex_name: selectCex });
+        if(res.data.symbols.length===0){
+          setPositionSymbols(initData);
+        }else {
+          setPositionSymbols(res);
+        }
+
+      } catch {
+        setPositionSymbols(initData);
+      }
+    }
+  };
+
+  const [selectCoin, setSelectCoin] = useState<{
+    update_time: number;
+    symbol: string;
+  }>({ update_time: 0, symbol: "" });
+
+  const handleAnalizeCoin = async (data: {
+    update_time: number;
+    symbol: string;
+  }) => {
+    if (!data.symbol) {
+      return;
+    }
+
+    if (!isLogin) {
+      message.warning("please login first");
+      return;
+    }
+
+    setSelectCoin(data);
+    await dispatch(syncPoints());
+    const perpsCost = AGENT_POINTS_COST.PERPS;
+    if (points < perpsCost) {
+      message.warning(t("home.insufficientPoints", { cost: perpsCost }));
+      return;
+    }
+    if (status === "loading" || status === "generating") {
+      message.warning(t("common.taskRunning"));
+      return;
+    }
+    if (loading) {
+      setLoading(false);
+    }
+
+    setMessageChunks([]);
+    setStatus("loading");
+
+    try {
+      setLoading(true);
+
+      streamAbortController.current = new AbortController();
+
+      const streamGenerator = position_risk_management(
+        `${t("agent.analyze")}|symbol:${data.symbol}|${selectCex}`,
+        data.symbol,
+        undefined,
+        streamAbortController.current
+      );
+
+      for await (const chunk of streamGenerator) {
+        if (streamAbortController.current?.signal.aborted) {
+          break;
+        }
+
+        let newContent = "";
+
+        if (chunk && typeof chunk === "object") {
+          if (
+            "event" in chunk &&
+            chunk.event === "message" &&
+            "answer" in chunk &&
+            chunk.answer !== undefined
+          ) {
+            newContent = chunk.answer;
+
+            const newChunk: MessageChunk = {
+              id: `chunk_${Date.now()}_${Math.random()
+                .toString(36)
+                .substr(2, 9)}`,
+              content: newContent,
+              timestamp: Date.now(),
+            };
+
+            setMessageChunks((prev) => {
+              if (prev.length === 0) {
+                setStatus("generating");
+              }
+              return [...prev, newChunk];
+            });
+          } else if ("event" in chunk && chunk.event === "workflow_started") {
+            // Workflow started
+          } else if ("event" in chunk && chunk.event === "workflow_finished") {
+            streamAbortController.current = null;
+          } else if ("event" in chunk && chunk.event === "message_end") {
+            streamAbortController.current = null;
+          } else {
+            if ("data" in chunk && chunk.data?.analyse_result?.output?.output) {
+              newContent = chunk.data.analyse_result.output.output;
+            } else if (
+              "data" in chunk &&
+              (chunk.data?.text || chunk.data?.content)
+            ) {
+              newContent = chunk.data.text || chunk.data.content || "";
+            } else if ("text" in chunk && chunk.text) {
+              newContent = chunk.text;
+            } else if ("content" in chunk && chunk.content) {
+              newContent = chunk.content;
+            } else if ("answer" in chunk && chunk.answer) {
+              newContent = chunk.answer;
+            }
+
+            if (newContent && newContent.trim()) {
+              const newChunk: MessageChunk = {
+                id: `chunk_${Date.now()}_${Math.random()
+                  .toString(36)
+                  .substr(2, 9)}`,
+                content: newContent,
+                timestamp: Date.now(),
+              };
+
+              setMessageChunks((prev) => {
+                if (prev.length === 0) {
+                  setStatus("generating");
+                }
+                return [...prev, newChunk];
+              });
+            }
+          }
+        }
+      }
+
+      setStatus("end");
+    } catch (error) {
+      if (error instanceof DOMException && error.name === "AbortError") {
+        return;
+      }
+
+      setLoading(false);
+      setMessageChunks([]);
+      setStatus("init");
+
+      if (typeof window !== "undefined") {
+        window.dispatchEvent(new Event("textLoaded"));
+      }
+
+      message.error(
+        t("common.analysisFailed") || "Analysis failed, please try again"
+      );
+    } finally {
+      streamAbortController.current = null;
+    }
+  };
+
+  const stopCreation = () => {
+    if (streamAbortController.current) {
+      streamAbortController.current.abort();
+      streamAbortController.current = null;
+    }
+
+    setLoading(false);
+    setMessageChunks([]);
+    setStatus("init");
+
+    if (typeof window !== "undefined") {
+      window.dispatchEvent(new Event("textLoaded"));
+    }
+  };
+
+  useEffect(() => {
+    const handleTextLoading = () => {
+      setStatus("generating");
+    };
+
+    const handleTextLoaded = () => {
+      setStatus("end");
+    };
+
+    window.addEventListener("textLoading", handleTextLoading);
+    window.addEventListener("textLoaded", handleTextLoaded);
+
+    return () => {
+      window.removeEventListener("textLoading", handleTextLoading);
+      window.removeEventListener("textLoaded", handleTextLoaded);
+
+      if (streamAbortController.current) {
+        streamAbortController.current.abort();
+        streamAbortController.current = null;
+      }
+    };
+  }, []);
+
   const handleUpload = () => {
     router.push("/apiForm");
   };
@@ -134,6 +405,7 @@ export default function InsightPage() {
         );
         setUndue(cached.undue);
         setCalculated(cached.calculated);
+        setPositionSymbols(cached.positionSymbols || initData);
         return;
       }
 
@@ -152,11 +424,13 @@ export default function InsightPage() {
         );
         setUndue(data.undue);
         setCalculated(data.calculated);
+        setPositionSymbols(data.positionSymbols || initData);
       } catch {
         if (cancelled) return;
         setClaimInfo([...initClaimList]);
         setUndue(undefined);
         setCalculated(undefined);
+        setPositionSymbols(initData);
       } finally {
         insightDashboardPromise.delete(selectCex);
       }
@@ -188,6 +462,7 @@ export default function InsightPage() {
       setClaimInfo([...initClaimList]);
       setUndue(undefined);
       setCalculated(undefined);
+      setPositionSymbols(initData);
     }
   }, [selectCex, isLogin]);
 
@@ -309,11 +584,30 @@ export default function InsightPage() {
         </div>
         <div className="rounded-[8px] h-[100%] w-[100%] lg:w-[59%] mt-[20px] lg:mt-0">
           <div className="h-auto lg:h-[78.5vh]  rounded-[8px] px-[0] py-[14px] lg:py-[2vh] lg:px-[2vh] bg-[transparent] lg:bg-[#fff] lg:bg-white]">
+            <div className="flex text-[18px] font-bold rounded-[8px] h-[44px] lg:h-[5vh] cursor-pointer">
+              <div
+                onClick={() => handleTab(1)}
+                className={`home-btn flex-1 flex items-center justify-center bg-black text-white gap-2  border-[2px] border-black border-solid rounded-l-[8px] ${
+                  tab === 1 && "selected"
+                }`}
+              >
+                {t("home.perpsMining")}
+              </div>
+              <div
+                onClick={() => handleTab(2)}
+                className={`home-btn flex-1 flex items-center justify-center gap-2 border-[2px] border-black border-solid rounded-r-[8px] ${
+                  tab === 2 && "selected"
+                }`}
+              >
+                {t("home.perpsPilot")}
+              </div>
+            </div>
+            {tab === 1 && (
             <div
-              className="bg-[#ebebeb] p-[14px] lg:p-0 lg:bg-[#fff] rounded-[8px] h-auto lg:h-[74vh] mt-[2vh] relative w-[100%]"
+              className="bg-[#ebebeb] p-[14px] lg:p-0 lg:bg-[#fff] rounded-[8px] h-auto lg:h-[68vh] mt-[2vh] relative w-[100%]"
               id="context-box-2"
             >
-                <div className="flex flex-col lg:flex-row items-center justify-between gap-[2vh] lg:h-[49vh]">
+                <div className="flex flex-col lg:flex-row items-center justify-between gap-[2vh] lg:h-[44vh]">
                   <ReceivedCard
                     bg="bg-[#EBFF99]"
                     title={t("home.retroactiveBonus")}
@@ -462,6 +756,112 @@ export default function InsightPage() {
                   </div>
                 </div>
             </div>
+            )}
+            {tab === 2 && (
+              <div className="rounded-[8px] h-auto lg:h-[67vh] mt-[2vh] w-[100%]">
+                <div className="bg-white rounded-[8px] lg:h-[68vh] border-[1px] border-solid border-black lg:border-none mt-[14px] lg:mt-0 relative">
+
+                  <div className="block border-[1px] border-solid border-black rounded-[8px] overflow-x-hidden overflow-hidden">
+                    <div
+                      className="lg:h-[54vh]"
+                      id="scroll-box-pilot"
+                    >
+                      <div className="lg:px-[2vh] lg:pt-[2vh] lg:pb-[1vh] flex items-center gap-2 lg:gap-4 font-bold text-[11px] lg:text-[12px] rounded-[8px]">
+                        <div className="border-[1px] border-solid border-black rounded-[4px] px-[8px] py-[2px] lg:py-2 bg-[#E9FF93] flex items-center gap-1 flex-1 flex items-center justify-center">
+                          <Image
+                            src={star}
+                            alt="star"
+                            className="hidden lg:inline-block"
+                          ></Image>{" "}
+                          {t("home.personalPosition")}
+                        </div>
+                        <div className="border-[1px] border-solid border-black rounded-[4px] px-[8px] py-[2px] lg:py-2 bg-[#F9FFE2] flex items-center gap-1 flex-1 flex items-center justify-center">
+                          <Image
+                            src={star}
+                            alt="star"
+                            className="hidden lg:inline-block"
+                          ></Image>
+                          {t("home.liveMonitoring")}
+                        </div>
+                        <div className="border-[1px] border-solid border-black rounded-[4px] px-[8px] py-[2px] lg:py-2 bg-[#C4BEFF] flex items-center gap-1 flex-1 flex items-center justify-center">
+                          <Image
+                            src={star}
+                            alt="star"
+                            className="hidden lg:inline-block"
+                          ></Image>
+                          {t("home.publicFactors")}
+                        </div>
+                        <div className="border-[1px] border-solid border-black rounded-[4px] px-[8px] py-[2px] lg:py-2 bg-[#F6EFFF] flex items-center gap-1 flex-1 flex items-center justify-center">
+                          <Image
+                            src={star}
+                            alt="star"
+                            className="hidden lg:inline-block"
+                          ></Image>
+                          {t("home.agentAdvice")}
+                        </div>
+                      </div>
+                      <div className="lg:h-[47vh]">
+                        <HomeAnalysisResult
+                          status={status}
+                          stopCreation={stopCreation}
+                          tip={t("home.analyzing")}
+                          loading={loading}
+                          messages={messageChunks}
+                          currentCoin={selectCoin}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                  <div className="rounded-[8px] px-[10px] lg:px-0 py-[18px] lg:py-[14px] lg:p-0 lg:bg-[#fff] h-auto lg:h-[12vh] relative w-[100%]">
+                    <style>{`
+                        #date-swiper::-webkit-scrollbar {
+                          height: 4px;
+                        }
+                        #date-swiper::-webkit-scrollbar-track {
+                          background: transparent;
+                        }
+                        #date-swiper::-webkit-scrollbar-thumb {
+                          background-color: #cf0;
+                          border-radius: 4px;
+                        }
+                        #date-swiper::-webkit-scrollbar-thumb:hover {
+                          background-color: #abd501;
+                        }
+                      `}</style>
+
+                    <div className="w-[100%] h-auto lg:h-[12vh]">
+                      <div
+                        id="date-swiper2"
+                        className="flex flex-col lg:flex-row gap-[10px] lg:gap-[14px] h-full overflow-y-auto overflow-x-hidden lg:overflow-x-auto lg:overflow-y-hidden scroll-smooth"
+                        style={{
+                          scrollbarWidth: "thin",
+                          scrollbarColor: "#cf0 #eee",
+                        }}
+                      >
+                        {positionSymbols?.data.symbols.map((item, index) => (
+                          <div
+                            key={`${item.symbol}-${index}`}
+                            className={`flex-shrink-0 w-[100%] lg:w-[200px] ${
+                              item.symbol
+                                ? "cursor-pointer"
+                                : "cursor-not-allowed"
+                            } rounded-[4px] overflow-hidden`}
+                          >
+                            <CoinSlide
+                              onClick={handleAnalizeCoin}
+                              data={{
+                                update_time: item.update_time,
+                                symbol: item.symbol,
+                              }}
+                            ></CoinSlide>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </div>

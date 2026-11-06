@@ -24,13 +24,15 @@ import "./page.scss";
 
 const PAGE_SIZE = 20;
 
-/** 本页只展示这两个分析类型，每个 Tab 直查对应接口。
- *  Tab 文案：BEP20 / ALPHA（业务线维度）；底层查询映射：
+/** 本页展示三个分析业务线，每个 Tab 直查对应接口。
+ *  Tab 文案：BEP20 / ALPHA / INSIGHT（业务线维度）；底层查询映射：
  *    BEP20 → binance_token_analysis
- *    ALPHA → liquidity_check */
+ *    ALPHA → liquidity_check
+ *    INSIGHT → risk_management（insight 合约领航单币分析） */
 const TABS: { key: AnalysisServiceType; i18nKey: string }[] = [
   { key: "binance_token_analysis", i18nKey: "analysisHistory.tabs.bep20" },
   { key: "liquidity_check", i18nKey: "analysisHistory.tabs.alpha" },
+  { key: "risk_management", i18nKey: "analysisHistory.tabs.insight" },
 ];
 
 /** 把后端 time.Time 序列化字符串解析成毫秒时间戳（失败返回 0） */

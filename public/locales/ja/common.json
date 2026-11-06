@@ -210,6 +210,11 @@
         "radicalShortDesc": "弱気志向で下降トレンドを鋭く見抜き、ショートポジションに自然に適しています。",
         "guardian": "守護型",
         "perpsMining": "パーペチュアルマイニング",
+        "perpsPilot": "パーペチュアルパイロット",
+        "personalPosition": "個人ポジション",
+        "liveMonitoring": "リアルタイム監視",
+        "publicFactors": "公開要因",
+        "agentAdvice": "エージェントアドバイス",
         "liquidationRewards": "清算報酬",
         "claim": "請求",
         "received": "受領済み",
@@ -612,7 +617,8 @@
         "entry": "分析履歴",
         "tabs": {
             "bep20": "BEP20",
-            "alpha": "ALPHA"
+            "alpha": "ALPHA",
+            "insight": "INSIGHT"
         },
         "type": {
             "analyse_coin": "コイン分析",

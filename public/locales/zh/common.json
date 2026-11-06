@@ -205,6 +205,11 @@
         "radicalShortDesc": "看跌导向且善于发现下跌趋势，自然适合做空。",
         "guardian": "守护型",
         "perpsMining": "合约挖矿",
+        "perpsPilot": "合约领航",
+        "personalPosition": "个人持仓",
+        "liveMonitoring": "实时监控",
+        "publicFactors": "公开因子",
+        "agentAdvice": "代理建议",
         "liquidationRewards": "清算奖励",
         "claim": "领取",
         "received": "已领取",
@@ -607,7 +612,8 @@
         "entry": "分析记录",
         "tabs": {
             "bep20": "BEP20",
-            "alpha": "ALPHA"
+            "alpha": "ALPHA",
+            "insight": "INSIGHT"
         },
         "type": {
             "analyse_coin": "单币分析",

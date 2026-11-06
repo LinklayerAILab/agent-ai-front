@@ -204,6 +204,11 @@
         "radicalShortDesc": "Медвежья ориентация и острое чутье на спады, что делает его естественным для коротких позиций.",
         "guardian": "Защитный",
         "perpsMining": "Майнинг бессрочных контрактов",
+        "perpsPilot": "Пилот бессрочных контрактов",
+        "personalPosition": "Личная позиция",
+        "liveMonitoring": "Мониторинг в реальном времени",
+        "publicFactors": "Публичные факторы",
+        "agentAdvice": "Совет агента",
         "liquidationRewards": "Награды за ликвидацию",
         "claim": "Получить",
         "received": "Получено",
@@ -598,7 +603,8 @@
         "entry": "История анализов",
         "tabs": {
             "bep20": "BEP20",
-            "alpha": "ALPHA"
+            "alpha": "ALPHA",
+            "insight": "INSIGHT"
         },
         "type": {
             "analyse_coin": "Анализ монеты",

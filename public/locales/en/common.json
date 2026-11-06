@@ -210,6 +210,11 @@
         "radicalShortDesc": "Bearish-oriented and sharp in spotting downturns, making him a natural fit for the short-side role.",
         "guardian": "Guardian",
         "perpsMining": "Perps Mining",
+        "perpsPilot": "Perps Pilot",
+        "personalPosition": "Personal Position",
+        "liveMonitoring": "Live Monitoring",
+        "publicFactors": "Public Factors",
+        "agentAdvice": "Agent Advice",
         "liquidationRewards": "Liquidation Rewards",
         "claim": "Claim",
         "received": "Received",
@@ -610,7 +615,8 @@
         "entry": "Analysis History",
         "tabs": {
             "bep20": "BEP20",
-            "alpha": "ALPHA"
+            "alpha": "ALPHA",
+            "insight": "INSIGHT"
         },
         "type": {
             "analyse_coin": "Coin Analysis",
