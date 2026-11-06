@@ -1,0 +1,20 @@
+.page-analysis-history {
+  .list-box {
+    .list-item-ele {
+      background: #E9FF93;
+
+      // 失败行：禁用光标，不参与悬停高亮
+      &.disabled {
+        cursor: not-allowed;
+      }
+
+      &:nth-last-of-type(odd) {
+        background: #F9FFE2;
+      }
+
+      &:not(.disabled):hover {
+        background: #DFFF67;
+      }
+    }
+  }
+}

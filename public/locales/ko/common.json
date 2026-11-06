@@ -604,6 +604,33 @@
         "retry": "다시 시도",
         "refresh": "상태 새로고침"
     },
+    "analysisHistory": {
+        "title": "분석 기록",
+        "entry": "분석 기록",
+        "tabs": {
+            "bep20": "BEP20",
+            "alpha": "ALPHA"
+        },
+        "type": {
+            "analyse_coin": "코인 분석",
+            "execute_strategy": "전략 실행",
+            "risk_management": "리스크 관리",
+            "liquidity_check": "유동성 검사",
+            "binance_token_analysis": "Binance 토큰 분석",
+            "guard_coin_analysis": "Guard"
+        },
+        "status": {
+            "ok": "정상",
+            "partial": "불완전",
+            "failed": "실패"
+        },
+        "partialTip": "내용이 불완전할 수 있습니다",
+        "loadMore": "더 불러오기",
+        "noMore": "더 이상 없음",
+        "loadFailed": "불러오기에 실패했습니다. 다시 시도해 주세요.",
+        "empty": "아직 분석 기록이 없습니다",
+        "emptyDesc": "AI 분석을 실행하면 여기에 표시됩니다"
+    },
     "alpha": {
         "card": {
             "explorer": "탐색",

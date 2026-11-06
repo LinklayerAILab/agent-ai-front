@@ -602,6 +602,33 @@
         "retry": "再试一次",
         "refresh": "刷新状态"
     },
+    "analysisHistory": {
+        "title": "分析历史",
+        "entry": "分析记录",
+        "tabs": {
+            "bep20": "BEP20",
+            "alpha": "ALPHA"
+        },
+        "type": {
+            "analyse_coin": "单币分析",
+            "execute_strategy": "策略执行",
+            "risk_management": "持仓风险",
+            "liquidity_check": "流动性检查",
+            "binance_token_analysis": "币安代币分析",
+            "guard_coin_analysis": "Guard 单币"
+        },
+        "status": {
+            "ok": "正常",
+            "partial": "不完整",
+            "failed": "失败"
+        },
+        "partialTip": "内容可能不完整",
+        "loadMore": "加载更多",
+        "noMore": "没有更多了",
+        "loadFailed": "加载失败，请重试",
+        "empty": "还没有分析记录",
+        "emptyDesc": "运行一次 AI 分析后，会显示在这里"
+    },
     "alpha": {
         "liquidityAnalysis": "流动性分析",
         "liquidityCheck": "流动性检查",

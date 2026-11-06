@@ -10,7 +10,7 @@ import {
   logout,
   setOtherInfo,
 } from "../store/userSlice";
-import { CaretDownOutlined, QuestionCircleOutlined } from "@ant-design/icons";
+import { CaretDownOutlined, QuestionCircleOutlined, HistoryOutlined, RightOutlined } from "@ant-design/icons";
 import { useState, useEffect, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { Dropdown, Modal, message } from "antd";
@@ -531,7 +531,7 @@ const Connect = () => {
             )}
           </div>
         </div>
-        <div className="flex gap-[4px] mt-[8px]">
+          <div className="flex gap-[4px] mt-[8px]">
               <div className="bg-[#cf0] rounded-[8px] rounded-[8px] h-[50px] w-[20%] lg:h-[60px] px-2 py-3">
             <div className="h-full flex justify-between items-center">
               <div className="flex items-center gap-2">
@@ -551,15 +551,15 @@ const Connect = () => {
                 </div>
               </div>
               <div className="font-bold text-black flex items-center gap-1">
-           
-                         {llaxFrozen > 0 ? 
+
+                         {llaxFrozen > 0 ?
                 <span className="text-[12px] font-normal whitespace-nowrap flex items-center gap-1 text-[#666]">
                   ({t("llax.frozenAmount")}: {llaxFrozen})
                     <QuestionCircleOutlined title={t("llax.frozenTip")} style={{ fontSize: 12 }} />
                 </span>
               :(llaxBalance || 0)}
               </div>
-     
+
               <LLButton
                 className="bg-[#eee]"
                 onClick={handleClaim}
@@ -571,8 +571,23 @@ const Connect = () => {
               </LLButton>
             </div>
           </div>
-      
+
         </div>
+
+        {/* 分析记录入口：跳转 /analysis-history */}
+        <Link href="/analysis-history" className="block mt-[8px]">
+          <div className="bg-[#F2F2F2] hover:bg-[#E9FF93] transition-colors rounded-[8px] h-[50px] lg:h-[60px] px-2 py-3 flex items-center cursor-pointer">
+            <div className="flex gap-2 items-center">
+              <HistoryOutlined className="text-[16px] text-black" />
+              <div className="text-[#666666] text-[12px]">
+                {t("analysisHistory.entry")}
+              </div>
+            </div>
+            <div className="flex-1 flex items-center justify-end">
+              <RightOutlined className="text-[12px] text-[#666]" />
+            </div>
+          </div>
+        </Link>
       </div>
       <div className="flex items-center mt-4">
         <Image src={music} alt="music" className="w-full"></Image>

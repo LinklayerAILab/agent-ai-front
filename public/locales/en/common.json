@@ -605,6 +605,33 @@
         "retry": "Try Again",
         "refresh": "Refresh Status"
     },
+    "analysisHistory": {
+        "title": "Analysis History",
+        "entry": "Analysis History",
+        "tabs": {
+            "bep20": "BEP20",
+            "alpha": "ALPHA"
+        },
+        "type": {
+            "analyse_coin": "Coin Analysis",
+            "execute_strategy": "Strategy",
+            "risk_management": "Risk Mgmt",
+            "liquidity_check": "Liquidity Check",
+            "binance_token_analysis": "Binance Token Analysis",
+            "guard_coin_analysis": "Guard"
+        },
+        "status": {
+            "ok": "OK",
+            "partial": "Partial",
+            "failed": "Failed"
+        },
+        "partialTip": "Content may be incomplete",
+        "loadMore": "Load more",
+        "noMore": "No more",
+        "loadFailed": "Failed to load. Please try again.",
+        "empty": "No analysis history yet",
+        "emptyDesc": "Run an AI analysis and it will show up here."
+    },
     "alpha": {
         "liquidityAnalysis": "Liquidity Analysis",
         "liquidityCheck": "Liquidity Check",

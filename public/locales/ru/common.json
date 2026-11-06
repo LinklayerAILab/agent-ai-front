@@ -593,6 +593,33 @@
         "retry": "Повторить",
         "refresh": "Обновить статус"
     },
+    "analysisHistory": {
+        "title": "История анализов",
+        "entry": "История анализов",
+        "tabs": {
+            "bep20": "BEP20",
+            "alpha": "ALPHA"
+        },
+        "type": {
+            "analyse_coin": "Анализ монеты",
+            "execute_strategy": "Стратегия",
+            "risk_management": "Риски",
+            "liquidity_check": "Ликвидность",
+            "binance_token_analysis": "Binance анализ токенов",
+            "guard_coin_analysis": "Guard"
+        },
+        "status": {
+            "ok": "OK",
+            "partial": "Частично",
+            "failed": "Ошибка"
+        },
+        "partialTip": "Содержимое может быть неполным",
+        "loadMore": "Загрузить ещё",
+        "noMore": "Больше нет записей",
+        "loadFailed": "Не удалось загрузить. Попробуйте снова.",
+        "empty": "История анализов пока пуста",
+        "emptyDesc": "Запустите AI-анализ, и он появится здесь"
+    },
     "alpha": {
         "card": {
             "explorer": "Обзор",
