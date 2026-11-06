@@ -301,6 +301,7 @@ export const ChatMessage = (props: {
           onConfirm={handleConfirm}
           open={open && showStopButton}
           okText={t('common.gotIt')}
+          zIndex={10001}
         >
           <StopButton onClick={props.stopCreation} />
         </Popconfirm>
