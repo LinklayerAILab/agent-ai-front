@@ -327,16 +327,9 @@ const Page = () => {
         width="92vw"
         style={{ maxWidth: 720 }}
         title={
-          <div className="flex items-center gap-[8px]">
-            <span className="px-[6px] py-[2px] rounded-[4px] bg-black text-[#cf0] text-[10px] font-bold">
-              {detailItem
-                ? t(`analysisHistory.type.${detailItem.service_type}`)
-                : ""}
-            </span>
-            <span className="text-[14px] lg:text-[16px]">
-              {t("analysisHistory.title")}
-            </span>
-          </div>
+          <span className="text-[14px] lg:text-[16px]">
+            {t("analysisHistory.title")}
+          </span>
         }
       >
         {detailLoading ? (
